@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ESP8266</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+	 <style type="text/css">
+     button {  
+        width: 150px;  
+        padding:8px;  
+        background-color: #428bca;  
+        border-color: #357ebd;  
+        color: #fff;  
+        -moz-border-radius: 5px;  
+        -webkit-border-radius: 5px;  
+        border-radius: 10px; /* future proofing */  
+        -khtml-border-radius: 5px; /* for old Konqueror browsers */  
+        text-align: center;  
+        vertical-align: middle;  
+        border: 1px solid transparent;  
+        font-weight: 900;  
+        font-size:100%  
+      }  
+   </style>
+  </head>
+  <body>
+  	<nav class="navbar navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">ESP8266</a>
+        </div>
+      </div>
+    </nav>
+    
+	<div class="container">
+       
+    	<div class="starter-template">
+            <h1>欢迎使用WiFiduino</h1>
+			<br>
+			<p>点击下面按钮</p>
+			<P>可控制蓝色LED灯</P>
+			<br>
+			<button onclick='setPinValue("on")' >点亮板载LED</button>
+			<br>
+			<br>
+			<button onclick='setPinValue("off")' >熄灭板载LED</button>
+        </div>
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+	
+	
+	<script type="text/javascript">
+		function setPinValue(value) {
+			var xh = new XMLHttpRequest();
+			xh.onreadystatechange = function() {
+				if (xh.readyState == 4){
+					if(xh.status == 200) {
+						//alert(xh.responseText);
+						alert("操作成功");
+					}
+				}
+			}
+			var requestString = "/pin?a=" + value + "&pin=2";
+			xh.open("GET", requestString, true);
+			xh.send(null);
+		}
+	</script>
+  </body>
+</html>
