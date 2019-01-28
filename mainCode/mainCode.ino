@@ -3,11 +3,8 @@
 #include <FS.h>
 
 ESP8266WebServer server ( 80 );
-String ssid = "TOTOLINK_3be124"; //你的wifi热点名称
-String password = "13371035727"; //你的wifi热点密码
-
-//String ssid = "236-iot"; //你的wifi热点名称
-//String password = "236236236"; //你的wifi热点密码
+String ssid = "yimian-iot"; //你的wifi热点名称
+String password = "1234567890."; //你的wifi热点密码
 
 String getContentType(String filename){
   if(server.hasArg("download")) return "application/octet-stream";
@@ -25,8 +22,33 @@ String getContentType(String filename){
   else if(filename.endsWith(".gz")) return "application/x-gzip";
   return "text/plain";
 }
-/* NotFound处理
- */
+
+/* wifi 连接 */
+void wifiCnct()  {
+  int connectCount = 0;
+  WiFi.begin ( ssid.c_str(), password.c_str() );
+  while ( WiFi.status() != WL_CONNECTED ) {
+    digitalWrite(2, HIGH);
+    delay ( 1000 );
+    Serial.print ( "." );
+    if(connectCount > 30) {
+      Serial.println( "Connect fail!" );
+      break;
+    }
+    connectCount += 1;
+  }
+  if(WiFi.status() == WL_CONNECTED) {
+    Serial.println ( "" );
+    Serial.print ( "Connected to " );
+    Serial.println ( ssid );
+    Serial.print ( "IP address: " );
+    Serial.println ( WiFi.localIP() );
+    connectCount = 0;
+    digitalWrite(2, LOW);
+  }
+}
+
+/* NotFound处理 */
 void handleNotFound() {
   String path = server.uri();
   Serial.print("load url:");
@@ -54,6 +76,8 @@ void handleNotFound() {
   }
   server.send ( 404, "text/plain", message );
 }
+
+/* index提示页面 */
 void handleMain() {
   Serial.print("handleMain");
   File file = SPIFFS.open("/index.html", "r");
@@ -61,45 +85,58 @@ void handleMain() {
   file.close();
   return;
 }
-void handlePin() {
-  if(server.hasArg("a")) {
-    String action = server.arg("a");
-    if(action == "on") { //a=on
-      digitalWrite(2, LOW); //点亮8266上的蓝色led
-      server.send ( 200, "text/html", "Pin 2 has turn on"); return; //返回数据
-    } else if(action == "off") { // a=off
-      digitalWrite(2, HIGH); //熄灭板载led
-      server.send ( 200, "text/html", "Pin 2 has turn off"); return;
-    }
-    server.send ( 200, "text/html", "unknown action"); return;
+
+/* data提取url */
+void handleData() {
+  Serial.print("handleData");
+
+  char cmd[135];
+  sprintf(cmd,"{\"D0\":\"%d\",\"D1\":\"%d\",\"D2\":\"%d\",\"D3\":\"%d\",\"D4\":\"%d\",\"D5\":\"%d\",\"D6\":\"%d\",\"D7\":\"%d\",\"D8\":\"%d\",\"D9\":\"%d\",\"D10\":\"%d\",\"D11\":\"%d\",\"D12\":\"%d\",\"D13\":\"%d\",\"A0\":\"%f\"}",digitalRead(D0),digitalRead(D1),digitalRead(D2),digitalRead(D3),digitalRead(D4),digitalRead(D5),digitalRead(D6),digitalRead(D7),digitalRead(D8),digitalRead(D9),digitalRead(D10),digitalRead(D11),digitalRead(D12),digitalRead(D13),analogRead(A0));
+  
+  File file = SPIFFS.open("/data.json","w+");
+  if (!file) {
+    Serial.println("There was an error opening the file for writing");
+    return;
   }
-  server.send ( 200, "text/html", "action no found");
+  if (file.print(cmd)) {
+    Serial.println("File was written");
+  } else {
+    Serial.println("File write failed");
+  }
+  file.close();
+  file = SPIFFS.open("/data.json","r");
+  size_t sent = server.streamFile(file, "application/json");
+  file.close();
+  return;
 }
+
+/* execute url */
+void handlePin() {
+  if(server.hasArg("p")) {
+    String pin = server.arg("p");
+    if(server.hasArg("a")) {
+      String action = server.arg("a");
+      if(action == "high") { //a=on
+        digitalWrite(atoi(pin.c_str()), HIGH); //抬高电平
+        server.send ( 200, "application/json", "{\"code\":\"2\",\"state\":\"HIGH\"}"); return; //返回数据
+      } else if(action == "low") { // a=off
+        digitalWrite(atoi(pin.c_str()), LOW); //拉低电平
+        server.send ( 200, "application/json", "{\"code\":\"1\",\"state\":\"LOW\"}"); return;
+      }
+      server.send ( 200, "application/json", "{\"code\":\"-1\",\"state\":\"UNKNOW ACTION!\"}"); return;
+    }
+    server.send ( 200, "application/json", "{\"code\":\"-2\",\"state\":\"ACTION NO FOUND!\"}");
+  }
+}
+
 void setup() { 
   pinMode(2, OUTPUT);
   Serial.begin ( 115200 );
   SPIFFS.begin();
-  int connectCount = 0;
-  WiFi.begin ( ssid.c_str(), password.c_str() );
-  while ( WiFi.status() != WL_CONNECTED ) {
-    delay ( 1000 );
-    Serial.print ( "." );
-    if(connectCount > 30) {
-      Serial.println( "Connect fail!" );
-      break;
-    }
-    connectCount += 1;
-  }
-  if(WiFi.status() == WL_CONNECTED) {
-    Serial.println ( "" );
-    Serial.print ( "Connected to " );
-    Serial.println ( ssid );
-    Serial.print ( "IP address: " );
-    Serial.println ( WiFi.localIP() );
-    connectCount = 0;
-  }
+  wifiCnct();
   server.on ("/", handleMain);
-  server.on ("/pin", HTTP_GET, handlePin);
+  server.on ("/ctl", handlePin);
+  server.on ("/data", HTTP_GET, handleData);
   server.onNotFound ( handleNotFound );
   server.begin();
   Serial.println ( "HTTP server started" );
@@ -107,4 +144,5 @@ void setup() {
 
 void loop() {
   server.handleClient();
+  //if( WiFi.status() != WL_CONNECTED)  wifiCnct();
 }
