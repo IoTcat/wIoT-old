@@ -13,6 +13,7 @@
 //define overal var
 char ssid[] = "yimian-iot";
 char pswd[] = "1234567890.";
+char auth[] = "f60664f86153";
 
 //announce keyname
 BlinkerButton Button1("btn-abc");
@@ -28,7 +29,7 @@ int swi,swi1 ,i,a,timer,timer1,b,c= 0;
 //button1-function
 void button1_callback(const String & state) 
 {
-    BLINKER_LOG2("get button state: ", state);
+    BLINKER_LOG("get button state: ", state);
     if(digitalRead(D5)){ Button1.print("灯正亮！");}else{    Button1.print("灯未亮！");}
     digitalWrite(D5,LOW);
     Button1.print("正在重置！");
@@ -49,7 +50,7 @@ void button1_callback(const String & state)
 //button2-function
 void button2_callback(const String & state) 
 {
-    BLINKER_LOG2("get button state: ", state);
+    BLINKER_LOG("get button state: ", state);
     a=1;
     digitalWrite(D5,HIGH);
     if(digitalRead(D5)){ Button1.print("灯已打开！");}else{    Button1.print("灯已关闭！");}
@@ -60,7 +61,7 @@ void button2_callback(const String & state)
 //button3-function
 void button3_callback(const String & state) 
 {
-    BLINKER_LOG2("get button state: ", state);
+    BLINKER_LOG("get button state: ", state);
     a=1;
     digitalWrite(D5,LOW);
     if(digitalRead(D5)){ Button1.print("灯已打开！");}else{    Button1.print("灯已关闭！");}
@@ -85,7 +86,7 @@ void setup()
     digitalWrite(D5, HIGH);
 
     //connect to WIFI
-    Blinker.begin(ssid, pswd);
+    Blinker.begin(auth ,ssid, pswd);
 
     //set interrupt
     Button1.attach(button1_callback);
@@ -113,14 +114,14 @@ void loop() {
     if(digitalRead(D4)!=digitalRead(D8)){ swi++;}
     }
 
-      BLINKER_LOG2("get slider value: ", swi);
+      BLINKER_LOG("get slider value: ", swi);
       if(swi!=swi1){digitalWrite(D5,!digitalRead(D5));a=1;timer=Blinker.time();Blinker.print("已切换至手动控制！");}
       if(timer==(Blinker.time()-300)){a=0;Blinker.print("手动控制结束！");}
-      BLINKER_LOG2("get slhgggggggggggider value: ",digitalRead(D5) );
+      BLINKER_LOG("get slhgggggggggggider value: ",digitalRead(D5) );
     //get sensor info
-      BLINKER_LOG2("get sensor1: ", digitalRead(D13));
-      BLINKER_LOG2("get sensor2: ", digitalRead(D6));
-      BLINKER_LOG2("a= ", a);
+      BLINKER_LOG("get sensor1: ", digitalRead(D13));
+      BLINKER_LOG("get sensor2: ", digitalRead(D6));
+      BLINKER_LOG("a= ", a);
       
      //if people light on
     if(digitalRead(D6)==1&&digitalRead(D13)==1&&a!=1){     Blinker.print("探测到人");  if(Blinker.hour()<=7||Blinker.hour()>=17){ digitalWrite(D5,HIGH);Blinker.print("灯已打开！");timer1=Blinker.time();}}else{if(a!=1&&timer1==(Blinker.time()-250)){digitalWrite(D5,LOW);Blinker.print("未探测到人，灯已关闭！");    Button1.print("正在重置！");

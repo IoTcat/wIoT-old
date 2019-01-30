@@ -6,6 +6,8 @@ ESP8266WebServer server ( 80 );
 String ssid = "yimian-iot"; //你的wifi热点名称
 String password = "1234567890."; //你的wifi热点密码
 
+int disCntCount=0;
+
 String getContentType(String filename){
   if(server.hasArg("download")) return "application/octet-stream";
   else if(filename.endsWith(".htm")) return "text/html";
@@ -144,5 +146,6 @@ void setup() {
 
 void loop() {
   server.handleClient();
-  //if( WiFi.status() != WL_CONNECTED)  wifiCnct();
+  if( WiFi.status() != WL_CONNECTED&&disCntCount++>6)  wifiCnct();
+  if( WiFi.status()==WL_CONNECTED ) disCntCount=0;
 }
