@@ -1,5 +1,5 @@
 /* *****************************************************************
- * this is the code for control unit in hallway
+ * this is the code for control unit in living Room
  * 
  * *****************************************************************/
 
@@ -13,7 +13,7 @@
 //define overal var
 char ssid[] = "yimian-iot";
 char pswd[] = "1234567890.";
-char auth[] = "7e62353fa063";
+char auth[] = "2cf87de895ee ";
 
 //announce keyname
 BlinkerButton Button1("btn-abc");

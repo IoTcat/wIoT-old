@@ -13,7 +13,7 @@
 //define overal var
 char ssid[] = "yimian-iot";
 char pswd[] = "1234567890.";
-char auth[] = "7e62353fa063";
+char auth[] = "5ff46d9b46e5";
 
 //announce keyname
 BlinkerButton Button1("btn-abc");
