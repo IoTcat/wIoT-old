@@ -1,5 +1,5 @@
 /* *****************************************************************
- * this is the code for control unit in hallway
+ * this is the code for control unit in dinner
  * 
  * *****************************************************************/
 
