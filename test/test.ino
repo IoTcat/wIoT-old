@@ -2,6 +2,21 @@
  * this is the code for wIoT TEST purpose
  * 
  * *****************************************************************/
+// MQTT auth code and WIFI
+#define MQTT_AUTH_CODE "1c9f7cf6bb67"
+#define WIFI_SSID "yimian-iot"
+#define WIFI_PASSWD "1234567890."
+
+// Pins Log ID
+#define W_DEVICE_ID ""
+#define W_LIGHT_ID "dd"
+#define W_SWI_ID ""
+#define W_TEMP_ID ""
+#define W_HUM_ID ""
+#define W_BUZ_ID ""
+#define W_R1_ID ""
+
+
 // Set as WIFI mode
 #define BLINKER_WIFI
 #define BLINKER_PRINT Serial
@@ -14,13 +29,20 @@
 #define swiIn D4 // Pins for Check the switch state :: signal In
 #define swiOut D8 // Pins for Check the switch state :: signal Out
 
+// Parameter Define
+#define SWI_TRY_TIMES 100
+#define SWI_OK_TIMES 77
+
+
 // Set wifi and MQTT config
-char auth[] = "1c9f7cf6bb67";
-char ssid[] = "yimian-iot";
-char pswd[] = "1234567890.";
+char auth[] = MQTT_AUTH_CODE;
+char ssid[] = WIFI_SSID;
+char pswd[] = WIFI_PASSWD;
 
 // load module
+BlinkerButton wIoT("wIoT");
 BlinkerButton lightCtlBtn("btn-light");
+
 
 // declare global var
 int swiStatus=0;
@@ -124,6 +146,19 @@ void lightCtlBtn_callback(const String & state)
     }
 }
 
+/******* Heartbeat Function ********/
+// Heartbeat for Blinker app
+void heartbeat_app()
+{
+  update_light_btn();
+}
+
+// Heartbeat for wIoT
+void heartbeat(const String & state)
+{
+  Blinker.print("W_LIGHT_ID","jj");
+}
+
 /******* Arduino Setup Funstion *******/
 void setup()
 {
@@ -146,7 +181,11 @@ void setup()
     Blinker.begin(auth, ssid, pswd);
     
     // Blinker attached Functions
+    wIoT.attach(heartbeat);
     lightCtlBtn.attach(lightCtlBtn_callback);
+
+    // Blinker attached Heartbeat
+    Blinker.attachHeartbeat(heartbeat_app);
 }
 
 /******** Arduino Main loop Function********/

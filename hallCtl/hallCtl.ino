@@ -2,18 +2,27 @@
  * this is the code for control unit in hallway
  * 
  * *****************************************************************/
+ // MQTT auth code
+#define MQTT_AUTH "7e62353fa063"
 
-//declear the moudle is WIFI
-#define BLINKER_PRINT Serial
+
+// Set as WIFI mode
 #define BLINKER_WIFI
+#define BLINKER_PRINT Serial
 
-//include function set
+// Include Blinker lib
 #include <Blinker.h>
 
-//define overal var
-char ssid[] = "yimian-iot";
-char pswd[] = "1234567890.";
-char auth[] = "7e62353fa063";
+// Correspond Pins to Tag
+#define lightCtl D5 //Control the light
+#define swiIn D4 // Pins for Check the switch state :: signal In
+#define swiOut D8 // Pins for Check the switch state :: signal Out
+
+// Parameter Define
+#define SWI_TRY_TIMES 100
+#define SWI_OK_TIMES 77
+// Set wifi and MQTT config
+char auth[] = 
 
 //announce keyname
 BlinkerButton Button1("btn-abc");
