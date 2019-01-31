@@ -15,7 +15,7 @@ this is the code for the control part of automatic home solar-powered water heat
 #include <Blinker.h>
 
 //declear overall variable::user, password, identify key
-char auth[] = "c625b08a9549";
+char auth[] = "91431a5e4043";
 char ssid[] = "yimian-iot";
 char pswd[] = "1234567890.";
 
@@ -34,7 +34,7 @@ float i=0;
 //Button1 function::state check
 void button1_callback(const String & state) 
 {
-    BLINKER_LOG2("get button1 state: ", state);
+    BLINKER_LOG("get button1 state: ", state);
     if(digitalRead(D5)){ Button1.print("未加水");}else{ Button1.print("正在加水..");}   
     if(a==1){        Blinker.print("剩余分钟：");
         Blinker.print((time2-Blinker.time())/60);}
@@ -43,7 +43,7 @@ void button1_callback(const String & state)
 //Button2 function::on
 void button2_callback(const String & state) 
 {
-    BLINKER_LOG2("get button2 state: ", state);    
+    BLINKER_LOG("get button2 state: ", state);    
     digitalWrite(D5, LOW);
     if(digitalRead(D5)){ Button2.print("停止加水");}else{ Button2.print("开始加水..");}
 }
@@ -51,7 +51,7 @@ void button2_callback(const String & state)
 //Button3 function::off
 void button3_callback(const String & state) 
 {
-    BLINKER_LOG2("get button3 state: ", state);
+    BLINKER_LOG("get button3 state: ", state);
 
     digitalWrite(D5, HIGH);
     
@@ -64,14 +64,14 @@ void button3_callback(const String & state)
 //Button4 function::start on
 void button4_callback(const String & state) 
 {
-    BLINKER_LOG2("get button4 state: ", state);
+    BLINKER_LOG("get button4 state: ", state);
 
     a=1;
     digitalWrite(D5, LOW);
     
     time1=Blinker.time();
     time2=time1+timer*60;
-    BLINKER_LOG2("get slider value: ", time2-Blinker.time());
+    BLINKER_LOG("get slider value: ", time2-Blinker.time());
     Button4.print("开始计时加水！");
 }
 
@@ -90,7 +90,7 @@ void setup()
     pinMode(D7, INPUT);
     digitalWrite(D5, HIGH);
     
-    Blinker.begin(/*auth,*/ ssid, pswd);
+    Blinker.begin(auth, ssid, pswd);
     Button1.attach(button1_callback);
     Button2.attach(button2_callback);
     Button3.attach(button3_callback);
