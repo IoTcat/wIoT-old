@@ -4,95 +4,156 @@
  * *****************************************************************/
 // Set as WIFI mode
 #define BLINKER_WIFI
+#define BLINKER_PRINT Serial
 
 // Include Blinker lib
 #include <Blinker.h>
 
+// Correspond Pins to Tag
+#define lightCtl D5 //Control the light
+#define swiIn D4 // Pins for Check the switch state :: signal In
+#define swiOut D8 // Pins for Check the switch state :: signal Out
+
+// Set wifi and MQTT config
 char auth[] = "1c9f7cf6bb67";
 char ssid[] = "yimian-iot";
 char pswd[] = "1234567890.";
 
-// 新建组件对象
-BlinkerButton Button1("btn-abc");
+// load module
+BlinkerButton lightCtlBtn("btn-light");
 
-int counter = 0;
+// declare global var
+int swiStatus=0;
 
-// 按下按键即会执行该函数
-void button1_callback(const String & state)
+/******** Custom Functions *********/
+
+/*** LightCtl Functions ***/
+// function for control light :: 0(shutdown),1(open),2(switch)
+int light_ctl(int cmd)
 {
-    BLINKER_LOG("get button state: ", state);
-    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+  if(cmd == 0)
+  {
+    digitalWrite(lightCtl, HIGH);
+    if(digitalRead(lightCtl) == HIGH) {BLINKER_LOG("Run Funtion light_ctl :: light Shutdown");update_light_btn();return 1;}
+    else {BLINKER_LOG("ERROR in Funtion light_ctl :: when light Shutdown");return 0;}
+  }
+  if(cmd == 1)
+  {
+    digitalWrite(lightCtl, LOW);
+    if(digitalRead(lightCtl) == LOW) {BLINKER_LOG("Run Funtion light_ctl :: light Open");update_light_btn();return 1;}
+    else {BLINKER_LOG("ERROR in Funtion light_ctl :: when light Open");return 0;}
+  }
+  if(cmd == 2)
+  {
+    int lightStatus = digitalRead(lightCtl);
+    digitalWrite(lightCtl, !lightStatus);
+    if(digitalRead(lightCtl) != lightStatus) {BLINKER_LOG("Run Funtion light_ctl :: light Switch");update_light_btn();return 1;}
+    else {BLINKER_LOG("ERROR in Funtion light_ctl :: when light Switch");return 0;}
+  }
+  return 0;
+}
+
+//function for get light info :: ::return 0(shutdown),1(open)
+int get_light_status()
+{
+  if(digitalRead(lightCtl) == HIGH) return 0;
+  else if (digitalRead(lightCtl == LOW)) return 1;
+  else return -1;
+}
+
+// function for dealing with light error
+int light_err()
+{
+  BLINKER_LOG("ERROR with LIGHTCTL!!!");
+}
+
+// function for update app button state
+void update_light_btn()
+{
+  if(digitalRead(lightCtl) == LOW)
+  {
+    lightCtlBtn.icon("fas fa-lightbulb");
+    lightCtlBtn.color("#00CD00");
+    lightCtlBtn.text("戳我关灯~","关灯啦~");
+    lightCtlBtn.print("on");
+  }
+  else
+  {
+    lightCtlBtn.icon("far fa-lightbulb");
+    lightCtlBtn.color("#FF0000");
+    lightCtlBtn.text("戳我开灯~","戳我开灯~");
+    lightCtlBtn.print("off");
+  }
+}
+
+/*** Swi Functions ***/
+// function for judging swi state :: ::return 0(off),1(on),-1(error)
+int get_swi_status()
+{
+  int swiCount = 0;
+  int swiEff = 0;
+  for(swiCount = 0; swiCount < SWI_TRY_TIMES; swiCount++)
+  {
+    digitalWrite(swiOut, HIGH);
+    if(digitalRead(swiIn) == HIGH) swiEff++;
+    digitalWrite(swiOut, LOW);
+    if(digitalRead(swiIn) == LOW) swiEff++;
+    swiEff--;
+  }
+  BLINKER_LOG("Parameter in get_swi_status :: swiEff = ",swiEff);
+  if(swiEff > SWI_OK_TIMES) return 1;
+  else return 0;
+}
+/******** Blinker Attached Function *********/
+//
+void lightCtlBtn_callback(const String & state)
+{
+    BLINKER_LOG("lightCtlBtn :: get button state: ", state);
 
     if (state == BLINKER_CMD_BUTTON_TAP) {
         BLINKER_LOG("Button tap!");
-
-        // Button1.icon("icon_1");
-        Button1.color("#FF0000");
-        Button1.text("Your button name or describe");
-        Button1.print();
-    }
-    else if (state == BLINKER_CMD_BUTTON_PRESSED) {
-        BLINKER_LOG("Button pressed!");
-
-        // Button1.icon("icon_1");
-        Button1.color("#FFFF00");
-        Button1.text("Your button name or describe");
-        Button1.print();
-    }
-    else if (state == BLINKER_CMD_BUTTON_RELEASED) {
-        BLINKER_LOG("Button released!");
-
-        // Button1.icon("icon_1");
-        Button1.color("#FFFFFF");
-        //Button1.text("Your button name or describe");
-        Button1.text("Your button name", "describe");
-        Button1.print();
+        if(!light_ctl(2)) light_err();
     }
     else if (state == BLINKER_CMD_ON) {
         BLINKER_LOG("Toggle on!");
-
-        // Button1.icon("icon_1");
-        Button1.color("#0000FF");
-       // Button1.text("Your button name or describe");
-        Button1.text("Your button name", "describe");
-        Button1.print("on");
+        if(!light_ctl(1)) light_err();
     }
     else if (state == BLINKER_CMD_OFF) {
         BLINKER_LOG("Toggle off!");
-
-         Button1.icon("icon_1");
-        Button1.color("#00FFFF");
-        //Button1.text("Your button name or describe");
-         Button1.text("Your button name", "describe");
-        Button1.print("off");
-    }
-    else {
-        BLINKER_LOG("Get user setting: ", state);
-
-         Button1.icon("icon_1");
-        Button1.color("#FFFFFF");
-        //Button1.text("Your button name or describe");
-        Button1.text("Your button name", "describe");
-        Button1.print();
+        if(!light_ctl(0)) light_err();
     }
 }
 
+/******* Arduino Setup Funstion *******/
 void setup()
 {
-    // 初始化串口
+    // Serial ini
     Serial.begin(115200);
     BLINKER_DEBUG.stream(Serial);
 
-    // 初始化有LED的IO
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
-    // 初始化blinker
-    Blinker.begin(auth, ssid, pswd);
+    // Pins state declare
+    pinMode(lightCtl, OUTPUT);
+    pinMode(swiIn, INPUT);
+    pinMode(swiOut, OUTPUT);
 
-    Button1.attach(button1_callback);
+    // Pins state ini
+    digitalWrite(lightCtl, HIGH);
+
+    // swi ini
+    swiStatus = get_swi_status();
+    
+    // Blinker ini
+    Blinker.begin(auth, ssid, pswd);
+    
+    // Blinker attached Functions
+    lightCtlBtn.attach(lightCtlBtn_callback);
 }
 
+/******** Arduino Main loop Function********/
 void loop() {
+    // Active Blinker
     Blinker.run();
+
+    if(swiStatus != get_swi_status()) {light_ctl(2);swiStatus = get_swi_status();}
 }
 
