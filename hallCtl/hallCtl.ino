@@ -40,12 +40,16 @@
 #define uDoorOpenPin D12 // Pins for opening door
 #define uDoorVoice D11 // Pins for connecting voice lines
 #define uDoorTel D10 // Pins for detecting if Tel is on
-#define led D3
+#define led D0
 
 // Parameter Define 
 #define SWI_TRY_TIMES 300
 #define SWI_ACTION_DELAY 30
 #define UDOOR_OPEN_DELAY_TIME 800
+#define LED_WARNING_FREQUENCY 10
+#define MIN_DIRECT_CHANGE_TIME 10000
+#define NO_PEOPLE_DELAY 8000
+#define SHUTDOWN_LIGHT_DELAY 27000
 
 
 // Set wifi and MQTT config
@@ -57,6 +61,7 @@ char pswd[] = WIFI_PASSWD;
 BlinkerButton wIoT("wIoT");
 BlinkerButton lightCtlBtn("btn-light");
 BlinkerButton uDoorOpenBtn("btn-uDoorOpen");
+BlinkerButton ledBtn("led");
 
 BlinkerText txtTel("tex-tel");
 BlinkerText txtR1("tex-r1");
@@ -71,6 +76,9 @@ int swiStatus = 0;
 int uDoorTelStatus = 0;
 int rSnsr1Status,rSnsr2Status,rSnsr3Status,rSnsr4Status = 0;
 int isPeople = 0;
+int noPeople = 0;
+int hallDir = 0;
+int PeopleChangeTime = 0;
 
 /******** Custom Functions *********/
 
@@ -81,7 +89,7 @@ int light_ctl(int cmd)
   if(cmd == 0)
   {
     digitalWrite(lightCtl, LOW);
-    if(digitalRead(lightCtl) == LOW) {BLINKER_LOG("Run Funtion light_ctl :: light Shutdown");update_light_btn();return 1;}
+    if(digitalRead(lightCtl) == LOW) {BLINKER_LOG("Run Funtion light_ctl :: light Shutdown");update_light_btn();Blinker.delay(SHUTDOWN_LIGHT_DELAY);return 1;}
     else {BLINKER_LOG("ERROR in Funtion light_ctl :: when light Shutdown");return 0;}
   }
   if(cmd == 1)
@@ -187,8 +195,15 @@ int is_People()
   else return 0;
 }
 
+int no_People()
+{
+  if(!rSnsr1Status && !rSnsr2Status && !rSnsr3Status && !rSnsr4Status && PeopleChangeTime < millis()-NO_PEOPLE_DELAY) return 1;
+  else return 0;
+}
+
 void rSnsr_data()
 {
+  static int  t_ice = 0;
   if(rSnsr1Status == HIGH) txtR1.print("r1","有人经过");
   else txtR1.print("r1","无人");
   if(rSnsr2Status == HIGH) txtR2.print("r2","有人经过");
@@ -197,10 +212,13 @@ void rSnsr_data()
   else txtR3.print("r3","无人");
   if(rSnsr4Status == HIGH) txtR4.print("r4","有人经过");
   else txtR4.print("r4","无人");
-  if((rSnsr1Status||rSnsr2Status)&&!(rSnsr3Status||rSnsr4Status)) txtDir.print("方向","出");
-  if(!(rSnsr1Status||rSnsr2Status)&&(rSnsr3Status||rSnsr4Status)) txtDir.print("方向","进");
-  if(!rSnsr1Status&&rSnsr2Status&&!rSnsr3Status&&rSnsr4Status) txtDir.print("方向","未知");
+  if((rSnsr1Status+rSnsr2Status+rSnsr3Status+rSnsr4Status>=2)&&(rSnsr1Status&&rSnsr2Status)&&(rSnsr3Status||rSnsr4Status)) {if(t_ice < millis()-MIN_DIRECT_CHANGE_TIME || hallDir == 1){txtDir.print("方向","出");hallDir=1;t_ice=millis();}}
+  else if((rSnsr1Status+rSnsr2Status+rSnsr3Status+rSnsr4Status>=2)&&(rSnsr1Status||rSnsr2Status)&&(rSnsr3Status&&rSnsr4Status)) {if(t_ice < millis()-MIN_DIRECT_CHANGE_TIME || hallDir == -1){txtDir.print("方向","进");hallDir=-1;t_ice=millis();}}
+  else if(!rSnsr1Status&&rSnsr2Status&&!rSnsr3Status&&rSnsr4Status) {txtDir.print("方向","未知");hallDir=0;}
+  else hallDir=0;
+  PeopleChangeTime = millis();
 }
+
 
 /*** uDoor functions ***/
 // function for opening the unit door
@@ -236,6 +254,14 @@ void uDoor_data()
   if(digitalRead(uDoorTel) == HIGH)txtTel.print("门铃","麦克风已接通！");
   if(digitalRead(uDoorTel) == LOW)txtTel.print("门铃","未接通");
 }
+
+/*** led functions ***/
+void led_warning()
+{
+  analogWrite(led, (millis()/LED_WARNING_FREQUENCY)%255);
+}
+
+
 /******** Blinker Attached Function *********/
 //
 void lightCtlBtn_callback(const String & state)
@@ -262,6 +288,13 @@ void uDoorOpenBtn_callback(const String & state)
 }
 
 
+void ledBtn_callback(const String & state)
+{
+  if (state == BLINKER_CMD_ON) digitalWrite(led, HIGH);
+  if (state == BLINKER_CMD_OFF) digitalWrite(led, LOW);
+  if (state == BLINKER_CMD_BUTTON_TAP) digitalWrite(led, !digitalRead(led));
+}
+
 /******* Heartbeat Function ********/
 // Heartbeat for Blinker app
 void heartbeat_app()
@@ -281,6 +314,7 @@ void heartbeat(const String & state)
   Blinker.print(W_R2_ID,digitalRead(rSnsr2));
   Blinker.print(W_R3_ID,digitalRead(rSnsr3));
   Blinker.print(W_R4_ID,digitalRead(rSnsr4));
+  Blinker.print("hallDir",hallDir);
   Blinker.print(W_LED_ID,digitalRead(led));
 }
 
@@ -327,6 +361,7 @@ void setup()
     wIoT.attach(heartbeat);
     lightCtlBtn.attach(lightCtlBtn_callback);
     uDoorOpenBtn.attach(uDoorOpenBtn_callback);
+    ledBtn.attach(ledBtn_callback);
 
     // Blinker attached Heartbeat
     Blinker.attachHeartbeat(heartbeat_app);
@@ -346,5 +381,12 @@ void loop() {
     // If people Light
     if(is_People()&&is_People()!=isPeople) light_ctl(1);
     isPeople = is_People();
+
+    // If no people shutdown Light
+    if(no_People()&&no_People()!=noPeople) light_ctl(0);
+    noPeople = no_People();
+    // led
+    if(is_People()) led_warning();
+    //digitalWrite(led, HIGH);
 }
 

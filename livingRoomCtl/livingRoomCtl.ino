@@ -3,7 +3,7 @@
  * 
  * *****************************************************************/
  // MQTT auth code
-#define MQTT_AUTH_CODE "2cf87de895ee"
+#define MQTT_AUTH_CODE  "2cf87de895ee"
 #define WIFI_SSID "yimian-iot"
 #define WIFI_PASSWD "1234567890."
 
