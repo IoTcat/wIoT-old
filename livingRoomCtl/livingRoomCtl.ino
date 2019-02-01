@@ -3,7 +3,18 @@
  * 
  * *****************************************************************/
  // MQTT auth code
-#define MQTT_AUTH "2cf87de895ee"
+#define MQTT_AUTH_CODE "2cf87de895ee"
+#define WIFI_SSID "yimian-iot"
+#define WIFI_PASSWD "1234567890."
+
+// Pins Log ID
+#define W_DEVICE_ID ""
+#define W_LIGHT_ID "dd"
+#define W_SWI_ID ""
+#define W_TEMP_ID ""
+#define W_HUM_ID ""
+#define W_BUZ_ID ""
+#define W_R1_ID ""
 
 
 // Set as WIFI mode
@@ -19,14 +30,13 @@
 #define swiOut D8 // Pins for Check the switch state :: signal Out
 
 // Parameter Define
-#define SWI_TRY_TIMES 100
-#define SWI_OK_TIMES 77
+#define SWI_TRY_TIMES 300
 
 
 // Set wifi and MQTT config
-char auth[] = ;
-char ssid[] = "yimian-iot";
-char pswd[] = "1234567890.";
+char auth[] = MQTT_AUTH_CODE;
+char ssid[] = WIFI_SSID;
+char pswd[] = WIFI_PASSWD;
 
 // load module
 BlinkerButton wIoT("wIoT");
@@ -106,14 +116,17 @@ int get_swi_status()
   for(swiCount = 0; swiCount < SWI_TRY_TIMES; swiCount++)
   {
     digitalWrite(swiOut, HIGH);
+    //Blinker.delay(1);
     if(digitalRead(swiIn) == HIGH) swiEff++;
     digitalWrite(swiOut, LOW);
+    //Blinker.delay(1);
     if(digitalRead(swiIn) == LOW) swiEff++;
     swiEff--;
   }
   BLINKER_LOG("Parameter in get_swi_status :: swiEff = ",swiEff);
-  if(swiEff > SWI_OK_TIMES) return 1;
-  else return 0;
+  if(swiEff == SWI_TRY_TIMES) return 1;
+  else if(swiEff == 0) return 0;
+  else return swiStatus;
 }
 /******** Blinker Attached Function *********/
 //
@@ -145,7 +158,7 @@ void heartbeat_app()
 // Heartbeat for wIoT
 void heartbeat(const String & state)
 {
-  Blinker.print("li","jj");
+  Blinker.print(W_LIGHT_ID,"jj");
 }
 
 /******* Arduino Setup Funstion *******/
@@ -182,6 +195,6 @@ void loop() {
     // Active Blinker
     Blinker.run();
 
-    if(swiStatus != get_swi_status()) {light_ctl(2);swiStatus = get_swi_status();}
+    if(swiStatus != get_swi_status()) {Blinker.delay(200);if(swiStatus != get_swi_status()){light_ctl(2);swiStatus = get_swi_status();}}
 }
 

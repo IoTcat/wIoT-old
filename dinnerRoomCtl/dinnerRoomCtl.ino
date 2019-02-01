@@ -2,137 +2,199 @@
  * this is the code for control unit in dinner
  * 
  * *****************************************************************/
+// MQTT auth code and WIFI
+#define MQTT_AUTH_CODE "5ff46d9b46e5"
+#define WIFI_SSID "yimian-iot"
+#define WIFI_PASSWD "1234567890."
 
-//declear the moudle is WIFI
-#define BLINKER_PRINT Serial
+// Pins Log ID
+#define W_DEVICE_ID ""
+#define W_LIGHT_ID "dd"
+#define W_SWI_ID ""
+#define W_TEMP_ID ""
+#define W_HUM_ID ""
+#define W_BUZ_ID ""
+#define W_R1_ID ""
+
+
+// Set as WIFI mode
 #define BLINKER_WIFI
+#define BLINKER_PRINT Serial
 
-//include function set
+// Include Blinker lib
 #include <Blinker.h>
 
-//define overal var
-char ssid[] = "yimian-iot";
-char pswd[] = "1234567890.";
-char auth[] = "5ff46d9b46e5";
+// Correspond Pins to Tag
+#define lightCtl D5 //Control the light
+#define swiIn D4 // Pins for Check the switch state :: signal In
+#define swiOut D8 // Pins for Check the switch state :: signal Out
 
-//announce keyname
-BlinkerButton Button1("btn-abc");
-BlinkerButton Button2("btn-on");
-BlinkerButton Button3("btn-off");
-
-//declear var
-int swi,swi1 ,i,a,timer,timer1,b,c= 0;
+// Parameter Define
+#define SWI_TRY_TIMES 300
 
 
+// Set wifi and MQTT config
+char auth[] = MQTT_AUTH_CODE;
+char ssid[] = WIFI_SSID;
+char pswd[] = WIFI_PASSWD;
+
+// load module
+BlinkerButton wIoT("wIoT");
+BlinkerButton lightCtlBtn("btn-light");
 
 
-//button1-function
-void button1_callback(const String & state) 
+// declare global var
+int swiStatus=0;
+
+/******** Custom Functions *********/
+
+/*** LightCtl Functions ***/
+// function for control light :: 0(shutdown),1(open),2(switch)
+int light_ctl(int cmd)
 {
-    BLINKER_LOG("get button state: ", state);
-    if(digitalRead(D5)){ Button1.print("灯正亮！");}else{    Button1.print("灯未亮！");}
-    digitalWrite(D5,LOW);
-    Button1.print("正在重置！");
-    for(i=10;i>0;i--)
-    {
-      Blinker.print(i);
-      digitalWrite(D6,LOW);digitalWrite(D13,LOW);
-      digitalRead(D6);digitalRead(D13);
-      delay(1000);
-     }
-    a=0;
-    Button1.print("重置完成！");
-    timer1=Blinker.time()-249;
-    if(digitalRead(D5)){ Button1.print("灯已打开！");}else{    Button1.print("灯已关闭！");}
+  if(cmd == 0)
+  {
+    digitalWrite(lightCtl, HIGH);
+    if(digitalRead(lightCtl) == HIGH) {BLINKER_LOG("Run Funtion light_ctl :: light Shutdown");update_light_btn();return 1;}
+    else {BLINKER_LOG("ERROR in Funtion light_ctl :: when light Shutdown");return 0;}
+  }
+  if(cmd == 1)
+  {
+    digitalWrite(lightCtl, LOW);
+    if(digitalRead(lightCtl) == LOW) {BLINKER_LOG("Run Funtion light_ctl :: light Open");update_light_btn();return 1;}
+    else {BLINKER_LOG("ERROR in Funtion light_ctl :: when light Open");return 0;}
+  }
+  if(cmd == 2)
+  {
+    int lightStatus = digitalRead(lightCtl);
+    digitalWrite(lightCtl, !lightStatus);
+    if(digitalRead(lightCtl) != lightStatus) {BLINKER_LOG("Run Funtion light_ctl :: light Switch");update_light_btn();return 1;}
+    else {BLINKER_LOG("ERROR in Funtion light_ctl :: when light Switch");return 0;}
+  }
+  return 0;
 }
 
-
-//button2-function
-void button2_callback(const String & state) 
+//function for get light info :: ::return 0(shutdown),1(open)
+int get_light_status()
 {
-    BLINKER_LOG("get button state: ", state);
-    a=1;
-    digitalWrite(D5,HIGH);
-    if(digitalRead(D5)){ Button1.print("灯已打开！");}else{    Button1.print("灯已关闭！");}
-     timer=Blinker.time();
-}  
+  if(digitalRead(lightCtl) == HIGH) return 0;
+  else if (digitalRead(lightCtl == LOW)) return 1;
+  else return -1;
+}
 
-
-//button3-function
-void button3_callback(const String & state) 
+// function for dealing with light error
+int light_err()
 {
-    BLINKER_LOG("get button state: ", state);
-    a=1;
-    digitalWrite(D5,LOW);
-    if(digitalRead(D5)){ Button1.print("灯已打开！");}else{    Button1.print("灯已关闭！");}
-    timer=Blinker.time();
-}   
+  BLINKER_LOG("ERROR with LIGHTCTL!!!");
+}
 
-
-
-//main setup function
-void setup() 
+// function for update app button state
+void update_light_btn()
 {
+  if(digitalRead(lightCtl) == LOW)
+  {
+    lightCtlBtn.icon("fas fa-lightbulb");
+    lightCtlBtn.color("#00CD00");
+    lightCtlBtn.text("戳我关灯~","关灯啦~");
+    lightCtlBtn.print("on");
+  }
+  else
+  {
+    lightCtlBtn.icon("far fa-lightbulb");
+    lightCtlBtn.color("#FF0000");
+    lightCtlBtn.text("戳我开灯~","戳我开灯~");
+    lightCtlBtn.print("off");
+  }
+}
+
+/*** Swi Functions ***/
+// function for judging swi state :: ::return 0(off),1(on),-1(error)
+int get_swi_status()
+{
+  int swiCount = 0;
+  int swiEff = 0;
+  for(swiCount = 0; swiCount < SWI_TRY_TIMES; swiCount++)
+  {
+    digitalWrite(swiOut, HIGH);
+    //Blinker.delay(1);
+    if(digitalRead(swiIn) == HIGH) swiEff++;
+    digitalWrite(swiOut, LOW);
+    //Blinker.delay(1);
+    if(digitalRead(swiIn) == LOW) swiEff++;
+    swiEff--;
+  }
+  BLINKER_LOG("Parameter in get_swi_status :: swiEff = ",swiEff);
+  if(swiEff == SWI_TRY_TIMES) return 1;
+  else if(swiEff == 0) return 0;
+  else return swiStatus;
+}
+/******** Blinker Attached Function *********/
+//
+void lightCtlBtn_callback(const String & state)
+{
+    BLINKER_LOG("lightCtlBtn :: get button state: ", state);
+
+    if (state == BLINKER_CMD_BUTTON_TAP) {
+        BLINKER_LOG("Button tap!");
+        if(!light_ctl(2)) light_err();
+    }
+    else if (state == BLINKER_CMD_ON) {
+        BLINKER_LOG("Toggle on!");
+        if(!light_ctl(1)) light_err();
+    }
+    else if (state == BLINKER_CMD_OFF) {
+        BLINKER_LOG("Toggle off!");
+        if(!light_ctl(0)) light_err();
+    }
+}
+
+/******* Heartbeat Function ********/
+// Heartbeat for Blinker app
+void heartbeat_app()
+{
+  update_light_btn();
+}
+
+// Heartbeat for wIoT
+void heartbeat(const String & state)
+{
+  Blinker.print(W_LIGHT_ID,"jj");
+}
+
+/******* Arduino Setup Funstion *******/
+void setup()
+{
+    // Serial ini
     Serial.begin(115200);
+    BLINKER_DEBUG.stream(Serial);
+
+    // Pins state declare
+    pinMode(lightCtl, OUTPUT);
+    pinMode(swiIn, INPUT);
+    pinMode(swiOut, OUTPUT);
+
+    // Pins state ini
+    digitalWrite(lightCtl, HIGH);
+
+    // swi ini
+    swiStatus = get_swi_status();
     
-    pinMode(D5, OUTPUT);  //control the light
-    pinMode(D6, INPUT);  //sensor1
-    pinMode(D13, INPUT);  //sensor2
-    //D4&D8 are used for checking the switch state
-    pinMode(D4, INPUT);
-    pinMode(D8, OUTPUT);
+    // Blinker ini
+    Blinker.begin(auth, ssid, pswd);
+    
+    // Blinker attached Functions
+    wIoT.attach(heartbeat);
+    lightCtlBtn.attach(lightCtlBtn_callback);
 
-    //set the light paraperation
-    digitalWrite(D5, HIGH);
-
-    //connect to WIFI
-    Blinker.begin(auth ,ssid, pswd);
-
-    //set interrupt
-    Button1.attach(button1_callback);
-    Button2.attach(button2_callback);
-    Button3.attach(button3_callback);
+    // Blinker attached Heartbeat
+    Blinker.attachHeartbeat(heartbeat_app);
 }
 
-
-
-
-//main loop function
+/******** Arduino Main loop Function********/
 void loop() {
+    // Active Blinker
     Blinker.run();
 
-    //get time info
-
-
-    //judge the switch state
-    swi1=swi;
-    swi=0;
-    for(i=0;i<2;i++)
-    {
-     //change  D8 state 
-    digitalWrite(D8,!digitalRead(D8));
-    if(digitalRead(D4)!=digitalRead(D8)){ swi++;}
-    }
-
-      BLINKER_LOG("get slider value: ", swi);
-      if(swi!=swi1){digitalWrite(D5,!digitalRead(D5));a=1;timer=Blinker.time();Blinker.print("已切换至手动控制！");}
-      if(timer==(Blinker.time()-300)){a=0;Blinker.print("手动控制结束！");}
-      BLINKER_LOG("get slhgggggggggggider value: ",digitalRead(D5) );
-    //get sensor info
-      BLINKER_LOG("get sensor1: ", digitalRead(D13));
-      BLINKER_LOG("get sensor2: ", digitalRead(D6));
-      BLINKER_LOG("a= ", a);
-      
-     //if people light on
-    if(digitalRead(D6)==1&&digitalRead(D13)==1&&a!=1){     Blinker.print("探测到人");  if(Blinker.hour()<=7||Blinker.hour()>=17){ digitalWrite(D5,HIGH);Blinker.print("灯已打开！");timer1=Blinker.time();}}else{if(a!=1&&timer1==(Blinker.time()-250)){digitalWrite(D5,LOW);Blinker.print("未探测到人，灯已关闭！");    Button1.print("正在重置！");
-    for(i=10;i>0;i--)
-    {
-      Blinker.print(i);
-
-      digitalRead(D6);digitalRead(D13);
-      delay(1000);
-     }
-    Button1.print("重置完成！");}}
-
+    if(swiStatus != get_swi_status()) {Blinker.delay(200);if(swiStatus != get_swi_status()){light_ctl(2);swiStatus = get_swi_status();}}
 }
 

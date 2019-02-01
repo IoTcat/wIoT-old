@@ -158,7 +158,7 @@ void heartbeat_app()
 // Heartbeat for wIoT
 void heartbeat(const String & state)
 {
-  Blinker.print("W_LIGHT_ID","jj");
+  Blinker.print(W_LIGHT_ID,"jj");
 }
 
 /******* Arduino Setup Funstion *******/

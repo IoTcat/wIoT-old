@@ -30,8 +30,7 @@
 #define swiOut D8 // Pins for Check the switch state :: signal Out
 
 // Parameter Define
-#define SWI_TRY_TIMES 100
-#define SWI_OK_TIMES 77
+#define SWI_TRY_TIMES 300
 
 
 // Set wifi and MQTT config
@@ -117,14 +116,17 @@ int get_swi_status()
   for(swiCount = 0; swiCount < SWI_TRY_TIMES; swiCount++)
   {
     digitalWrite(swiOut, HIGH);
+    //Blinker.delay(1);
     if(digitalRead(swiIn) == HIGH) swiEff++;
     digitalWrite(swiOut, LOW);
+    //Blinker.delay(1);
     if(digitalRead(swiIn) == LOW) swiEff++;
     swiEff--;
   }
   BLINKER_LOG("Parameter in get_swi_status :: swiEff = ",swiEff);
-  if(swiEff > SWI_OK_TIMES) return 1;
-  else return 0;
+  if(swiEff == SWI_TRY_TIMES) return 1;
+  else if(swiEff == 0) return 0;
+  else return swiStatus;
 }
 /******** Blinker Attached Function *********/
 //
@@ -156,7 +158,7 @@ void heartbeat_app()
 // Heartbeat for wIoT
 void heartbeat(const String & state)
 {
-  Blinker.print("W_LIGHT_ID","jj");
+  Blinker.print(W_LIGHT_ID,"jj");
 }
 
 /******* Arduino Setup Funstion *******/
@@ -193,6 +195,6 @@ void loop() {
     // Active Blinker
     Blinker.run();
 
-    if(swiStatus != get_swi_status()) {light_ctl(2);swiStatus = get_swi_status();}
+    if(swiStatus != get_swi_status()) {Blinker.delay(200);if(swiStatus != get_swi_status()){light_ctl(2);swiStatus = get_swi_status();}}
 }
 
