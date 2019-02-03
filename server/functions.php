@@ -146,6 +146,14 @@ function yimian__footer($wordColor="#C7C7C7",$backgroundColor="#2B2B2B",$urlColo
 }
 
 
+/**added functions**/
+//get millis time stamp
+function millis() {
+list($msec, $sec) = explode(' ', microtime());
+return $msectime = (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
+}
+
+
 
 /**database connection**/
 
