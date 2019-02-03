@@ -290,7 +290,7 @@ void led_blink()
 {
   if(is_People())
     if(ledStatus == 1)
-      analogWrite(led, (millis()/LED_BLINK_FREQUENCY)%255);
+      {analogWrite(led, (millis()/LED_BLINK_FREQUENCY)%255);}
 }
 
 void led_warning()
@@ -315,6 +315,7 @@ void ice_core()
   if(Ice==1&&t_ice==0)
   {
     IceTime = millis();
+    t_ice=1;
   }
   if(Ice == 0)
     t_ice=0;
@@ -322,6 +323,7 @@ void ice_core()
     {
       Ice=0;
       t_ice=0;
+      light_ctl(0);
     }
 }
 
@@ -359,7 +361,8 @@ void wconnect_status()
 {
   static int former=0;
   if(millis()>LastCnnctTime+OFFLINE_TIME_LIMIT) {former=ledStatus;ledStatus = -1;}
-  else if(ledStatus == -1)ledStatus=former;
+  else if(ledStatus == -1&&former!=-1)ledStatus=former;
+  else ledStatus=1;
 }
 
 
@@ -400,8 +403,8 @@ void ledBtn_callback(const String & state)
 
 void wledBtn_callback(const String & state)
 {
-  if (state == "1") digitalWrite(led, HIGH);
-  if (state == "0") digitalWrite(led, LOW);
+  if (state == "1") wlight_ctl(1);
+  if (state == "0") wlight_ctl(0);
 }
 
 /******* Heartbeat Function ********/

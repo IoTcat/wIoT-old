@@ -9,13 +9,24 @@ const window = document.defaultView;
 const $ = require('jquery')(window);
 var cnt_open=0;
 var cnt_send=0;
+var cnt_recv=0;
+
+
+function logic(obj)
+{
+	if(obj.R1+obj.R2+obj.R3+obj.R4>=2)socket.send('{"w-light":1}');
+	else socket.send('{"w-light":0}');
+	$.post("http://127.0.0.1/wIoT.php",obj);
+	cnt_recv++;
+}
+
 var socket = new WebSocket('ws://192.168.3.102:81');
 socket_open();
 socket.onmessage = function(event) {
 console.log('Client received a message',event.data);
 var obj = eval('(' + event.data + ')');
 if(obj.wIoT == 1) {
-	$.post("http://127.0.0.1/wIoT.php",obj);
+	logic(obj);
 	}
 };
 
@@ -24,10 +35,11 @@ function socket_open(){
 		socket = new WebSocket('ws://192.168.3.102:81');
 		socket.onopen = function(event) {}
 		socket.onmessage = function(event) {
+cnt_recv=cnt_send;
 console.log('Client received a message',event.data);
 var obj = eval('(' + event.data + ')');
 if(obj.wIoT == 1) {
-	$.post("http://127.0.0.1/wIoT.php",obj);
+	logic(obj);
 	}
 };
 	}
@@ -40,11 +52,17 @@ if(obj.wIoT == 1) {
 function hallCtlData(){
 	if(socket.readyState ==1)
 	{
-		socket.send('{"wIoT":1}');
-		cnt_send++;console.log('cnt_send ',cnt_send);
+		if(cnt_send>cnt_recv+30)
+			socket_open();
+		else
+		{
+			socket.send('{"wIoT":}');
+			cnt_send++;console.log('cnt_send ',cnt_send);
+		}
 	}
 	else
 		console.log('waiting connection');
+	if(cnt_send>800||cnt_open>1000) socket.close();
 
 };
 // 监听Socket的关闭
