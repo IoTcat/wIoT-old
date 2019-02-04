@@ -29,6 +29,7 @@
 // Include Blinker lib
 #include <Blinker.h>
 
+
 // Correspond Pins to Tag
 #define lightCtl D5 //Control the light
 #define swiIn D4 // Pins for Check the switch state :: signal In
@@ -83,7 +84,7 @@ int isPeople = 0;
 int noPeople = 0;
 int hallDir = 0;
 int PeopleChangeTime = 0;
-int ledStatus = 0;
+int ledStatus = -1;
 int Mode = 0;
 int Ice = 0;
 int IceTime = 0;

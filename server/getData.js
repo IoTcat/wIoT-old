@@ -14,8 +14,8 @@ var cnt_recv=0;
 
 function logic(obj)
 {
-	if(obj.R1+obj.R2+obj.R3+obj.R4>=2)socket.send('{"w-light":1}');
-	else socket.send('{"w-light":0}');
+	if(obj.R1+obj.R2+obj.R3+obj.R4>=2&&obj.L1==0)socket.send('{"w-light":1}');
+	else if(obj.L1==1&&obj.R1+obj.R2+obj.R3+obj.R4==0)socket.send('{"w-light":0}');
 	$.post("http://127.0.0.1/wIoT.php",obj);
 	cnt_recv++;
 }
@@ -61,7 +61,7 @@ function hallCtlData(){
 		}
 	}
 	else
-		console.log('waiting connection');
+	{console.log('waiting connection');cnt_open++;}
 	if(cnt_send>800||cnt_open>1000) socket.close();
 
 };
