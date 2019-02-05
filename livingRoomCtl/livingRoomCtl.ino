@@ -1,5 +1,5 @@
-/* *****************************************************************
- * this is the code for wIoT TEST purpose
+ /* *****************************************************************
+ * this is the code for wIoT liveingRoomCtl purpose
  * 
  * *****************************************************************/
  // MQTT auth code
@@ -18,9 +18,9 @@
 #define W_R2_ID "R10"
 #define W_R3_ID "R11"
 #define W_R4_ID "R12"
-#define W_LED_ID "l3"
+#define W_LED_ID "ll3"
 #define W_BUZ_ID "B2"
-#define W_LS_ID "Ls1"
+#define W_LS_ID "Ls2"
 
 
 
@@ -34,15 +34,15 @@
 
 // Correspond Pins to Tag
 #define lightCtl D5 //Control the light
-#define swiIn D4 // Pins for Check the switch state :: signal In
-#define swiOut D8 // Pins for Check the switch state :: signal Out
+#define swiIn D1 // Pins for Check the switch state :: signal In
+#define swiOut D2 // Pins for Check the switch state :: signal Out
 #define rSnsr1 D6 // Pins for searching people
 #define rSnsr2 D13 // Pins for searching people
 #define rSnsr3 D11
 #define rSnsr4 D12
 #define led D0
 #define lightSnsr A0 //detect the light
-#define Buz D10 // Pins for buzz
+#define Buz D4 // Pins for buzz
 
 // Parameter Define 
 #define SWI_TRY_TIMES 300
@@ -388,9 +388,9 @@ void heartbeat_app()
 void heartbeat(const String & state)
 {
   Blinker.print("wIoT",1);
-  Blinker.print("ice",Ice);
-  Blinker.print("mode",Mode);
-  Blinker.print(W_LIGHT_ID,digitalRead(lightCtl));
+  Blinker.print("ice5",Ice);
+  Blinker.print("mode5",Mode);
+  Blinker.print(W_LIGHT_ID,!digitalRead(lightCtl));
   Blinker.print(W_SWI_ID,get_swi_status());
   Blinker.print(W_R1_ID,digitalRead(rSnsr1));
   Blinker.print(W_R2_ID,digitalRead(rSnsr2));

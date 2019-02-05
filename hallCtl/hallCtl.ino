@@ -18,7 +18,7 @@
 #define W_R2_ID "R2"
 #define W_R3_ID "R3"
 #define W_R4_ID "R4"
-#define W_LED_ID "l1"
+#define W_LED_ID "ll1"
 #define W_BUZ_ID ""
 
 
@@ -421,11 +421,12 @@ void heartbeat_app()
 void heartbeat(const String & state)
 {
   Blinker.print("wIoT",1);
-  Blinker.print("ice",Ice);
-  Blinker.print("mode",Mode);
+  Blinker.print("ice2",Ice);
+  Blinker.print("mode2",Mode);
   Blinker.print(W_LIGHT_ID,digitalRead(lightCtl));
   Blinker.print(W_SWI_ID,get_swi_status());
   Blinker.print(W_TEL_ID,digitalRead(uDoorTel));
+  Blinker.print("To",digitalRead(uDoorOpenPin));
   Blinker.print(W_R1_ID,digitalRead(rSnsr1));
   Blinker.print(W_R2_ID,digitalRead(rSnsr2));
   Blinker.print(W_R3_ID,digitalRead(rSnsr3));

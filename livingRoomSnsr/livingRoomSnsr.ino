@@ -18,7 +18,7 @@
 #define W_R2_ID "R6"
 #define W_R3_ID "R7"
 #define W_R4_ID "R8"
-#define W_LED_ID "l2"
+#define W_LED_ID "ll2"
 #define W_BUZ_ID "B1"
 #define W_LS_ID "Ls1"
 #define W_SH_ID "Sh1"  //Shake Snsr
@@ -38,9 +38,9 @@
 #define rSnsr1 D6 // Pins for searching people
 #define rSnsr2 D13 // Pins for searching people
 #define rSnsr3 D4
-#define rSnsr4 D11
+#define rSnsr4 D2
 #define Shake D9 // Pins for detect shake
-#define led D5 
+#define led D0
 #define TempSnsr A0 // Temp Detector
 
 // Parameter Define 
@@ -231,7 +231,7 @@ void walert_callback(const String & state)
 void heartbeat(const String & state)
 {
   Blinker.print("wIoT",1);
-  Blinker.print("mode",Mode);
+  Blinker.print("mode6",Mode);
   Blinker.print(W_R1_ID,digitalRead(rSnsr1));
   Blinker.print(W_R2_ID,digitalRead(rSnsr2));
   Blinker.print(W_R3_ID,digitalRead(rSnsr3));
