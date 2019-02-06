@@ -15,6 +15,12 @@ var livingRmCtlObj = new Object;
 var dinnerRmCtlObj = new Object;
 var kitchenCtlObj = new Object;
 
+var fs = require("fs");
+var pdata = fs.readFileSync('pdata.txt');
+var pHal=parseInt(pdata.slice(0,1));
+var pDin=parseInt(pdata.slice(1,2));
+var pLiv=parseInt(pdata.slice(2,3));
+var pKit=parseInt(pdata.slice(3,4));
 
 var cnt_open_hall=0;
 var cnt_send_hall=0;
@@ -376,22 +382,29 @@ function log()
 
 	if(!l_liv(obj)) cnt_livingRmNoPeople++;
 	else cnt_livingRmNoPeople=0;
-	if(cnt_livingRmNoPeople>1000) {cnt_livingRmNoPeople=0;if(pLiv>0) pLiv--;}
+	if(cnt_livingRmNoPeople>350) {cnt_livingRmNoPeople=0;if(pLiv>0) pLiv--;}
 	
 	if(!l_hal(obj)) cnt_hallNoPeople++;
 	else cnt_hallNoPeople=0;
-	if(cnt_hallNoPeople>40) {cnt_hallNoPeople=0;if(pHal>0) pHal--;}
+	if(cnt_hallNoPeople>100) {cnt_hallNoPeople=0;if(pHal>0) pHal--;}
 	
 	if(!l_din(obj)) cnt_dinnerRmNoPeople++;
 	else cnt_dinnerRmNoPeople=0;
-	if(cnt_dinnerRmNoPeople>1000) {cnt_dinnerRmNoPeople=0;if(pDin>0) pDin--;}
+	if(cnt_dinnerRmNoPeople>350) {cnt_dinnerRmNoPeople=0;if(pDin>0) pDin--;}
 	
 	if(!l_kit(obj)) cnt_kitchenNoPeople++;
 	else cnt_kitchenNoPeople=0;
-	if(cnt_kitchenNoPeople>400) {cnt_kitchenNoPeople=0;if(pKit>0) pKit--;}
+	if(cnt_kitchenNoPeople>150) {cnt_kitchenNoPeople=0;if(pKit>0) pKit--;}
 
 	logic(obj);
 	console.log(pHal+',,'+pDin+',,'+pLiv+',,'+pKit);
+	
+	
+	let fd = fs.openSync('pdata.txt','w');
+
+	fs.writeFileSync(fd, ''+pHal+''+pDin+''+pLiv+''+pKit);
+
+	fs.closeSync(fd);
 	
 	light();
 	
@@ -410,26 +423,24 @@ function isLight()
 
 var fobj = new Object;
 
-var pHal=0;
 var tHal=0;
 var fHal=0;
 var ftHal=0;
 
-var pDin=0;
 var tDin=0;
 var fDin=0;
 var ftDin=0;
 var iceDoor=0
 
-var pLiv=0;
 var tLiv=0;
 var fLiv=0;
 var ftLiv=0;
 
-var pKit=0;
 var tKit=0;
 var fKit=0;
 var ftKit=0;
+
+var changeTime=0;
 
 function logic(obj)
 {
@@ -495,21 +506,24 @@ function logic(obj)
 	{
 		if(pDin>0) pDin--;console.log("dlss");
 		pLiv++;
+		changeTime=Date.parse(new Date());
 	}
 	
 	//l to d
-	if((obj.R12&&!fobj.R13&&obj.R13))
+	if((obj.R12&&!fobj.R5&&obj.R5))
 	{
 		if(pLiv>0) pLiv--;console.log('ldss');
 		pDin++;
+		changeTime=Date.parse(new Date());
 	}
 	
 	//console.log("kkk",obj.R18,(!fobj.R20),fobj.R20);
 	//d to k
-	if((obj.R18&&(!fobj.R20)&&obj.R20))
+	if((obj.R18&&(!fobj.R20)&&obj.R20)&&pKit<3)
 	{
 		if(pDin>0) pDin--;console.log('dkss');
 		pKit++;
+		changeTime=Date.parse(new Date());
 	}
 
 	//k to d
@@ -517,6 +531,7 @@ function logic(obj)
 	{
 		if(pKit>0) pKit--;console.log('kdss');
 		pDin++;
+		changeTime=Date.parse(new Date());
 	}
 	
 	//h to d
@@ -524,6 +539,7 @@ function logic(obj)
 	{
 		if(pHal>0) pHal--;
 		pDin++;
+		changeTime=Date.parse(new Date());
 	}
 	
 	//d to h
@@ -531,6 +547,7 @@ function logic(obj)
 	{
 		if(pDin>0) pDin--;
 		pHal++;
+		changeTime=Date.parse(new Date());
 	}
 	
 	
@@ -538,10 +555,10 @@ function logic(obj)
 	if(pDin>4) pDin=4;
 	if(pLiv>4) pLiv=4;
 	
-	if(pLiv==0&&obj.R6&&Date.parse(new Date())>tDin+9000) pLiv=1;
-	//if(pDin==0&&l_din(obj)) pDin=1;
-	//if(pKit==0&&l_kit(obj)) pKit=1;
-	//if(pHal==0&&l_hal(obj)) pHal=1;
+	if(pLiv==0&&(obj.R6||obj.R12||obj.R7)&&Date.parse(new Date())>changeTime+9000) pLiv=1;
+	if(pDin==0&&(obj.R18||obj.R8)&&Date.parse(new Date())>changeTime+9000) pDin=1;
+	if(pKit==0&&l_kit(obj)&&Date.parse(new Date())>changeTime+9000) pKit=1;
+	if(pHal==0&&(obj.R4||obj.R1&&obj.R2)&&Date.parse(new Date())>changeTime+9000) pHal=1;
 	
 	
 	
