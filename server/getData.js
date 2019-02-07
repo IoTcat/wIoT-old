@@ -406,7 +406,7 @@ function log()
 
 	fs.closeSync(fd);
 	
-	light();
+	if(isLight()) light();
 	
 	fobj=obj;
 }
@@ -555,8 +555,8 @@ function logic(obj)
 	if(pDin>4) pDin=4;
 	if(pLiv>4) pLiv=4;
 	
-	if(pLiv==0&&(obj.R6||obj.R12||obj.R7)&&Date.parse(new Date())>changeTime+9000) pLiv=1;
-	if(pDin==0&&(obj.R18||obj.R8)&&Date.parse(new Date())>changeTime+9000) pDin=1;
+	if(pLiv==0&&(obj.R6||obj.R12||obj.R9||obj.R11||obj.R7)&&Date.parse(new Date())>changeTime+9000) pLiv=1;
+	if(pDin==0&&(obj.R18||obj.R8||obj.R17)&&Date.parse(new Date())>changeTime+9000) pDin=1;
 	if(pKit==0&&l_kit(obj)&&Date.parse(new Date())>changeTime+9000) pKit=1;
 	if(pHal==0&&(obj.R4||obj.R1&&obj.R2)&&Date.parse(new Date())>changeTime+9000) pHal=1;
 	
@@ -578,7 +578,7 @@ function l_din(obj)
 	
 function l_liv(obj)
 {
-	if(obj.R5||obj.R6||obj.R7||obj.R9||obj.R10||obj.R11||obj.R12) return 1;
+	if(obj.R5||obj.R6||obj.R7||obj.R9||/*obj.R10||*/obj.R11||obj.R12) return 1;
 	else return 0;
 }
 	
