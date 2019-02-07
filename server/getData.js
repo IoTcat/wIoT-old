@@ -367,6 +367,17 @@ var cnt_livingRmNoPeople=0;
 var cnt_hallNoPeople=0;
 var cnt_dinnerRmNoPeople=0;
 var cnt_kitchenNoPeople=0;
+var LastPeopleTime=0;
+var RealNoPeople=0;
+var SwiChangeTime=0;
+
+function check_real_no_people()
+{
+	if(Date.parse(new Date())-1800000>LastPeopleTime) RealNoPeople=1;
+	else RealNoPeople=0;
+}
+
+setInterval(check_real_no_people,1800000);
 
 function log()
 {
@@ -381,20 +392,25 @@ function log()
 	
 
 	if(!l_liv(obj)) cnt_livingRmNoPeople++;
-	else cnt_livingRmNoPeople=0;
+	else {cnt_livingRmNoPeople=0;LastPeopleTime=Date.parse(new Date());}
 	if(cnt_livingRmNoPeople>350) {cnt_livingRmNoPeople=0;if(pLiv>0) pLiv--;}
 	
 	if(!l_hal(obj)) cnt_hallNoPeople++;
-	else cnt_hallNoPeople=0;
+	else {cnt_hallNoPeople=0;LastPeopleTime=Date.parse(new Date());}
 	if(cnt_hallNoPeople>100) {cnt_hallNoPeople=0;if(pHal>0) pHal--;}
 	
 	if(!l_din(obj)) cnt_dinnerRmNoPeople++;
-	else cnt_dinnerRmNoPeople=0;
+	else {cnt_dinnerRmNoPeople=0;LastPeopleTime=Date.parse(new Date());}
 	if(cnt_dinnerRmNoPeople>350) {cnt_dinnerRmNoPeople=0;if(pDin>0) pDin--;}
 	
 	if(!l_kit(obj)) cnt_kitchenNoPeople++;
-	else cnt_kitchenNoPeople=0;
+	else {cnt_kitchenNoPeople=0;Date.parse(new Date());}
 	if(cnt_kitchenNoPeople>150) {cnt_kitchenNoPeople=0;if(pKit>0) pKit--;}
+	
+	if(obj.S1!=fobj.S1||obj.S2!=fobj.S2||obj.S3!=fobj.S3||obj.S4!=fobj.S4)
+	{
+		SwiChangeTime=Date.parse(new Date());
+	}
 
 	logic(obj);
 	console.log(pHal+',,'+pDin+',,'+pLiv+',,'+pKit);
@@ -417,8 +433,9 @@ function isLight()
 {
 	var d = new Date();
 
-	if(d.getHours()<7||d.getHours()>17) return 1;
-	else return 0;
+	if(d.getHours()>6&&d.getHours()<18) return 0;
+	else if(d.getHours()>=0&&d.getHours()<5&&RealNoPeople==1&&SwiChangeTime<Date.parse(new Date())-1800000) return 0;
+	else return 1;
 }
 
 var fobj = new Object;
@@ -561,6 +578,10 @@ function logic(obj)
 	if(pHal==0&&(obj.R4||obj.R1&&obj.R2)&&Date.parse(new Date())>changeTime+9000) pHal=1;
 	
 	
+	//door in
+	if(pDin==0&&l_newDoor(obj)) pDin=1;
+	
+	
 	
 }
 
@@ -597,7 +618,7 @@ function l_halDir(obj)
 function l_newDoor(obj)
 {
 	if(obj.R8&&obj.R14) return 1;
-	else return -1;
+	else return 0;
 }
 
 function light()
