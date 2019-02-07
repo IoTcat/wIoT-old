@@ -66,5 +66,5 @@ $Tp1=$_REQUEST['Tp1'];
 
 $conn=db__connect();
 
-db__pushData($conn,"wIoT_Data",array("time"=>millis(),"mode2"=>$mode2,"mode3"=>$mode3,"mode4"=>$mode4,"mode5"=>$mode5,"mode6"=>$mode6,"ice2"=>$ice2,"ice3"=>$ice3,"ice4"=>$ice4,"ice5"=>$ice5,"L1"=>$L1,"L2"=>$L2,"L3"=>$L3,"L4"=>$L4,"S1"=>$S1,"S2"=>$S2,"S3"=>$S3,"S4"=>$S4,"T"=>$T,"Top"=>$To,"R1"=>$R1,"R2"=>$R2,"R3"=>$R3,"R4"=>$R4,"R5"=>$R5,"R6"=>$R6,"R7"=>$R7,"R8"=>$R8,"R9"=>$R9,"R10"=>$R10,"R11"=>$R11,"R12"=>$R12,"R13"=>$R13,"R14"=>$R14,"R15"=>$R15,"R16"=>$R16,"R17"=>$R17,"R18"=>$R18,"R19"=>$R19,"R20"=>$R20,"ll1"=>$ll1,"ll2"=>$ll2,"ll3"=>$ll3,"ll4"=>$ll4,"ll5"=>$ll5,"Ls1"=>$Ls1,"Ls2"=>$Ls2,"Ls3"=>$Ls3,"B1"=>$B1,"B2"=>$B2,"Sh1"=>$Sh1,"Tp1"=>$Tp1));
+db__pushData($conn,"wiot_data",array("time"=>millis(),"mode2"=>$mode2,"mode3"=>$mode3,"mode4"=>$mode4,"mode5"=>$mode5,"mode6"=>$mode6,"ice2"=>$ice2,"ice3"=>$ice3,"ice4"=>$ice4,"ice5"=>$ice5,"L1"=>$L1,"L2"=>$L2,"L3"=>$L3,"L4"=>$L4,"S1"=>$S1,"S2"=>$S2,"S3"=>$S3,"S4"=>$S4,"T"=>$T,"Top"=>$To,"R1"=>$R1,"R2"=>$R2,"R3"=>$R3,"R4"=>$R4,"R5"=>$R5,"R6"=>$R6,"R7"=>$R7,"R8"=>$R8,"R9"=>$R9,"R10"=>$R10,"R11"=>$R11,"R12"=>$R12,"R13"=>$R13,"R14"=>$R14,"R15"=>$R15,"R16"=>$R16,"R17"=>$R17,"R18"=>$R18,"R19"=>$R19,"R20"=>$R20,"ll1"=>$ll1,"ll2"=>$ll2,"ll3"=>$ll3,"ll4"=>$ll4,"ll5"=>$ll5,"Ls1"=>$Ls1,"Ls2"=>$Ls2,"Ls3"=>$Ls3,"B1"=>$B1,"B2"=>$B2,"Sh1"=>$Sh1,"Tp1"=>$Tp1));
 
