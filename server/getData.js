@@ -510,7 +510,7 @@ function logic(obj)
 	}
 	
 	//l to d
-	if((obj.R12&&!fobj.R5&&obj.R5))
+	if((obj.R12&&!fobj.R13&&obj.R13))
 	{
 		if(pLiv>0) pLiv--;console.log('ldss');
 		pDin++;
@@ -555,7 +555,7 @@ function logic(obj)
 	if(pDin>4) pDin=4;
 	if(pLiv>4) pLiv=4;
 	
-	if(pLiv==0&&(obj.R6||obj.R12||obj.R9||obj.R11||obj.R7)&&Date.parse(new Date())>changeTime+9000) pLiv=1;
+	if(pLiv==0&&(obj.R6||obj.R12||obj.R9||obj.R11||obj.R7)&&Date.parse(new Date())>changeTime+9000) pLiv=2;
 	if(pDin==0&&(obj.R18||obj.R8||obj.R17)&&Date.parse(new Date())>changeTime+9000) pDin=1;
 	if(pKit==0&&l_kit(obj)&&Date.parse(new Date())>changeTime+9000) pKit=1;
 	if(pHal==0&&(obj.R4||obj.R1&&obj.R2)&&Date.parse(new Date())>changeTime+9000) pHal=1;
