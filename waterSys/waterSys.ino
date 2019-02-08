@@ -26,10 +26,20 @@ BlinkerButton Button3("btn-off");
 BlinkerButton Button4("btn-start");
 //declaer Slider with certain keyname
 BlinkerSlider Slider1(Slider_1);
+// load module
+BlinkerButton wIoT("wIoT");
 
 //define vairable
 int counter,timer,time1,time2,a,b = 0;
+volatile double waterFlow;
 float i=0;
+
+/***waterFlow functions ***/
+void pulse()   //measure the quantity of square wave
+{
+  waterFlow += 1.0 / 450.0;
+}
+
 
 //Button1 function::state check
 void button1_callback(const String & state) 
@@ -81,6 +91,17 @@ void slider1_callback(int32_t value)
 timer=value;
 }
 
+// Heartbeat for wIoT
+void heartbeat(const String & state)
+{
+  Blinker.print("wIoT",1);
+  Blinker.print("waterAdd",!digitalRead(D5));
+  if(waterFlow<10) waterFlow=atof(state.c_str());
+  Blinker.print("waterFlow",waterFlow);
+
+}
+
+
 //setup function
 void setup() 
 {
@@ -96,6 +117,11 @@ void setup()
     Button3.attach(button3_callback);
     Button4.attach(button4_callback);
     Slider1.attach(slider1_callback);
+    // Blinker attached Functions
+    wIoT.attach(heartbeat);
+
+  waterFlow = 0;
+  attachInterrupt(0, pulse, RISING);  //DIGITAL Pin 2: Interrupt 0
 }
 
 //main loop function
