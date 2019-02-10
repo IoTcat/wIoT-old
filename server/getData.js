@@ -1,4 +1,4 @@
-/*include ws*/
+﻿/*include ws*/
 const WebSocket = require('ws');
 /*include jquery*/
 const jsdom = require('jsdom');
@@ -367,17 +367,6 @@ var cnt_livingRmNoPeople=0;
 var cnt_hallNoPeople=0;
 var cnt_dinnerRmNoPeople=0;
 var cnt_kitchenNoPeople=0;
-var LastPeopleTime=0;
-var RealNoPeople=0;
-var SwiChangeTime=0;
-
-function check_real_no_people()
-{
-	if(Date.parse(new Date())-1800000>LastPeopleTime) RealNoPeople=1;
-	else RealNoPeople=0;
-}
-
-setInterval(check_real_no_people,1800000);
 
 function log()
 {
@@ -392,25 +381,20 @@ function log()
 	
 
 	if(!l_liv(obj)) cnt_livingRmNoPeople++;
-	else {cnt_livingRmNoPeople=0;LastPeopleTime=Date.parse(new Date());}
+	else cnt_livingRmNoPeople=0;
 	if(cnt_livingRmNoPeople>350) {cnt_livingRmNoPeople=0;if(pLiv>0) pLiv--;}
 	
 	if(!l_hal(obj)) cnt_hallNoPeople++;
-	else {cnt_hallNoPeople=0;LastPeopleTime=Date.parse(new Date());}
+	else cnt_hallNoPeople=0;
 	if(cnt_hallNoPeople>100) {cnt_hallNoPeople=0;if(pHal>0) pHal--;}
 	
 	if(!l_din(obj)) cnt_dinnerRmNoPeople++;
-	else {cnt_dinnerRmNoPeople=0;LastPeopleTime=Date.parse(new Date());}
+	else cnt_dinnerRmNoPeople=0;
 	if(cnt_dinnerRmNoPeople>350) {cnt_dinnerRmNoPeople=0;if(pDin>0) pDin--;}
 	
 	if(!l_kit(obj)) cnt_kitchenNoPeople++;
-	else {cnt_kitchenNoPeople=0;Date.parse(new Date());}
+	else cnt_kitchenNoPeople=0;
 	if(cnt_kitchenNoPeople>150) {cnt_kitchenNoPeople=0;if(pKit>0) pKit--;}
-	
-	if(obj.S1!=fobj.S1||obj.S2!=fobj.S2||obj.S3!=fobj.S3||obj.S4!=fobj.S4)
-	{
-		SwiChangeTime=Date.parse(new Date());
-	}
 
 	logic(obj);
 	console.log(pHal+',,'+pDin+',,'+pLiv+',,'+pKit);
@@ -422,7 +406,7 @@ function log()
 
 	fs.closeSync(fd);
 	
-	if(isLight()) light();
+	if(/*isLight()*/1) light();
 	
 	fobj=obj;
 }
@@ -433,9 +417,8 @@ function isLight()
 {
 	var d = new Date();
 
-	if(d.getHours()>6&&d.getHours()<18) return 0;
-	else if(d.getHours()>=0&&d.getHours()<5&&RealNoPeople==1&&SwiChangeTime<Date.parse(new Date())-1800000) return 0;
-	else return 1;
+	if(d.getHours()<7||d.getHours()>17) return 1;
+	else return 0;
 }
 
 var fobj = new Object;
@@ -458,6 +441,9 @@ var fKit=0;
 var ftKit=0;
 
 var changeTime=0;
+var dchangeTime=0;
+var lchangeTime=0;
+var kchangeTime=0;
 
 function logic(obj)
 {
@@ -524,6 +510,7 @@ function logic(obj)
 		if(pDin>0) pDin--;console.log("dlss");
 		pLiv++;
 		changeTime=Date.parse(new Date());
+		dchangeTime=Date.parse(new Date());
 	}
 	
 	//l to d
@@ -532,6 +519,7 @@ function logic(obj)
 		if(pLiv>0) pLiv--;console.log('ldss');
 		pDin++;
 		changeTime=Date.parse(new Date());
+		lchangeTime=Date.parse(new Date());
 	}
 	
 	//console.log("kkk",obj.R18,(!fobj.R20),fobj.R20);
@@ -541,6 +529,7 @@ function logic(obj)
 		if(pDin>0) pDin--;console.log('dkss');
 		pKit++;
 		changeTime=Date.parse(new Date());
+		dchangeTime=Date.parse(new Date());
 	}
 
 	//k to d
@@ -549,6 +538,7 @@ function logic(obj)
 		if(pKit>0) pKit--;console.log('kdss');
 		pDin++;
 		changeTime=Date.parse(new Date());
+		kchangeTime=Date.parse(new Date());
 	}
 	
 	//h to d
@@ -557,6 +547,7 @@ function logic(obj)
 		if(pHal>0) pHal--;
 		pDin++;
 		changeTime=Date.parse(new Date());
+
 	}
 	
 	//d to h
@@ -565,6 +556,7 @@ function logic(obj)
 		if(pDin>0) pDin--;
 		pHal++;
 		changeTime=Date.parse(new Date());
+		dchangeTime=Date.parse(new Date());
 	}
 	
 	
@@ -576,10 +568,6 @@ function logic(obj)
 	if(pDin==0&&(obj.R18||obj.R8||obj.R17)&&Date.parse(new Date())>changeTime+9000) pDin=1;
 	if(pKit==0&&l_kit(obj)&&Date.parse(new Date())>changeTime+9000) pKit=1;
 	if(pHal==0&&(obj.R4||obj.R1&&obj.R2)&&Date.parse(new Date())>changeTime+9000) pHal=1;
-	
-	
-	//door in
-	if(pDin==0&&l_newDoor(obj)) pDin=1;
 	
 	
 	
@@ -618,21 +606,20 @@ function l_halDir(obj)
 function l_newDoor(obj)
 {
 	if(obj.R8&&obj.R14) return 1;
-	else return 0;
+	else return -1;
 }
 
 function light()
 {
-	if(pHal) socket_hall.send('{"w-light":1}');
-	else socket_hall.send('{"w-light":0}');
+	if(pHal>=1) socket_hall.send('{"w-light":1}');
+	else if(pHal==0)socket_hall.send('{"w-light":0}');
 	
-	if(pDin) socket_dc.send('{"w-light":1}');
-	else socket_dc.send('{"w-light":0}');
+	if(pDin>=1) socket_dc.send('{"w-light":1}');
+	else if(pDin==0&&dchangeTime<Date.parse(new Date())-10000)socket_dc.send('{"w-light":0}');
 
-	if(pLiv) socket_lc.send('{"w-light":1}');
-	else socket_lc.send('{"w-light":0}');
+	if(pLiv>=1) socket_lc.send('{"w-light":1}');
+	else if(pLiv==0&&lchangeTime<Date.parse(new Date())-10000)socket_lc.send('{"w-light":0}');
 	
-	if(pKit) socket_kc.send('{"w-light":1}');
-	else socket_kc.send('{"w-light":0}');
+	if(pKit>=1) socket_kc.send('{"w-light":1}');
+	else if(pKit==0&&kchangeTime<Date.parse(new Date())-10000)socket_kc.send('{"w-light":0}');
 }
-		   
