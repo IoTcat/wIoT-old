@@ -14,7 +14,7 @@ this is the code for the sensor part of automatic home solar-powered water heate
 
 //declear overall variable::user, password, identify key
 char auth[] = "03a477a71ffb";
-char ssid[] = "yimian-iot";
+char ssid[] = "yimian-iot-s";
 char pswd[] = "1234567890.";
 
 // load module
