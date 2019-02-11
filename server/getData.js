@@ -406,18 +406,34 @@ function log()
 
 	fs.closeSync(fd);
 	
-	if(/*isLight()*/1) light();
+	if(isLight()) light();
 	
 	fobj=obj;
 }
 
 setInterval(log,500);
 
+var lightVal=0;
+
+var lightVal = parseInt(fs.readFileSync('lightVal.txt'));
+
 function isLight()
 {
 	var d = new Date();
 
-	if(d.getHours()<7||d.getHours()>17) return 1;
+	if((d.getHours()>15||d.getHours()==0)&&livingRmSnsrObj.Ls1) lightVal=1;
+	if(d.getHours()==9) lightVal=0;
+	if(d.getHours()>=7&&d.getHours()<9&&!livingRmSnsrObj.Ls1) lightVal=0;
+	if(d.getHours()==1) lightVal=0;
+	if(d.getHours()==5) lightVal=1;
+
+	let fd = fs.openSync('lightVal.txt','w');
+
+	fs.writeFileSync(fd, lightVal);
+
+	fs.closeSync(fd);
+
+	if(d.getHours()<1||(d.getHours()>5&&d.getHours()<7)||d.getHours()>17||lightVal==1) return 1;
 	else return 0;
 }
 
@@ -564,7 +580,7 @@ function logic(obj)
 	if(pDin>4) pDin=4;
 	if(pLiv>4) pLiv=4;
 	
-	if(pLiv==0&&(obj.R6||obj.R12||obj.R9||obj.R11||obj.R7)&&Date.parse(new Date())>changeTime+9000) pLiv=2;
+	if(pLiv==0&&(obj.R6||obj.R12||obj.R9||/*obj.R11||*/obj.R7)&&Date.parse(new Date())>changeTime+9000) pLiv=2;
 	if(pDin==0&&(obj.R18||obj.R8||obj.R17)&&Date.parse(new Date())>changeTime+9000) pDin=1;
 	if(pKit==0&&l_kit(obj)&&Date.parse(new Date())>changeTime+9000) pKit=1;
 	if(pHal==0&&(obj.R4||obj.R1&&obj.R2)&&Date.parse(new Date())>changeTime+9000) pHal=1;
@@ -587,7 +603,7 @@ function l_din(obj)
 	
 function l_liv(obj)
 {
-	if(obj.R5||obj.R6||obj.R7||obj.R9||/*obj.R10||*/obj.R11||obj.R12) return 1;
+	if(obj.R5||obj.R6||obj.R7||obj.R9||obj.R10||/*obj.R11||*/obj.R12) return 1;
 	else return 0;
 }
 	
