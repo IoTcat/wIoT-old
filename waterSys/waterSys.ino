@@ -97,7 +97,7 @@ void heartbeat(const String & state)
   Blinker.print("wIoT",1);
   Blinker.print("waterAdd",!digitalRead(D5));
   if(waterFlow<10) waterFlow=atof(state.c_str());
-  Blinker.print("waterFlow",waterFlow);
+  Blinker.print("waterFlow1",waterFlow);
 
 }
 
@@ -108,7 +108,6 @@ void setup()
     Serial.begin(115200);
     
     pinMode(D5, OUTPUT);
-    pinMode(D7, INPUT);
     digitalWrite(D5, HIGH);
     
     Blinker.begin(auth, ssid, pswd);
