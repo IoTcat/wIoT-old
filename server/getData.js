@@ -22,6 +22,10 @@ var pDin=parseInt(pdata.slice(1,2));
 var pLiv=parseInt(pdata.slice(2,3));
 var pKit=parseInt(pdata.slice(3,4));
 
+var cnt_livingRmNoPeople = parseInt(fs.readFileSync('cnt_livingRmNoPeople.txt'));
+var cnt_dinnerRmNoPeople = parseInt(fs.readFileSync('cnt_dinnerRmNoPeople.txt'));
+
+
 var cnt_open_hall=0;
 var cnt_send_hall=0;
 var cnt_recv_hall=0;
@@ -363,9 +367,8 @@ setInterval(kcCtlData,400);
 
 
 
-var cnt_livingRmNoPeople=0;
+
 var cnt_hallNoPeople=0;
-var cnt_dinnerRmNoPeople=0;
 var cnt_kitchenNoPeople=0;
 
 function log()
@@ -383,6 +386,10 @@ function log()
 	if(!l_liv(obj)) cnt_livingRmNoPeople++;
 	else cnt_livingRmNoPeople=0;
 	if(cnt_livingRmNoPeople>350) {cnt_livingRmNoPeople=0;if(pLiv>0) pLiv--;}
+
+	let fd1 = fs.openSync('cnt_livingRmNoPeople.txt','w');
+	fs.writeFileSync(fd1, cnt_livingRmNoPeople);
+	fs.closeSync(fd1);
 	
 	if(!l_hal(obj)) cnt_hallNoPeople++;
 	else cnt_hallNoPeople=0;
@@ -391,6 +398,10 @@ function log()
 	if(!l_din(obj)) cnt_dinnerRmNoPeople++;
 	else cnt_dinnerRmNoPeople=0;
 	if(cnt_dinnerRmNoPeople>350) {cnt_dinnerRmNoPeople=0;if(pDin>0) pDin--;}
+
+	let fd2 = fs.openSync('cnt_dinnerRmNoPeople.txt','w');
+	fs.writeFileSync(fd2, cnt_dinnerRmNoPeople);
+	fs.closeSync(fd2);
 	
 	if(!l_kit(obj)) cnt_kitchenNoPeople++;
 	else cnt_kitchenNoPeople=0;
