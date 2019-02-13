@@ -16,7 +16,7 @@ this is the code for the control part of automatic home solar-powered water heat
 
 //declear overall variable::user, password, identify key
 char auth[] = "91431a5e4043";
-char ssid[] = "yimian-iot";
+char ssid[] = "yimian-iot-s";
 char pswd[] = "1234567890.";
 
 //declear Button with certain keyname

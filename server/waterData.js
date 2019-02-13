@@ -27,17 +27,17 @@ var change1_time=0;
 function rec_w1(obj)
 {
 	w1CtlObj=obj;
-	wF1=obj.waterFlow;
+	wF1=obj.waterFlow1;
 	//console.log('Client received a message',w1CtlObj);
 	let fd = fs.openSync('waterFlow1.txt','w');
 
-	change1=wF1-fw1Obj.waterFlow;
+	change1=wF1-fw1Obj.waterFlow1;
 	change1_time=Date.parse(new Date());
 
 	fs.writeFileSync(fd, wF1);
 
 	fs.closeSync(fd);
-	console.log('w1 '+obj.waterFlow);
+	console.log('w1 '+obj.waterFlow1);
 	w1Obj=obj;
 	//$.post("http://127.0.0.1/water.php",obj,function(msg){console.log(msg)});
 	cnt_recv_w1++;
@@ -48,7 +48,7 @@ socket_open_w1();
 socket_w1.onmessage = function(event) {
 var obj = eval('(' + event.data + ')');
 if(obj.wIoT == 1) {
-	if(obj.waterFlow<10) {obj.waterFlow=wF1;socket_w1.send('{"wIoT":'+wF1+'}');}
+	if(obj.waterFlow1<10) {obj.waterFlow1=wF1;socket_w1.send('{"wIoT":'+wF1+'}');}
 	rec_w1(obj);
 	fw1Obj=obj;
 	}

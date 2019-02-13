@@ -3,7 +3,7 @@ header('Access-Control-Allow-Origin:*');
 include './functions.php';
 
 $waterAdd=$_REQUEST['waterAdd'];
-$waterFlow1=$_REQUEST['waterFlow'];
+$waterFlow1=$_REQUEST['waterFlow1'];
 $waterFlow2=$_REQUEST['waterFlow2'];
 
 $conn=db__connect();
