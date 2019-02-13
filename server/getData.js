@@ -1,5 +1,6 @@
 ﻿/*include ws*/
 const WebSocket = require('ws');
+
 /*include jquery*/
 const jsdom = require('jsdom');
 const {JSDOM} = jsdom;
@@ -8,6 +9,12 @@ global.document = document;
 const window = document.defaultView;
 const $ = require('jquery')(window);
 
+
+
+
+
+
+/* overall var */
 
 var hallCtlObj = new Object;
 var livingRmSnsrObj = new Object;
@@ -26,6 +33,23 @@ var cnt_livingRmNoPeople = parseInt(fs.readFileSync('cnt_livingRmNoPeople.txt'))
 var cnt_dinnerRmNoPeople = parseInt(fs.readFileSync('cnt_dinnerRmNoPeople.txt'));
 
 
+
+
+
+var on_hall=parseInt(fs.readFileSync('on_hall.txt'));
+var on_livS=parseInt(fs.readFileSync('on_livS.txt'));
+var on_liv=parseInt(fs.readFileSync('on_liv.txt'));
+var on_din=parseInt(fs.readFileSync('on_din.txt'));
+var on_kit=parseInt(fs.readFileSync('on_kit.txt'));
+
+
+
+
+
+
+
+/* hall var */
+
 var cnt_open_hall=0;
 var cnt_send_hall=0;
 var cnt_recv_hall=0;
@@ -37,15 +61,6 @@ function rec_hall(obj)
 	//$.post("http://127.0.0.1/wIoT.php",obj,function(msg){console.log(msg)});
 	cnt_recv_hall++;
 }
-
-var socket_hall = new WebSocket('ws://192.168.3.102:81');
-socket_open_hall();
-socket_hall.onmessage = function(event) {
-var obj = eval('(' + event.data + ')');
-if(obj.wIoT == 1) {
-	rec_hall(obj);
-	}
-};
 
 function socket_open_hall(){
 	if(socket_hall.readyState ==3 ){
@@ -66,6 +81,8 @@ if(obj.wIoT == 1) {
 	cnt_open_hall++;//console.log('cnt_open_hall ',cnt_open_hall);
 	setTimeout(socket_open_hall,15000);
 }
+
+
 function hallCtlData(){
 	if(socket_hall.readyState ==1)
 	{
@@ -82,17 +99,42 @@ function hallCtlData(){
 	if(cnt_send_hall>800||cnt_open_hall>1000) socket_hall.close();
 
 };
-// 监听Socket的关闭
-socket_hall.onclose = function(event) {
-console.log('Client notified socket has closed');
-socket_open_hall();
-};
 
-setInterval(hallCtlData,400);
+var socket_hall = new WebSocket('ws://192.168.3.102:81');
 
 
 
+/* hall ctl */
 
+if(on_hall)
+{
+	socket_open_hall();
+	socket_hall.onmessage = function(event) {
+	var obj = eval('(' + event.data + ')');
+	if(obj.wIoT == 1) {
+		rec_hall(obj);
+		}
+	};
+
+	// 监听Socket的关闭
+	socket_hall.onclose = function(event) {
+	console.log('Client notified socket has closed');
+	socket_open_hall();
+	};
+
+	setInterval(hallCtlData,400);
+
+	socket_hall.onerror = function(e){
+		console.log('error_hall '+e);
+		let fd = fs.openSync('on_hall.txt','w');
+		fs.writeFileSync(fd,'0');
+		fs.closeSync(fd);
+	}
+}
+
+
+
+/* livS var */
 
 var cnt_open_ls=0;
 var cnt_send_ls=0;
@@ -105,15 +147,6 @@ function rec_ls(obj)
 	//$.post("http://127.0.0.1/wIoT.php",obj,function(msg){console.log(msg)});
 	cnt_recv_ls++;
 }
-
-var socket_ls = new WebSocket('ws://192.168.3.106:81');
-socket_open_ls();
-socket_ls.onmessage = function(event) {
-var obj = eval('(' + event.data + ')');
-if(obj.wIoT == 1) {
-	rec_ls(obj);
-	}
-};
 
 function socket_open_ls(){
 	if(socket_ls.readyState ==3 ){
@@ -150,16 +183,41 @@ function lsCtlData(){
 	if(cnt_send_ls>800||cnt_open_ls>1000) socket_ls.close();
 
 };
-// 监听Socket的关闭
-socket_ls.onclose = function(event) {
-console.log('Client notified socket has closed');
-socket_open_ls();
-};
-
-setInterval(lsCtlData,400);
 
 
 
+/* livS ctl */
+if(on_livS)
+{
+	var socket_ls = new WebSocket('ws://192.168.3.106:81');
+	socket_open_ls();
+	socket_ls.onmessage = function(event) {
+	var obj = eval('(' + event.data + ')');
+	if(obj.wIoT == 1) {
+		rec_ls(obj);
+		}
+	};
+
+	// 监听Socket的关闭
+	socket_ls.onclose = function(event) {
+	console.log('Client notified socket has closed');
+	socket_open_ls();
+	};
+
+	setInterval(lsCtlData,400);
+
+
+	socket_ls.onerror = function(e){
+		console.log('error_livS '+e);
+		let fd = fs.openSync('on_livS.txt','w');
+		fs.writeFileSync(fd,'0');
+		fs.closeSync(fd);
+	}
+}
+
+
+
+/* liv var */
 
 var cnt_open_lc=0;
 var cnt_send_lc=0;
@@ -172,15 +230,6 @@ function rec_lc(obj)
 	//$.post("http://127.0.0.1/wIoT.php",obj,function(msg){console.log(msg)});
 	cnt_recv_lc++;
 }
-
-var socket_lc = new WebSocket('ws://192.168.3.105:81');
-socket_open_lc();
-socket_lc.onmessage = function(event) {
-var obj = eval('(' + event.data + ')');
-if(obj.wIoT == 1) {
-	rec_lc(obj);
-	}
-};
 
 function socket_open_lc(){
 	if(socket_lc.readyState ==3 ){
@@ -201,6 +250,7 @@ if(obj.wIoT == 1) {
 	cnt_open_lc++;//console.log('cnt_open_lc ',cnt_open_lc);
 	setTimeout(socket_open_lc,15000);
 }
+
 function lcCtlData(){
 	if(socket_lc.readyState ==1)
 	{
@@ -217,15 +267,41 @@ function lcCtlData(){
 	if(cnt_send_lc>800||cnt_open_lc>1000) socket_lc.close();
 
 };
-// 监听Socket的关闭
-socket_lc.onclose = function(event) {
-console.log('Client notified socket has closed');
-socket_open_lc();
-};
-
-setInterval(lcCtlData,400);
 
 
+/* liv ctl */
+
+if(on_liv)
+{
+
+	var socket_lc = new WebSocket('ws://192.168.3.105:81');
+	socket_open_lc();
+	socket_lc.onmessage = function(event) {
+	var obj = eval('(' + event.data + ')');
+	if(obj.wIoT == 1) {
+		rec_lc(obj);
+		}
+	};
+
+	// 监听Socket的关闭
+	socket_lc.onclose = function(event) {
+	console.log('Client notified socket has closed');
+	socket_open_lc();
+	};
+
+	setInterval(lcCtlData,400);
+
+	socket_lc.onerror = function(e){
+		console.log('error_liv '+e);
+		let fd = fs.openSync('on_liv.txt','w');
+		fs.writeFileSync(fd,'0');
+		fs.closeSync(fd);
+	}
+}
+
+
+
+/* din var */
 
 var cnt_open_dc=0;
 var cnt_send_dc=0;
@@ -238,15 +314,6 @@ function rec_dc(obj)
 	//$.post("http://127.0.0.1/wIoT.php",obj,function(msg){console.log(msg)});
 	cnt_recv_dc++;
 }
-
-var socket_dc = new WebSocket('ws://192.168.3.103:81');
-socket_open_dc();
-socket_dc.onmessage = function(event) {
-var obj = eval('(' + event.data + ')');
-if(obj.wIoT == 1) {
-	rec_dc(obj);
-	}
-};
 
 function socket_open_dc(){
 	if(socket_dc.readyState ==3 ){
@@ -283,17 +350,37 @@ function dcCtlData(){
 	if(cnt_send_dc>800||cnt_open_dc>1000) socket_dc.close();
 
 };
-// 监听Socket的关闭
-socket_dc.onclose = function(event) {
-console.log('Client notified socket has closed');
-socket_open_dc();
-};
 
-setInterval(dcCtlData,400);
+/* din ctl */
+if(on_din)
+{
+	var socket_dc = new WebSocket('ws://192.168.3.103:81');
+	socket_open_dc();
+	socket_dc.onmessage = function(event) {
+	var obj = eval('(' + event.data + ')');
+	if(obj.wIoT == 1) {
+		rec_dc(obj);
+		}
+	};
+
+	// 监听Socket的关闭
+	socket_dc.onclose = function(event) {
+	console.log('Client notified socket has closed');
+	socket_open_dc();
+	};
+
+	setInterval(dcCtlData,400);
+
+	socket_dc.onerror = function(e){
+		console.log('error_din '+e);
+		let fd = fs.openSync('on_din.txt','w');
+		fs.writeFileSync(fd,'0');
+		fs.closeSync(fd);
+	}
+}
 
 
-
-
+/* kit var */
 
 var cnt_open_kc=0;
 var cnt_send_kc=0;
@@ -306,15 +393,6 @@ function rec_kc(obj)
 	//$.post("http://127.0.0.1/wIoT.php",obj,function(msg){console.log(msg)});
 	cnt_recv_kc++;
 }
-
-var socket_kc = new WebSocket('ws://192.168.3.104:81');
-socket_open_kc();
-socket_kc.onmessage = function(event) {
-var obj = eval('(' + event.data + ')');
-if(obj.wIoT == 1) {
-	rec_kc(obj);
-	}
-};
 
 function socket_open_kc(){
 	if(socket_kc.readyState ==3 ){
@@ -351,15 +429,37 @@ function kcCtlData(){
 	if(cnt_send_kc>800||cnt_open_kc>1000) socket_kc.close();
 
 };
-// 监听Socket的关闭
-socket_kc.onclose = function(event) {
-console.log('Client notified socket has closed');
-socket_open_kc();
-};
-
-setInterval(kcCtlData,400);
 
 
+/* kit ctl */
+
+if(on_kit)
+{
+	var socket_kc = new WebSocket('ws://192.168.3.104:81');
+	socket_open_kc();
+	socket_kc.onmessage = function(event) {
+	var obj = eval('(' + event.data + ')');
+	if(obj.wIoT == 1) {
+		rec_kc(obj);
+		}
+	};
+
+	// 监听Socket的关闭
+	socket_kc.onclose = function(event) {
+	console.log('Client notified socket has closed');
+	socket_open_kc();
+	};
+
+	setInterval(kcCtlData,400);
+
+	socket_kc.onerror = function(e){
+		console.log('error_kit '+e);
+		let fd = fs.openSync('on_kit.txt','w');
+		fs.writeFileSync(fd,'0');
+		fs.closeSync(fd);
+	}
+
+}
 
 
 
@@ -383,29 +483,43 @@ function log()
 	$.post("http://127.0.0.1/wIoT.php",obj,function(msg){console.log(msg)});
 	
 
-	if(!l_liv(obj)) cnt_livingRmNoPeople++;
-	else cnt_livingRmNoPeople=0;
-	if(cnt_livingRmNoPeople>350) {cnt_livingRmNoPeople=0;if(pLiv>0) pLiv--;}
+	if(on_liv)
+	{
+		if(!l_liv(obj)) cnt_livingRmNoPeople++;
+		else cnt_livingRmNoPeople=0;
+		if(cnt_livingRmNoPeople>350) {cnt_livingRmNoPeople=0;if(pLiv>0) pLiv--;}
 
-	let fd1 = fs.openSync('cnt_livingRmNoPeople.txt','w');
-	fs.writeFileSync(fd1, cnt_livingRmNoPeople);
-	fs.closeSync(fd1);
-	
-	if(!l_hal(obj)) cnt_hallNoPeople++;
-	else cnt_hallNoPeople=0;
-	if(cnt_hallNoPeople>100) {cnt_hallNoPeople=0;if(pHal>0) pHal--;}
-	
-	if(!l_din(obj)) cnt_dinnerRmNoPeople++;
-	else cnt_dinnerRmNoPeople=0;
-	if(cnt_dinnerRmNoPeople>350) {cnt_dinnerRmNoPeople=0;if(pDin>0) pDin--;}
+		let fd1 = fs.openSync('cnt_livingRmNoPeople.txt','w');
+		fs.writeFileSync(fd1, cnt_livingRmNoPeople);
+		fs.closeSync(fd1);
+	}
 
-	let fd2 = fs.openSync('cnt_dinnerRmNoPeople.txt','w');
-	fs.writeFileSync(fd2, cnt_dinnerRmNoPeople);
-	fs.closeSync(fd2);
-	
-	if(!l_kit(obj)) cnt_kitchenNoPeople++;
-	else cnt_kitchenNoPeople=0;
-	if(cnt_kitchenNoPeople>150) {cnt_kitchenNoPeople=0;if(pKit>0) pKit--;}
+	if(on_hall)
+	{
+		if(!l_hal(obj)) cnt_hallNoPeople++;
+		else cnt_hallNoPeople=0;
+		if(cnt_hallNoPeople>100) {cnt_hallNoPeople=0;if(pHal>0) pHal--;}
+	}
+
+	if(on_din)
+	{
+		if(!l_din(obj)) cnt_dinnerRmNoPeople++;
+		else cnt_dinnerRmNoPeople=0;
+		if(cnt_dinnerRmNoPeople>350) {cnt_dinnerRmNoPeople=0;if(pDin>0) pDin--;}
+
+		let fd2 = fs.openSync('cnt_dinnerRmNoPeople.txt','w');
+		fs.writeFileSync(fd2, cnt_dinnerRmNoPeople);
+		fs.closeSync(fd2);
+	}
+
+
+	if(on_kit)
+	{
+		if(!l_kit(obj)) cnt_kitchenNoPeople++;
+		else cnt_kitchenNoPeople=0;
+		if(cnt_kitchenNoPeople>150) {cnt_kitchenNoPeople=0;if(pKit>0) pKit--;}
+
+	}
 
 	logic(obj);
 	console.log(pHal+',,'+pDin+',,'+pLiv+',,'+pKit);
@@ -436,6 +550,7 @@ function isLight()
 	if(d.getHours()==9) lightVal=0;
 	if(d.getHours()>=7&&d.getHours()<9&&!livingRmSnsrObj.Ls1) lightVal=0;
 	if(d.getHours()==1) lightVal=0;
+	if(d.getHours()==1&&d.getMinutes()==1&&d.getSeconds()<10) {socket_hall.send('{"w-light":0}');socket_dc.send('{"w-light":0}');socket_lc.send('{"w-light":0}');socket_kc.send('{"w-light":0}');}
 	if(d.getHours()==5) lightVal=1;
 
 	let fd = fs.openSync('lightVal.txt','w');
@@ -592,7 +707,7 @@ function logic(obj)
 	if(pLiv>4) pLiv=4;
 	
 	if(pLiv==0&&(obj.R6||obj.R12||obj.R9||/*obj.R11||*/obj.R7)&&Date.parse(new Date())>changeTime+9000) pLiv=2;
-	if(pDin==0&&(obj.R18||obj.R8||obj.R17)&&Date.parse(new Date())>changeTime+9000) pDin=1;
+	if(pDin==0&&(obj.R18||/*obj.R8||*/obj.R17)&&Date.parse(new Date())>changeTime+9000) pDin=1;
 	if(pKit==0&&l_kit(obj)&&Date.parse(new Date())>changeTime+9000) pKit=1;
 	if(pHal==0&&(obj.R4||obj.R1&&obj.R2)&&Date.parse(new Date())>changeTime+9000) pHal=1;
 	
@@ -608,7 +723,7 @@ function l_hal(obj)
 
 function l_din(obj)
 {
-	if(obj.R8||obj.R13||obj.R14||obj.R15||obj.R16||obj.R17||obj.R18) return 1;
+	if(/*obj.R8||*/obj.R13||obj.R14||obj.R15||obj.R16||obj.R17||obj.R18) return 1;
 	else return 0;
 }
 	
@@ -632,21 +747,51 @@ function l_halDir(obj)
 		   
 function l_newDoor(obj)
 {
-	if(obj.R8&&obj.R14) return 1;
+	if(/*obj.R8&&*/obj.R14) return 1;
 	else return -1;
 }
 
 function light()
 {
-	if(pHal>=1) socket_hall.send('{"w-light":1}');
-	else if(pHal==0)socket_hall.send('{"w-light":0}');
 	
-	if(pDin>=1) socket_dc.send('{"w-light":1}');
-	else if(pDin==0&&dchangeTime<Date.parse(new Date())-10000)socket_dc.send('{"w-light":0}');
+	if(on_hall)
+		if(pHal>=1) socket_hall.send('{"w-light":1}');
+		else if(pHal==0)socket_hall.send('{"w-light":0}');
+	
+	if(on_din)		
+		if(pDin>=1) socket_dc.send('{"w-light":1}');
+		else if(pDin==0&&dchangeTime<Date.parse(new Date())-10000)socket_dc.send('{"w-light":0}');
 
-	if(pLiv>=1) socket_lc.send('{"w-light":1}');
-	else if(pLiv==0&&lchangeTime<Date.parse(new Date())-10000)socket_lc.send('{"w-light":0}');
-	
-	if(pKit>=1) socket_kc.send('{"w-light":1}');
-	else if(pKit==0&&kchangeTime<Date.parse(new Date())-10000)socket_kc.send('{"w-light":0}');
+	if(on_liv)
+		if(pLiv>=1) socket_lc.send('{"w-light":1}');
+		else if(pLiv==0&&lchangeTime<Date.parse(new Date())-10000)socket_lc.send('{"w-light":0}');
+
+
+	if(on_kit)
+		if(pKit>=1) socket_kc.send('{"w-light":1}');
+		else if(pKit==0&&kchangeTime<Date.parse(new Date())-10000)socket_kc.send('{"w-light":0}');
 }
+
+
+
+
+
+let fd_livS = fs.openSync('on_livS.txt','w');
+fs.writeFileSync(fd_livS,'1');
+fs.closeSync(fd_livS);
+
+let fd_hall = fs.openSync('on_hall.txt','w');
+fs.writeFileSync(fd_hall,'1');
+fs.closeSync(fd_hall);
+
+let fd_liv = fs.openSync('on_liv.txt','w');
+fs.writeFileSync(fd_liv,'1');
+fs.closeSync(fd_liv);
+
+let fd_din = fs.openSync('on_din.txt','w');
+fs.writeFileSync(fd_din,'1');
+fs.closeSync(fd_din);
+
+let fd_kit = fs.openSync('on_kit.txt','w');
+fs.writeFileSync(fd_kit,'1');
+fs.closeSync(fd_kit);

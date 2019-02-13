@@ -34,14 +34,15 @@
 
 // Correspond Pins to Tag
 #define lightSnsr D10 //detect the light
-#define Buz D8 // Pins for buzz
+#define Buz D2 // Pins for buzz
 #define rSnsr1 D6 // Pins for searching people
 #define rSnsr2 D13 // Pins for searching people
-#define rSnsr3 D4
-#define rSnsr4 D2
+#define rSnsr3 D8
+#define rSnsr4 D3
 #define Shake D9 // Pins for detect shake
 #define led D0
 #define TempSnsr A0 // Temp Detector
+#define Source D1 // Power Source Detector
 
 // Parameter Define 
 #define SWI_TRY_TIMES 300
@@ -244,6 +245,7 @@ void heartbeat(const String & state)
   if(state=="1") Mode=1;
   else if(state=="0") Mode=0;
   LastCnnctTime = millis();
+  digitalWrite(Source, HIGH);
 }
 
 /******* Arduino Setup Funstion *******/
@@ -263,6 +265,9 @@ void setup()
     pinMode(Buz, OUTPUT);
     pinMode(Shake, INPUT);
     pinMode(TempSnsr, INPUT);
+    pinMode(Source, OUTPUT);
+
+    digitalWrite(Source, LOW);
 
     // rSnsr ini
     rSnsr1Status = digitalRead(rSnsr1);
