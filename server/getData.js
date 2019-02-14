@@ -533,6 +533,14 @@ function log()
 	if(parseInt(fs.readFileSync('alert.txt'))) socket_lc.send('{"w-alert":1}');
 	else socket_lc.send('{"w-alert":0}');
 
+
+	let fd_Tp1 = fs.openSync('Tp1.txt','w');
+	fs.writeFileSync(fd_Tp1,obj.Tp1);
+	fs.closeSync(fd_Tp1);
+
+	let fd_Ls2 = fs.openSync('Ls2.txt','w');
+	fs.writeFileSync(fd_Ls2,obj.Ls2);
+	fs.closeSync(fd_Ls2);
 	
 	fobj=obj;
 }
