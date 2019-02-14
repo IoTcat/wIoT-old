@@ -532,6 +532,10 @@ function log()
 	fs.closeSync(fd);
 	
 	if(isLight()) light();
+
+	if(parseInt(fs.readFileSync('alert.txt'))) socket_lc.send('{"w-alert":1}');
+	else socket_lc.send('{"w-alert":0}');
+
 	
 	fobj=obj;
 }

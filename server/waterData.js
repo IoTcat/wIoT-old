@@ -222,8 +222,8 @@ function record_topWater(obj)
 
 function adjust_topWater(obj)
 {
-	if(topW>0)  socket_w1.send('{"btn-on":"tap"}');
-	if(judge_mode(obj)==2&&topW<=0) {socket_w1.send('{"btn-off":"tap"}');}
+	if(topW>0)  {socket_w1.send('{"btn-on":"tap"}');let fd = fs.openSync('alert.txt','w');fs.writeFileSync(fd, '0');fs.closeSync(fd);}
+	if(judge_mode(obj)==2&&topW<=0) {socket_w1.send('{"btn-off":"tap"}');let fd = fs.openSync('alert.txt','w');fs.writeFileSync(fd, '1');fs.closeSync(fd);}
 	if(judge_mode(obj)==1&&topW<=0) topW=topW+0.1;
 }
 
@@ -237,7 +237,11 @@ function report()
 	record_topWater(obj);
 	adjust_topWater(obj);
 
-	
+	let fd = fs.openSync('wStatus.txt','w');
+
+	fs.writeFileSync(fd, judge_mode(obj));
+
+	fs.closeSync(fd);
 	//if(!w1Obj.waterAdd&&change2&&change1==0) socket_w1.send('{"btn-on":"tap"}');
 	//if(w1Obj.waterAdd&&change1<change2) socket_w1.send('{"btn-off":"tap"}');
 
