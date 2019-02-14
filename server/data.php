@@ -24,6 +24,10 @@ else
 	$lS.="故障！";
 }
 
+if($lS=="正常运行")
+	if(file_get_contents('isLight.txt')==1) $lS="智慧照明开启";
+	else $lS="智慧照明已关闭";
+
 $pdata=file_get_contents('pdata.txt');
 
 echo json_encode( array(dl=>$learn_count/100,temp=>file_get_contents('./Tp1.txt'),Ls2=>file_get_contents('./Ls2.txt'),tW=>substr(file_get_contents('./topW.txt'),0,5),wF1=>file_get_contents('./waterFlow1.txt'),wF2=>file_get_contents('./waterFlow2.txt'),wS=>$wS,lS=>$lS,hP=>substr($pdata,0,1),dP=>substr($pdata,1,1),lP=>substr($pdata,2,1),kP=>substr($pdata,3,1)));

@@ -32,7 +32,7 @@ var on_w2=parseInt(fs.readFileSync('on_w2.txt'));
 
 
 
-var socket_w1 = new WebSocket('ws://192.168.3.101:81');
+var socket_w1;
 function rec_w1(obj)
 {
 	w1CtlObj=obj;
@@ -57,6 +57,9 @@ function socket_open_w1(){
 		socket_w1 = new WebSocket('ws://192.168.3.101:81');
 		socket_w1.onopen = function(event) {}
 		socket_w1.onmessage = function(event) {
+let fd_w1_ = fs.openSync('on_w1.txt','w');
+fs.writeFileSync(fd_w1_,'1');
+fs.closeSync(fd_w1_);
 cnt_recv_w1=cnt_send_w1;
 //console.log('Client received a message',event.data);
 var obj = eval('(' + event.data + ')');
@@ -74,12 +77,12 @@ if(obj.wIoT == 1) {
 function w1CtlData(){
 	if(socket_w1.readyState ==1)
 	{
-		if(cnt_send_w1>cnt_recv_w1+30)
-			socket_open_w1();
+		if(cnt_send_w1>cnt_recv_w1+8)
+			{socket_w1 = new WebSocket('ws://192.168.3.101:81');socket_open_w1();}
 		else
 		{
 			socket_w1.send('{"wIoT":'+wF1+'}');
-			cnt_send_w1++;//console.log('cnt_send_w1 ',cnt_send_w1);
+			cnt_send_w1++;console.log('cnt_send_w1 ',cnt_send_w1);console.log('cnt_recv_w1 ',cnt_recv_w1);
 		}
 	}
 	else
@@ -95,13 +98,16 @@ function w1CtlData(){
 
 function action_w1()
 {
+socket_w1 = new WebSocket('ws://192.168.3.101:81');
 
 let fd_i = fs.openSync('on_w1.txt','w');
 fs.writeFileSync(fd_i,'0');
 fs.closeSync(fd_i);
 
 socket_open_w1();
-socket_w1.onmessage = function(event) {
+socket_w1.onmessage = function(event) {let fd_w1_ = fs.openSync('on_w1.txt','w');
+fs.writeFileSync(fd_w1_,'1');
+fs.closeSync(fd_w1_);
 var obj = eval('(' + event.data + ')');
 if(obj.wIoT == 1) {
 	if(obj.waterFlow1<10) {obj.waterFlow1=wF1;socket_w1.send('{"wIoT":'+wF1+'}');}
@@ -130,7 +136,7 @@ socket_w1.onerror = function(e){
 }
 
 if(on_w1==1) action_w1();
-else setTimeout("action_w1",60000);
+else setTimeout(action_w1,20000);
 
 
 var cnt_open_w2=0;
@@ -139,7 +145,7 @@ var cnt_recv_w2=0;
 var change2=0;
 var change2_time=0;
 
-var socket_w2 = new WebSocket('ws://192.168.3.107:81');
+var socket_w2;
 function rec_w2(obj)
 {
 	w2CtlObj=obj;
@@ -165,6 +171,9 @@ function socket_open_w2(){
 		socket_w2 = new WebSocket('ws://192.168.3.107:81');
 		socket_w2.onopen = function(event) {}
 		socket_w2.onmessage = function(event) {
+let fd_w2_ = fs.openSync('on_w2.txt','w');
+fs.writeFileSync(fd_w2_,'1');
+fs.closeSync(fd_w2_);
 cnt_recv_w2=cnt_send_w2;
 //console.log('Client received a message',event.data);
 var obj = eval('(' + event.data + ')');
@@ -182,8 +191,8 @@ if(obj.wIoT == 1) {
 function w2CtlData(){
 	if(socket_w2.readyState ==1)
 	{
-		if(cnt_send_w2>cnt_recv_w2+30)
-			socket_open_w2();
+		if(cnt_send_w2>cnt_recv_w2+8)
+			{socket_w2 = new WebSocket('ws://192.168.3.107:81');socket_open_w2();}
 		else
 		{
 			socket_w2.send('{"wIoT":'+wF2+'}');
@@ -202,13 +211,16 @@ function w2CtlData(){
 
 function action_w2()
 {
-
+socket_w2 = new WebSocket('ws://192.168.3.107:81');
 let fd_i2 = fs.openSync('on_w2.txt','w');
 fs.writeFileSync(fd_i2,'0');
 fs.closeSync(fd_i2);
 
 socket_open_w2();
 socket_w2.onmessage = function(event) {
+	let fd_w2_ = fs.openSync('on_w2.txt','w');
+fs.writeFileSync(fd_w2_,'1');
+fs.closeSync(fd_w2_);
 var obj = eval('(' + event.data + ')');
 if(obj.wIoT == 1) {
 	if(obj.waterFlow2<10) {obj.waterFlow2=wF2;socket_w2.send('{"wIoT":'+wF2+'}');}
@@ -238,7 +250,7 @@ setInterval(w2CtlData,8000);
 }
 
 if(on_w2==1) action_w2();
-else setTimeout("action_w2",60000);
+else setTimeout(action_w2,20000);
 
 
 
@@ -281,8 +293,8 @@ function record_topWater(obj)
 
 function adjust_topWater(obj)
 {
-	if(topW>0)  {socket_w1.send('{"btn-on":"tap"}');let fd = fs.openSync('alert.txt','w');fs.writeFileSync(fd, '0');fs.closeSync(fd);}
-	if(judge_mode(obj)==2&&topW<=0) {socket_w1.send('{"btn-off":"tap"}');let fd = fs.openSync('alert.txt','w');fs.writeFileSync(fd, '1');fs.closeSync(fd);if(sms_sent<Date.parse(new Date())-12*3600000) {$.post("https://cn.yimian.xyz/msg.php?tel=18888283877&tpl=4");$.post("https://cn.yimian.xyz/msg.php?tel=13371035727&tpl=4");let fd_sms = fs.openSync('smsTimeout.txt','w');fs.writeFileSync(fd_sms, Date.parse(new Date()));fs.closeSync(fd_sms);}}
+	if(topW>0)  {if(socket_w1)socket_w1.send('{"btn-on":"tap"}');let fd = fs.openSync('alert.txt','w');fs.writeFileSync(fd, '0');fs.closeSync(fd);}
+	if(judge_mode(obj)==2&&topW<=0) {if(socket_w1)socket_w1.send('{"btn-off":"tap"}');let fd = fs.openSync('alert.txt','w');fs.writeFileSync(fd, '1');fs.closeSync(fd);if(sms_sent<Date.parse(new Date())-12*3600000) {$.post("https://cn.yimian.xyz/msg.php?tel=18888283877&tpl=4");$.post("https://cn.yimian.xyz/msg.php?tel=13371035727&tpl=4");let fd_sms = fs.openSync('smsTimeout.txt','w');fs.writeFileSync(fd_sms, Date.parse(new Date()));fs.closeSync(fd_sms);}}
 	if(judge_mode(obj)==1&&topW<=0) topW=topW+0.1;
 }
 
@@ -293,8 +305,11 @@ function report()
 	Object.assign(obj, w1Obj);
 	Object.assign(obj, w2Obj);
 	$.post("http://127.0.0.1/water.php",obj,function(msg){console.log(msg)});
+
+	on_w1=parseInt(fs.readFileSync('on_w1.txt'));
+	on_w2=parseInt(fs.readFileSync('on_w2.txt'));
 	
-	if(on_w1==1&&on_w2==1)
+	if(on_w1==1&&on_w2==1&&socket_w1&&socket_w2)
 	{
 
 
@@ -313,13 +328,13 @@ function report()
 	{
 	let fd = fs.openSync('wStatus.txt','w');
 
-	if(on_w1==1)
+	if(on_w1==1&&socket_w1)
 	fs.writeFileSync(fd, '-2');
 
-	if(on_w2==1)
+	if(on_w2==1&&socket_w2)
 	fs.writeFileSync(fd, '-1');
 
-	if(!(on_w1||on_w2))
+	if(!(on_w1&&socket_w1||on_w2&&socket_w2))
 	fs.writeFileSync(fd, '-3');
 
 

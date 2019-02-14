@@ -528,7 +528,18 @@ function log()
 
 	fs.closeSync(fd);
 	
-	if(isLight()) light();
+	if(isLight()) {
+		light();
+		let fd_l = fs.openSync('isLight.txt','w');
+		fs.writeFileSync(fd_l, "1");
+		fs.closeSync(fd_l);
+	}
+	else
+	{
+		let fd_l = fs.openSync('isLight.txt','w');
+		fs.writeFileSync(fd_l, "0");
+		fs.closeSync(fd_l);
+	}
 
 	if(parseInt(fs.readFileSync('alert.txt'))) socket_lc.send('{"w-alert":1}');
 	else socket_lc.send('{"w-alert":0}');
