@@ -45,9 +45,6 @@ var on_kit=parseInt(fs.readFileSync('on_kit.txt'));
 
 
 
-
-
-
 /* hall var */
 
 var cnt_open_hall=0;

@@ -118,7 +118,7 @@ function js__cleverLogin()
 function yimian__heartbeat()
 {
 	echo "
-<script>$.post(\"/heartbeat.php\",{\"ip\":ip,\"fp\":fp,\"city\":ipCity})</script>";
+<script>$.post(\"https://cn.yimian.xyz/heartbeat.php\",{\"ip\":ip,\"fp\":fp,\"city\":ipCity})</script>";
 }
 
 

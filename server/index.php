@@ -14,6 +14,8 @@ yimian__headerEnd();
 <h4>厨房人数：<span id="kP"></span></h4>
 <h4>走廊人数：<span id="hP"></span></h4>
 <h4><a href="./fix_l.php">人数有错？戳这里~</a></h4>
+<br/>
+<h4><a href="http://cloud.home.yimian.xyz">点击进入家庭云盘</a></h4>
 
 <script>
 function action()

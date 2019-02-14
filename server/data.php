@@ -5,6 +5,9 @@ if(file_get_contents('./wStatus.txt')=="1") $wS="未用水";
 if(file_get_contents('./wStatus.txt')=="2") $wS="正在加水";
 if(file_get_contents('./wStatus.txt')=="3") $wS="换热器用水";
 if(file_get_contents('./wStatus.txt')=="4") $wS="太阳能用水";
+if(file_get_contents('./wStatus.txt')=="-1") $wS="主厕系统故障";
+if(file_get_contents('./wStatus.txt')=="-2") $wS="副厕系统故障";
+if(file_get_contents('./wStatus.txt')=="-3") $wS="主、副厕系统故障";
 
 if(file_get_contents('on_hall.txt')=="1" && file_get_contents('on_kit.txt')==1 && file_get_contents('on_din.txt')==1 && file_get_contents('on_liv.txt')==1 && file_get_contents('on_livS.txt')==1) $lS="正常运行";
 else
