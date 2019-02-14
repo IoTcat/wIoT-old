@@ -29,6 +29,10 @@ var sms_sent=parseFloat(fs.readFileSync('smsTimeout.txt'));
 var on_w1=parseInt(fs.readFileSync('on_w1.txt'));
 var on_w2=parseInt(fs.readFileSync('on_w2.txt'));
 
+
+
+
+var socket_w1 = new WebSocket('ws://192.168.3.101:81');
 function rec_w1(obj)
 {
 	w1CtlObj=obj;
@@ -87,14 +91,15 @@ function w1CtlData(){
 };
 
 
-if(on_w1==1)
+
+
+function action_w1()
 {
 
-		let fd_i = fs.openSync('on_w1.txt','w');
-		fs.writeFileSync(fd_i,'0');
-		fs.closeSync(fd_i);
+let fd_i = fs.openSync('on_w1.txt','w');
+fs.writeFileSync(fd_i,'0');
+fs.closeSync(fd_i);
 
-var socket_w1 = new WebSocket('ws://192.168.3.101:81');
 socket_open_w1();
 socket_w1.onmessage = function(event) {
 var obj = eval('(' + event.data + ')');
@@ -115,15 +120,17 @@ socket_open_w1();
 
 setInterval(w1CtlData,8000);
 
-	socket_w1.onerror = function(e){
+socket_w1.onerror = function(e){
 		console.log('error_w1 '+e);
 		let fd = fs.openSync('on_w1.txt','w');
 		fs.writeFileSync(fd,'0');
 		fs.closeSync(fd);
 	}
 
-
 }
+
+if(on_w1==1) action_w1();
+else setTimeout("action_w1",60000);
 
 
 var cnt_open_w2=0;
@@ -132,6 +139,7 @@ var cnt_recv_w2=0;
 var change2=0;
 var change2_time=0;
 
+var socket_w2 = new WebSocket('ws://192.168.3.107:81');
 function rec_w2(obj)
 {
 	w2CtlObj=obj;
@@ -191,14 +199,14 @@ function w2CtlData(){
 };
 
 
-if(on_w2==1)
+
+function action_w2()
 {
 
-		let fd_i2 = fs.openSync('on_w2.txt','w');
-		fs.writeFileSync(fd_i2,'0');
-		fs.closeSync(fd_i2);
+let fd_i2 = fs.openSync('on_w2.txt','w');
+fs.writeFileSync(fd_i2,'0');
+fs.closeSync(fd_i2);
 
-var socket_w2 = new WebSocket('ws://192.168.3.107:81');
 socket_open_w2();
 socket_w2.onmessage = function(event) {
 var obj = eval('(' + event.data + ')');
@@ -226,9 +234,11 @@ setInterval(w2CtlData,8000);
 		fs.writeFileSync(fd,'0');
 		fs.closeSync(fd);
 
+	}
 }
 
-}
+if(on_w2==1) action_w2();
+else setTimeout("action_w2",60000);
 
 
 
