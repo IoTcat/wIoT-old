@@ -89,7 +89,7 @@ function w1CtlData(){
 	{console.log('waiting connection');cnt_open_w1++;		let fd_i = fs.openSync('on_w1.txt','w');
 		fs.writeFileSync(fd_i,'0');
 		fs.closeSync(fd_i);}
-	if(cnt_send_w1>800||cnt_open_w1>1000) socket_w1.close();
+	if(cnt_send_w1>800||cnt_open_w1>10) socket_w1.close();console.log('cnt_open_w1 ',cnt_open_w1);
 
 };
 
@@ -293,9 +293,35 @@ function record_topWater(obj)
 
 function adjust_topWater(obj)
 {
+
 	if(topW>0)  {if(socket_w1)socket_w1.send('{"btn-on":"tap"}');let fd = fs.openSync('alert.txt','w');fs.writeFileSync(fd, '0');fs.closeSync(fd);}
-	if(judge_mode(obj)==2&&topW<=0) {if(socket_w1)socket_w1.send('{"btn-off":"tap"}');let fd = fs.openSync('alert.txt','w');fs.writeFileSync(fd, '1');fs.closeSync(fd);if(sms_sent<Date.parse(new Date())-12*3600000) {$.post("https://cn.yimian.xyz/msg.php?tel=18888283877&tpl=4");$.post("https://cn.yimian.xyz/msg.php?tel=13371035727&tpl=4");let fd_sms = fs.openSync('smsTimeout.txt','w');fs.writeFileSync(fd_sms, Date.parse(new Date()));fs.closeSync(fd_sms);}}
+	if(parseFloat(fs.readFileSync('waterFlow2.txt'))-parseFloat(fs.readFileSync('topW_end.txt'))>parseFloat(fs.readFileSync('topW_end.txt'))-parseFloat(fs.readFileSync('topW_start.txt'))) {
+			if(socket_w1)socket_w1.send('{"btn-off":"tap"}');
+			topW=-0.3;
+			console.log("topW"+topW);
+			let fd_lk = fs.openSync('is_add_water.txt','w');
+			fs.writeFileSync(fd_lk, '0');
+			fs.closeSync(fd_lk);
+
+			let fd = fs.openSync('alert.txt','w');
+			fs.writeFileSync(fd, '1');
+			fs.closeSync(fd);
+
+			if(sms_sent<Date.parse(new Date())-12*3600000) {
+			$.post("https://cn.yimian.xyz/msg.php?tel=18888283877&tpl=4");
+			$.post("https://cn.yimian.xyz/msg.php?tel=13371035727&tpl=4");
+
+			let fd_sms = fs.openSync('smsTimeout.txt','w');
+			fs.writeFileSync(fd_sms, Date.parse(new Date()));
+			fs.closeSync(fd_sms);
+			}
+
+		let fd_tsd = fs.openSync('topW_end.txt','w');
+		fs.writeFileSync(fd_tsd, "999999999");
+		fs.closeSync(fd_tsd);
+		}
 	if(judge_mode(obj)==1&&topW<=0) topW=topW+0.1;
+	if(parseFloat(fs.readFileSync('is_add_water.txt'))==0&&judge_mode(obj)==2) {topW=-0.3;if(socket_w1)socket_w1.send('{"btn-off":"tap"}');}
 }
 
 
@@ -308,6 +334,24 @@ function report()
 
 	on_w1=parseInt(fs.readFileSync('on_w1.txt'));
 	on_w2=parseInt(fs.readFileSync('on_w2.txt'));
+
+	if(parseInt(fs.readFileSync('shower.txt'))==1)
+	{
+		let fd_shower = fs.openSync('shower.txt','w');
+		fs.writeFileSync(fd_shower, 0);
+		fs.closeSync(fd_shower);
+
+		let fd_ts = fs.openSync('topW_start.txt','w');
+		fs.writeFileSync(fd_ts, parseFloat(fs.readFileSync('waterFlow2.txt')));
+		fs.closeSync(fd_ts);
+
+		let fd_tsd = fs.openSync('topW_end.txt','w');
+		fs.writeFileSync(fd_tsd, "999999999");
+		fs.closeSync(fd_tsd);
+
+	}
+
+
 	
 	if(on_w1==1&&on_w2==1&&socket_w1&&socket_w2)
 	{
