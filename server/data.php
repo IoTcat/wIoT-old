@@ -30,4 +30,11 @@ if($lS=="正常运行")
 
 $pdata=file_get_contents('pdata.txt');
 
-echo json_encode( array(dl=>$learn_count/100,temp=>substr(file_get_contents('./Tp1.txt')/24.75,0,4),Ls2=>file_get_contents('./Ls2.txt'),tW=>substr(file_get_contents('./topW.txt'),0,5),wF1=>file_get_contents('./waterFlow1.txt'),wF2=>file_get_contents('./waterFlow2.txt'),wS=>$wS,lS=>$lS,hP=>substr($pdata,0,1),dP=>substr($pdata,1,1),lP=>substr($pdata,2,1),kP=>substr($pdata,3,1)));
+$Ls2=file_get_contents('./Ls2.txt');
+if($Ls2>800) $Ls2.=" (黑夜像宇宙)";
+elseif($Ls2>700) $Ls2.=" (暗)";
+elseif($Ls2>400) $Ls2.=" (还行)";
+elseif($Ls2>200) $Ls2.=" (亮)";
+
+
+echo json_encode( array(dl=>$learn_count/100,temp=>substr(41.2-file_get_contents('./Tp1.txt')/24.75,0,4),Ls2=>$Ls2,tW=>substr(file_get_contents('./topW.txt'),0,5),wF1=>file_get_contents('./waterFlow1.txt'),wF2=>file_get_contents('./waterFlow2.txt'),wS=>$wS,lS=>$lS,hP=>substr($pdata,0,1),dP=>substr($pdata,1,1),lP=>substr($pdata,2,1),kP=>substr($pdata,3,1)));

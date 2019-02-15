@@ -554,6 +554,13 @@ function log()
 	let fd_Ls2 = fs.openSync('Ls2.txt','w');
 	fs.writeFileSync(fd_Ls2,obj.Ls2);
 	fs.closeSync(fd_Ls2);
+
+	if(parseInt(fs.readFileSync('open_door.txt'))==1){
+	if(socket_hall) socket_hall.send('{"btn-uDoorOpen":1}');
+	let fd_ud = fs.openSync('open_door.txt','w');
+	fs.writeFileSync(fd_ud,'0');
+	fs.closeSync(fd_ud);
+	}
 	
 	fobj=obj;
 }

@@ -10,7 +10,7 @@ yimian__headerEnd();
 <h4>本次太阳能用水：<span id="tW"></span></h4>
 <h4>水流系统状态：<span id="wS"></span></h4>
 <h4>灯系统状态：<span id="lS"></span></h4>
-<h4>客厅人数：<span id="lP"></span></h4>
+<h4>客厅人数：<span id="lP"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onClick="openDoor()">戳我开门</button></h4>
 <h4>餐厅人数：<span id="dP"></span></h4>
 <h4>厨房人数：<span id="kP"></span></h4>
 <h4>走廊人数：<span id="hP"></span></h4>
@@ -41,6 +41,11 @@ function action()
 	
 setInterval("action()",500);
 
+function openDoor()
+{
+	$.post("./openDoor.php");
+}
+	
 
 </script>
 <?php
