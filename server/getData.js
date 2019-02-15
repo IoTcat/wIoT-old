@@ -520,6 +520,8 @@ function log()
 
 	logic(obj);
 	console.log(pHal+',,'+pDin+',,'+pLiv+',,'+pKit);
+
+	record_error();
 	
 	
 	let fd = fs.openSync('pdata.txt','w');
@@ -570,7 +572,8 @@ function isLight()
 	if(d.getHours()==9) lightVal=0;
 	if(d.getHours()>=7&&d.getHours()<9&&!livingRmSnsrObj.Ls1) lightVal=0;
 	if(d.getHours()==1) lightVal=0;
-	if(d.getHours()==1&&d.getMinutes()==1&&d.getSeconds()<10) {socket_hall.send('{"w-light":0}');socket_dc.send('{"w-light":0}');socket_lc.send('{"w-light":0}');socket_kc.send('{"w-light":0}');}
+	if(d.getHours()==1&&d.getMinutes()==1&&d.getSeconds()<10) {if(socket_hall)socket_hall.send('{"w-light":0}');if(socket_dc)socket_dc.send('{"w-light":0}');if(socket_lc)socket_lc.send('{"w-light":0}');if(socket_kc)socket_kc.send('{"w-light":0}');}
+	if(d.getHours()==8&&d.getMinutes()==1&&d.getSeconds()<10) {if(socket_hall)socket_hall.send('{"w-light":0}');if(socket_dc)socket_dc.send('{"w-light":0}');if(socket_lc)socket_lc.send('{"w-light":0}');if(socket_kc)socket_kc.send('{"w-light":0}');}
 	if(d.getHours()==5) lightVal=1;
 
 	let fd = fs.openSync('lightVal.txt','w');
@@ -815,3 +818,77 @@ fs.closeSync(fd_din);
 let fd_kit = fs.openSync('on_kit.txt','w');
 fs.writeFileSync(fd_kit,'1');
 fs.closeSync(fd_kit);
+
+
+function record_error()
+{
+if(parseInt(fs.readFileSync('on_livS.txt'))==1&&socket_ls)
+{
+let ffd_livS = fs.openSync('fon_livS.txt','w');
+fs.writeFileSync(ffd_livS,'1');
+fs.closeSync(ffd_livS);
+}
+else
+{
+let ffd_livS = fs.openSync('fon_livS.txt','w');
+fs.writeFileSync(ffd_livS,'0');
+fs.closeSync(ffd_livS);
+}
+
+
+if(parseInt(fs.readFileSync('on_hall.txt'))==1&&socket_hall)
+{
+let ffd_hall = fs.openSync('fon_hall.txt','w');
+fs.writeFileSync(ffd_hall,'1');
+fs.closeSync(ffd_hall);
+}
+else
+{
+let ffd_hall = fs.openSync('fon_hall.txt','w');
+fs.writeFileSync(ffd_hall,'0');
+fs.closeSync(ffd_hall);
+}
+
+if(parseInt(fs.readFileSync('on_liv.txt'))==1&&socket_lc)
+{
+let ffd_liv = fs.openSync('fon_liv.txt','w');
+fs.writeFileSync(ffd_liv,'1');
+fs.closeSync(ffd_liv);
+}
+else
+{
+let ffd_liv = fs.openSync('fon_liv.txt','w');
+fs.writeFileSync(ffd_liv,'0');
+fs.closeSync(ffd_liv);
+}
+
+if(parseInt(fs.readFileSync('on_din.txt'))==1&&socket_dc)
+{
+let ffd_din = fs.openSync('fon_din.txt','w');
+fs.writeFileSync(ffd_din,'1');
+fs.closeSync(ffd_din);
+}
+else
+{
+let ffd_din = fs.openSync('fon_din.txt','w');
+fs.writeFileSync(ffd_din,'0');
+fs.closeSync(ffd_din);
+}
+
+
+if(parseInt(fs.readFileSync('on_kit.txt'))==1&&socket_kc)
+{
+let ffd_kit = fs.openSync('fon_kit.txt','w');
+fs.writeFileSync(ffd_kit,'1');
+fs.closeSync(ffd_kit);
+}
+else
+{
+let ffd_kit = fs.openSync('fon_kit.txt','w');
+fs.writeFileSync(ffd_kit,'0');
+fs.closeSync(ffd_kit);
+}
+
+
+
+}
