@@ -40,7 +40,7 @@ $Ls2=file_get_contents('./Ls2.txt');
 if($Ls2>814) $Ls2.=" (黑夜)";
 elseif($Ls2>700) $Ls2.=" (暗)";
 elseif($Ls2>400) $Ls2.=" (还行)";
-elseif($Ls2>200) $Ls2.=" (亮)";
+elseif($Ls2>100) $Ls2.=" (亮)";
 
 
-echo json_encode( array(dl=>$learn_count/100,temp=>substr(41.2-file_get_contents('./Tp1.txt')/24.75,0,4),Ls2=>$Ls2,tW=>(file_get_contents('./is_add_water.txt')==0)?substr((file_get_contents('./waterFlow2.txt')-file_get_contents('./topW_start.txt')),0,5):substr((file_get_contents('./topW_end.txt')-file_get_contents('./topW_start.txt')),0,5),wF1=>file_get_contents('./waterFlow1.txt'),wF2=>file_get_contents('./waterFlow2.txt'),wS=>$wS,lS=>$lS,hP=>substr($pdata,0,1),dP=>substr($pdata,1,1),lP=>substr($pdata,2,1),kP=>substr($pdata,3,1)));
+echo json_encode( array(dl=>$learn_count/100,temp=>substr(-file_get_contents('./Tp1.txt')*0.3+175,0,4),Ls2=>$Ls2,tW=>(file_get_contents('./is_add_water.txt')==0)?substr((file_get_contents('./waterFlow2.txt')-file_get_contents('./topW_start.txt')),0,5):substr((file_get_contents('./topW_end.txt')-file_get_contents('./topW_start.txt')),0,5),wF1=>file_get_contents('./waterFlow1.txt'),wF2=>file_get_contents('./waterFlow2.txt'),wS=>$wS,lS=>$lS,hP=>substr($pdata,0,1),dP=>substr($pdata,1,1),lP=>substr($pdata,2,1),kP=>substr($pdata,3,1)));
