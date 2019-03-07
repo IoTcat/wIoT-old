@@ -7,8 +7,8 @@ yimian__headerEnd();
 <h4>参考温度：<span id="temp"></span> &nbsp;&nbsp;&nbsp;&nbsp;参考亮度：<span id="Ls"></span></h4>
 <h4>换热器用水：<span id="wF1"></span></h4>
 <h4>太阳能用水：<span id="wF2"></span></h4>
-<h4>本次太阳能用水：<span id="tW"></span>&nbsp;&nbsp;&nbsp;&nbsp;<button onClick="shower()">开始洗澡</button></h4>
-<h4>水流系统状态：<span id="wS"></span>&nbsp;&nbsp;&nbsp;&nbsp;<button id="btn" onClick="addWater()">开始加水</button></h4>
+<h4>本次太阳能用水：<span id="tW"></span>&nbsp;&nbsp;&nbsp;&nbsp;<!--<button onClick="shower()">开始洗澡</button>--></h4>
+<h4>水流系统状态：<span id="wS"></span>&nbsp;&nbsp;&nbsp;&nbsp;<!--<button id="btn" onClick="addWater()">开始加水</button>--></h4>
 <h4>灯系统状态：<span id="lS"></span></h4>
 <h4>客厅人数：<span id="lP"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onClick="openDoor()">戳我开门</button></h4>
 <h4>餐厅人数：<span id="dP"></span></h4>

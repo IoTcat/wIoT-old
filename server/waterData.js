@@ -32,7 +32,7 @@ var on_w2=parseInt(fs.readFileSync('on_w2.txt'));
 
 
 
-var socket_w1;
+var socket_w1;/*
 function rec_w1(obj)
 {
 	w1CtlObj=obj;
@@ -136,7 +136,7 @@ socket_w1.onerror = function(e){
 }
 
 if(on_w1==1) action_w1();
-else setTimeout(action_w1,20000);
+else setTimeout(action_w1,20000);*/
 
 
 var cnt_open_w2=0;
@@ -391,10 +391,12 @@ function report()
 setInterval(report,8000);
 
 
+/*
 
 let fd_w1 = fs.openSync('on_w1.txt','w');
 fs.writeFileSync(fd_w1,'1');
 fs.closeSync(fd_w1);
+*/
 
 let fd_w2 = fs.openSync('on_w2.txt','w');
 fs.writeFileSync(fd_w2,'1');
