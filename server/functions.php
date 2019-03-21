@@ -93,7 +93,7 @@ echo "</script>
 <script src=\"https://cdn.yimian.ac.cn/cookie/cookie.js\"></script>
 <script src=\"https://pv.sohu.com/cityjson?ie=utf-8\"></script>
 <script type=\"text/javascript\">ip=returnCitySN.cip;ipCity=returnCitySN.cname;</script>
-<script src=\"https://cdn.yimian.ac.cn/fp/fp.js\"></script>
+<script src=\"https://cdn.yimian.xyz/fp/fp.min.js\"></script>
 </head>
 	
 <body>";
@@ -138,8 +138,8 @@ function yimian__simpleFooter($bodyEnd=0)
 function yimian__footer($wordColor="#C7C7C7",$backgroundColor="#2B2B2B",$urlColor="#87CEEB")
 {
 	echo "	<style>/*footer theme*/footer{padding:1.5rem 1rem;color:".$wordColor.";font-size:1.2rem;line-height:1.4;text-align:center;background:".$backgroundColor.";border-top:1px solid #C7C7C7}a.footera:link{color: ".$urlColor." ; text-decoration:none;}a.footera:visited {color:#79CDCD}</style>
-	<script>function openwin(){window.open(\"https://cn.yimian.xyz\");}</script>
-	<footer class=\"footer\">Copyright © 2019.<a class=\"footera\" onclick=\"openwin()\" href=\"#\">Yimian LIU</a> All rights reserved.</footer>";
+	<script>function openwin(){window.open(\"https://iotcat.me\");}</script>
+	<footer class=\"footer\">Copyright © 2019.<a class=\"footera\" onclick=\"openwin()\" href=\"#\">IoTcat</a> All rights reserved.</footer>";
 	yimian__heartbeat();
 	echo "</body>
 </html>";
