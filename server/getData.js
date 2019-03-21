@@ -555,6 +555,90 @@ function log()
 	fs.writeFileSync(fd_Ls2,obj.Ls2);
 	fs.closeSync(fd_Ls2);
 
+	let fd_Ls3 = fs.openSync('Ls3.txt','w');
+	fs.writeFileSync(fd_Ls3,obj.Ls3);
+	fs.closeSync(fd_Ls3);
+
+	let fd_R1 = fs.openSync('R1.txt','w');
+	fs.writeFileSync(fd_R1,obj.R1);
+	fs.closeSync(fd_R1);
+
+	let fd_R2 = fs.openSync('R2.txt','w');
+	fs.writeFileSync(fd_R2,obj.R2);
+	fs.closeSync(fd_R2);
+
+	let fd_R3 = fs.openSync('R3.txt','w');
+	fs.writeFileSync(fd_R3,obj.R3);
+	fs.closeSync(fd_R3);
+
+	let fd_R4 = fs.openSync('R1.txt','w');
+	fs.writeFileSync(fd_R4,obj.R4);
+	fs.closeSync(fd_R4);
+
+	let fd_R5 = fs.openSync('R5.txt','w');
+	fs.writeFileSync(fd_R5,obj.R5);
+	fs.closeSync(fd_R5);
+
+	let fd_R6 = fs.openSync('R6.txt','w');
+	fs.writeFileSync(fd_R6,obj.R6);
+	fs.closeSync(fd_R6);
+
+	let fd_R7 = fs.openSync('R7.txt','w');
+	fs.writeFileSync(fd_R7,obj.R7);
+	fs.closeSync(fd_R7);
+
+	let fd_R8 = fs.openSync('R8.txt','w');
+	fs.writeFileSync(fd_R8,obj.R8);
+	fs.closeSync(fd_R8);
+
+	let fd_R9 = fs.openSync('R9.txt','w');
+	fs.writeFileSync(fd_R9,obj.R9);
+	fs.closeSync(fd_R9);
+
+	let fd_R10 = fs.openSync('R10.txt','w');
+	fs.writeFileSync(fd_R10,obj.R10);
+	fs.closeSync(fd_R10);
+
+	let fd_R11 = fs.openSync('R11.txt','w');
+	fs.writeFileSync(fd_R11,obj.R11);
+	fs.closeSync(fd_R11);
+
+	let fd_R12 = fs.openSync('R12.txt','w');
+	fs.writeFileSync(fd_R12,obj.R12);
+	fs.closeSync(fd_R12);
+
+	let fd_R13 = fs.openSync('R13.txt','w');
+	fs.writeFileSync(fd_R1,obj.R13);
+	fs.closeSync(fd_R13);
+
+	let fd_R14 = fs.openSync('R14.txt','w');
+	fs.writeFileSync(fd_R14,obj.R14);
+	fs.closeSync(fd_R14);
+
+	let fd_R15 = fs.openSync('R15.txt','w');
+	fs.writeFileSync(fd_R15,obj.R15);
+	fs.closeSync(fd_R15);
+
+	let fd_R16 = fs.openSync('R16.txt','w');
+	fs.writeFileSync(fd_R16,obj.R16);
+	fs.closeSync(fd_R16);
+
+	let fd_R17 = fs.openSync('R17.txt','w');
+	fs.writeFileSync(fd_R17,obj.R17);
+	fs.closeSync(fd_R17);
+
+	let fd_R18 = fs.openSync('R18.txt','w');
+	fs.writeFileSync(fd_R18,obj.R18);
+	fs.closeSync(fd_R18);
+
+	let fd_R19 = fs.openSync('R19.txt','w');
+	fs.writeFileSync(fd_R19,obj.R19);
+	fs.closeSync(fd_R19);
+
+	let fd_R20 = fs.openSync('R20.txt','w');
+	fs.writeFileSync(fd_R20,obj.R20);
+	fs.closeSync(fd_R20);
+
 	if(parseInt(fs.readFileSync('open_door.txt'))==1){
 	if(socket_hall) socket_hall.send('{"btn-uDoorOpen":1}');
 	let fd_ud = fs.openSync('open_door.txt','w');

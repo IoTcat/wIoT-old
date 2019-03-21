@@ -2,6 +2,7 @@
 include './functions.php';
 
 yimian__header("Yimian Home","This is a sample page for Yimian Home","Home, Yimian");
+
 yimian__headerEnd();
 ?>
 <h4>参考温度：<span id="temp"></span> &nbsp;&nbsp;&nbsp;&nbsp;参考亮度：<span id="Ls"></span></h4>
@@ -14,8 +15,11 @@ yimian__headerEnd();
 <h4>餐厅人数：<span id="dP"></span></h4>
 <h4>厨房人数：<span id="kP"></span></h4>
 <h4>走廊人数：<span id="hP"></span></h4>
+<p><a href="./chart.php">切换到图表界面</a></p>
 
 <h4><font color="red">注：以上仅是一个示例界面，所示数据已经过处理，不代表真实数据！</font></h4>
+
+
 <script>
 
 function action()
@@ -35,9 +39,7 @@ function action()
 		$('#dP').html(msg.dP+' 人');
 		$('#kP').html(msg.kP+' 人');
 		$('#hP').html(msg.hP+' 人');
-		
-		if(msg.tW<3) {$("#btn").hide();$('#btn').attr('disabled',"true");}
-		else {$("#btn").show();$('#btn').removeAttr("disabled");}
+
 	});
 }
 	
