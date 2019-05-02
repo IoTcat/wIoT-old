@@ -1,3 +1,11 @@
 {
-    "C_Cpp.errorSquiggles": "Disabled"
+    "C_Cpp.errorSquiggles": "Disabled",
+    "background.customImages": "https://api.yimian.xyz/moe",
+    "todo-tree.tags": [
+        "TODO",
+        "FIXME",
+        "tag",
+        "done",
+        "note"
+    ],
 }
