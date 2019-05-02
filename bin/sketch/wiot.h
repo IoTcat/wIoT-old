@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-02 21:20:48 
  * @Last Modified by: 
- * @Last Modified time: 2019-05-03 00:12:37
+ * @Last Modified time: 2019-05-03 01:19:26
  */
 
 #include <EEPROM.h>
@@ -23,8 +23,8 @@
 #define WIFI_STA_PSK  "1234567890"
 #endif
 
-const char* ssid = WIFI_STA_SSID;
-const char* password = WIFI_STA_PSK;
+String ssid = WIFI_STA_SSID;
+String password = WIFI_STA_PSK;
 const char* wiot_version = "v0.0.1";
 
 enum ModeType{AP, STA};
@@ -48,8 +48,8 @@ void serial_setup(){
 void eeprom_setup(){
 
     EEPROM.begin(5000);
-    EEPROM.write(64, 0);
-    EEPROM.commit();
+    //EEPROM.write(64, 0);
+    //EEPROM.commit();
 }
 
 void eeprom_insertStr(int start, int end, const String& s){
@@ -69,16 +69,16 @@ Serial.println("Write");
 String eeprom_readStr(int start, int end){
 
     Serial.println("Read");
-    int t[end-start];
+    char c[end-start];
     int i;
-    for(i = 0; i < end - start - 1; i++){
+    for(i = 0; EEPROM.read(start + i) != 0x00 && i < end - start - 1; i++){
         
-        t[i] = EEPROM.read(start + i);
-         Serial.println(t[i]);
+        c[i] = EEPROM.read(start + i);
+        Serial.println(c[i]);
     }
-    t[i] = 0;
-
-    return "";
+    c[i] = 0;
+    String s = c;
+    return s;
 }
 
 void wifi_setup(){
@@ -88,13 +88,15 @@ void wifi_setup(){
         //set wifi mode as AP
         WiFi.mode(WIFI_AP);
         WiFi.softAPConfig(IPAddress(192,168,0,1), IPAddress(192,168,0,1), IPAddress(255,255,255,0));
-        WiFi.softAP(("wiot-" + WiFi.macAddress()).c_str(),password,1);
+        WiFi.softAP(("wiot-" + WiFi.macAddress()).c_str(),password.c_str(),1);
         WiFi.begin();
         Mode = AP;
     }else{
+        ssid = eeprom_readStr(65, 98);
+        password = eeprom_readStr(98,162); 
         //set wifi mode as AP_STA
         WiFi.mode(WIFI_STA);
-        WiFi.begin(ssid, password);
+        WiFi.begin(ssid.c_str(), password.c_str());
         Mode = STA;
     }
 
@@ -110,17 +112,31 @@ void http_ap_root(){
     httpServer.send(200, "text/html", "<html><head><title>wIoT Config</title></head><body><h3>wIoT Client</h3><p>MAC Address: "+WiFi.macAddress()+"</p><p>wIoT Version: "+wiot_version+"</p><form action=\"/cmd\" method=\"get\"><p>Please Input the SSID of your WIFI:</p><input type=\"text\" name=\"ssid\"/><br/><p>Please Input the Password of your WIFI:</p><input type=\"text\" name=\"passwd\"/><br/><br/><input type=\"submit\" value=\"Submit\"/></form><p><font color=\"red\">You Only have ONE chance!! Please be Careful!!</font></p></body></html>");
 }
 
+void http_sta_root(){
+
+    httpServer.send(200, "text/html", "<html><head><title>wIoT Config</title></head><body><h3>wIoT Client</h3><p>MAC Address: "+WiFi.macAddress()+"</p><p>wIoT Version: "+wiot_version+"</p><p><font color=\"red\">Welcome to wIoT Client!!</font></p></body></html>");
+}
 
 void http_ap_cmd(){
 
     String t_ssid = httpServer.arg("ssid");
     String t_psk = httpServer.arg("passwd");
 
-    eeprom_insertStr(255, 355, t_ssid);
-    eeprom_insertStr(355, 455, t_psk);
-    String s = eeprom_readStr(255,270);
-    //if(s == "reset") ESP.restart();
-    httpServer.send(200, "text/html", "<html><head><title>wIoT Config</title></head><body>"+t_ssid+"||"+t_psk+"||"+s+"</body></html>");
+    eeprom_insertStr(65, 98, t_ssid);
+    eeprom_insertStr(98, 162, t_psk);
+    String s = eeprom_readStr(65, 98);
+    String p = eeprom_readStr(98,162); 
+
+    if(s == t_ssid && p == t_psk){
+
+        httpServer.send(200, "text/html", "<html><head><title>wIoT Config</title></head><body><p>Set Successfully!! Rebooting!!</p></body></html>");
+        delay(800);
+        EEPROM.write(64, 1);
+        EEPROM.commit();
+        ESP.restart();
+    }
+
+    httpServer.send(200, "text/html", "<html><head><title>wIoT Config</title></head><body><p>WiFi Set Failure!!</p></body></html>");
 }
 
 void http_setup(){
@@ -128,6 +144,7 @@ void http_setup(){
     if(Mode == STA){
         //OTA setup
         httpUpdater.setup(&httpServer);
+        httpServer.on("/", http_sta_root);
     }
 
     if(Mode == AP){
@@ -147,37 +164,21 @@ void http_setup(){
 
 
 
-int address = 4000;
-int value = 55;
+
 
 void setup() {
 
+    eeprom_setup();
     serial_setup();
     wifi_setup();
     http_setup();
-
-
 }
 
 
 
 
 void loop() {
-httpServer.handleClient();
-
- EEPROM.write(address, 1+EEPROM.read(address));
- value = EEPROM.read(address);
- EEPROM.commit();
-Serial.print(value,DEC);
-Serial.print("\n");
-delay(1000);
-
-
-
-
-
-
-/*
+httpServer.handleClient();/*
     EEPROM.write(0x01, 0x02);
     static String res = "";
     static String to = "";
