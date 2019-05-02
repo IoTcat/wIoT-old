@@ -6,6 +6,11 @@
 #include <ESP8266HTTPUpdateServer.h>
 
 
+#ifndef WEB_PORT
+#define WEB_PORT 80
+#endif
+
+
 #ifndef WIFI_STA_SSID
 #define WIFI_STA_SSID "wiot"
 #define WIFI_STA_PSK  "1234567890"
@@ -14,12 +19,13 @@
 const char* ssid = WIFI_STA_SSID;
 const char* password = WIFI_STA_PSK;
 
-enum ModeType{AP, STA}
+enum ModeType{AP, STA};
 ModeType Mode;
 
+void(* resetFunc) (void) = 0;
 
 /********** Web Server ***********/
-ESP8266WebServer httpServer(80);
+ESP8266WebServer httpServer(WEB_PORT);
 ESP8266HTTPUpdateServer httpUpdater;
 
 
@@ -35,6 +41,8 @@ void serial_setup(){
 void eeprom_setup(){
 
     EEPROM.begin(5000);
+    EEPROM.write(64, 0);
+    EEPROM.commit();
 }
 
 
@@ -44,6 +52,7 @@ void wifi_setup(){
     if(!EEPROM.read(64)){
         //set wifi mode as AP
         WiFi.mode(WIFI_AP);
+        WiFi.softAPConfig(IPAddress(192,168,0,1), IPAddress(192,168,0,1), IPAddress(255,255,255,0));
         WiFi.softAP(("wiot-" + WiFi.macAddress()).c_str(),password,1);
         WiFi.begin();
         Mode = AP;
@@ -61,15 +70,30 @@ void wifi_setup(){
     }
 }
 
+void http_ap_root(){
+
+    String s = httpServer.arg("abc");
+    if(s == "reset") resetFunc();
+    httpServer.send(200, "text/html", "<html><head><title>wIoT Config</title></head><body>"+s+"</body></html>");
+}
+
 
 void http_setup(){
 
     if(Mode == STA){
         //OTA setup
         httpUpdater.setup(&httpServer);
-        //httpserver begin
-        httpServer.begin();
     }
+
+    if(Mode == AP){
+        //mini dns
+        //MDNS.begin("wiot");
+        //MDNS.addService("http", "tcp", WEB_PORT);
+        httpServer.on("/", http_ap_root);
+    }
+
+    //httpserver begin
+    httpServer.begin();
 }
 
 
