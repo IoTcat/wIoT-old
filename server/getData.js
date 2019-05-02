@@ -837,7 +837,7 @@ function l_hal(obj)
 
 function l_din(obj)
 {
-	if(/*obj.R8||*/obj.R13||obj.R14||obj.R15||obj.R16||obj.R17||obj.R18) return 1;
+	if(/*obj.R8||*/obj.R13||obj.R14||/*obj.R15||*/obj.R16||obj.R17||obj.R18) return 1;
 	else return 0;
 }
 	
