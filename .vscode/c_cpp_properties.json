@@ -3,6 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
+                "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\**",
                 "${workspaceFolder}/**"
             ],
             "defines": [
@@ -13,7 +14,8 @@
             "compilerPath": "C:\\TDM-GCC-64\\bin\\gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64"
+            "intelliSenseMode": "clang-x64",
+            "forcedInclude": []
         }
     ],
     "version": 4

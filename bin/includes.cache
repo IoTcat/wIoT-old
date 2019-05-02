@@ -1,0 +1,162 @@
+[
+  {
+    "Sourcefile": "",
+    "Include": "",
+    "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\cores\\esp8266"
+  },
+  {
+    "Sourcefile": "",
+    "Include": "",
+    "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\variants\\d1_mini"
+  },
+  {
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Include": "EEPROM.h",
+    "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\EEPROM"
+  },
+  {
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Include": "ESP8266WiFi.h",
+    "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src"
+  },
+  {
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Include": "ESP8266WebServer.h",
+    "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WebServer\\src"
+  },
+  {
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Include": "ESP8266mDNS.h",
+    "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266mDNS"
+  },
+  {
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Include": "ESP8266HTTPUpdateServer.h",
+    "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266HTTPUpdateServer\\src"
+  },
+  {
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\EEPROM\\EEPROM.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\BearSSLHelpers.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\CertStoreBearSSL.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\ESP8266WiFi.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiAP.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiGeneric.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiMulti.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiSTA-WPS.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiSTA.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiScan.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\WiFiClient.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\WiFiClientSecureAxTLS.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\WiFiClientSecureBearSSL.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\WiFiServer.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\WiFiServerSecureAxTLS.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\WiFiServerSecureBearSSL.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src\\WiFiUdp.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WebServer\\src\\ESP8266WebServer.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WebServer\\src\\ESP8266WebServerSecureAxTLS.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WebServer\\src\\ESP8266WebServerSecureBearSSL.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WebServer\\src\\Parsing.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WebServer\\src\\detail\\mimetable.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266mDNS\\ESP8266mDNS.cpp",
+    "Include": "",
+    "Includepath": ""
+  },
+  {
+    "Sourcefile": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266HTTPUpdateServer\\src\\ESP8266HTTPUpdateServer.cpp",
+    "Include": "",
+    "Includepath": ""
+  }
+]

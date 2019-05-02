@@ -1,0 +1,8 @@
+{
+    "board": "esp8266:esp8266:d1_mini",
+    "configuration": "xtal=80,vt=flash,eesz=4M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=921600",
+    "sketch": "client\\wemos_D1_mini\\wemos_D1_mini.ino",
+    "port": "COM3",
+    "output": "./bin",
+    "programmer": "AVRISP mkII"
+}
