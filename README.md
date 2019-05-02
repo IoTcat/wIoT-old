@@ -6,5 +6,6 @@ wIoT let developers do not need to consider how to program the MCU and how the s
 
 ## Demo
 A simple demo can be accessed from http://home.yimian.xyz/display.php</br>
+A demo with chart can be found on http://home.yimian.xyz/chart.php</br>
 In this demo page, instant data collected from WIFIduinos are displayed while they are inserted into database.</br>
 
