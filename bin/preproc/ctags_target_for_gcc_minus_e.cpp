@@ -8,10 +8,7 @@
  */
 
 
-
-
-
-# 13 "e:\\Arduino_project\\wIoT\\client\\wemos_D1_mini\\wemos_D1_mini.ino" 2
+# 10 "e:\\Arduino_project\\wIoT\\client\\wemos_D1_mini\\wemos_D1_mini.ino" 2
 
 
 // Create an instance of the server

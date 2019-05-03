@@ -71,10 +71,23 @@ String eeprom_readStr(int start, int end) {
     return s;
 }
 
+auto _pin(int i){
+    if(i == 1) return D1;
+    if(i == 2) return D2;
+    if(i == 3) return D3;
+    if(i == 4) return D4;
+    if(i == 5) return D5;
+    if(i == 6) return D6;
+    if(i == 7) return D7;
+    if(i == 8) return D8;
+}
 
 void reset_core() {
     if (digitalRead(D0) == HIGH) {
-        EEPROM.write(64, 0x00);
+        for(int i =64; i < 180; i ++){
+
+        EEPROM.write(i, 0x00);
+        }
         EEPROM.commit();
         for (int i = 0; i < 10; i++) {
             Serial.println("Reseting...");
@@ -83,9 +96,23 @@ void reset_core() {
         ESP.restart();
     }
 }
+
+void pin_setup() {
+    for (int i = 1; i < 9; i++) {
+        if (EEPROM.read(162 + i) == 0) pinMode(_pin(i), INPUT);
+        if (EEPROM.read(162 + i) == 1) pinMode(_pin(i), OUTPUT);
+        if (EEPROM.read(162 + i) == 2) pinMode(_pin(i), INPUT_PULLUP);
+    }
+}
+
 void wifi_setup() {
     // check the mode
-    if (!EEPROM.read(64)) {
+    int cnt = 0;
+    for(int i = 65; i < 179; i ++){
+        cnt += EEPROM.read(i);        
+    }
+    Serial.println(cnt);
+    if (!cnt) {
         Serial.println("AP Mode");
         // set wifi mode as AP
         WiFi.mode(WIFI_AP);
@@ -138,6 +165,95 @@ void http_sta_root() {
             "Client!!</font></p></body></html>");
 }
 
+void http_sta_get() {
+
+String s = "{\"D1\": ";
+s += digitalRead(D1);
+s += ", \"D2\": ";
+s += digitalRead(D2);
+s += ", \"D3\": ";
+s += digitalRead(D3);
+s += ", \"D4\": ";
+s += digitalRead(D4);
+s += ", \"D5\": ";
+s += digitalRead(D5);
+s += ", \"D6\": ";
+s += digitalRead(D6);
+s += ", \"D7\": ";
+s += digitalRead(D7);
+s += ", \"D8\": ";
+s += digitalRead(D8);
+s += ", \"A0\": ";
+s += analogRead(A0);
+s += "}";
+
+
+httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
+    s);
+}
+
+void http_sta_set(){
+    String t_pin = httpServer.arg("pin");
+    String t_output = httpServer.arg("output");
+
+    int pin = atoi(t_pin.c_str());
+    int val = atoi(t_output.c_str());
+    String state, msg;
+    state = "failure";
+    msg = "Illegal Pins !";
+
+    if (pin > 0 && pin < 9 && EEPROM.read(162+pin) == 1) {
+        msg = "Illegal Output Value!!";
+        if(val >= 0 && val <= 255){
+            analogWrite(_pin(pin), val);
+            state = "success";
+            msg = "Set Successfully!!";
+        }
+    }
+
+     httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
+                    "{\"state\": \"" + state + "\",\"msg\": \"" + msg + "\"}");
+ 
+}
+
+void http_sta_pinmode() {
+    String t_pin = httpServer.arg("pin");
+    String t_mode = httpServer.arg("mode");
+
+    int pin = atoi(t_pin.c_str());
+    String state, msg;
+    state = "failure";
+    msg = "Illegal Pins !";
+
+    if (pin > 0 && pin < 9) {
+        msg = "Illegal Mode Name!!";
+        if (t_mode == "INPUT") {
+            EEPROM.write(162 + pin, 0);
+            state = "success";
+            msg = "Set INPUT Mode Successfully!!";
+        }
+        if (t_mode == "OUTPUT") {
+            EEPROM.write(162 + pin, 1);
+            state = "success";
+            msg = "Set OUTPUT Mode Successfully!!";
+        }
+        if (t_mode == "INPUT_PULLUP") {
+            EEPROM.write(162 + pin, 2);
+            state = "success";
+            msg = "Set INPUT_PULLUP Mode Successfully!!";
+        }
+
+        EEPROM.commit();
+        httpServer.send(
+            200, "application/json\r\nAccess-Control-Allow-Origin: *",
+            "{\"state\": \"" + state + "\",\"msg\": \"" + msg + "\"}");
+        delay(100);
+        if(state == "success") ESP.restart();
+    }
+    httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
+                    "{\"state\": \"" + state + "\",\"msg\": \"" + msg + "\"}");
+}
+
 void http_ap_cmd() {
     String t_ssid = httpServer.arg("ssid");
     String t_psk = httpServer.arg("passwd");
@@ -169,6 +285,9 @@ void http_setup() {
         // OTA setup
         httpUpdater.setup(&httpServer);
         httpServer.on("/", http_sta_root);
+        httpServer.on("/pinmode", http_sta_pinmode);
+        httpServer.on("/get", http_sta_get);
+        httpServer.on("/set", http_sta_set);
     }
 
     if (Mode == AP) {
@@ -183,23 +302,21 @@ void http_setup() {
     httpServer.begin();
 }
 
-void reset_setup(){
-    pinMode(D0, INPUT_PULLUP);
-}
+void reset_setup() { pinMode(D0, INPUT); }
 
 void setup() {
     eeprom_setup();
     reset_setup();
+    pin_setup();
     serial_setup();
     wifi_setup();
     http_setup();
 }
 
 void loop() {
-
     reset_core();
-    httpServer.handleClient(); 
-    
+    httpServer.handleClient();
+
     /*
          EEPROM.write(0x01, 0x02);
          static String res = "";
@@ -213,6 +330,7 @@ void loop() {
          }
 
          
+
 
 
 
