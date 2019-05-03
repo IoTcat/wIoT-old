@@ -1,8 +1,8 @@
 /*
  * @Author: IoTcat (https://iotcat.me)
  * @Date: 2019-05-02 21:20:48
- * @Last Modified by:
- * @Last Modified time: 2019-05-03 01:19:26
+ * @Last Modified by: 
+ * @Last Modified time: 2019-05-04 01:26:44
  */
 
 #include <EEPROM.h>
@@ -84,14 +84,17 @@ auto _pin(int i){
 
 void reset_core() {
     if (digitalRead(D0) == HIGH) {
+        delay(1000);
+        if(digitalRead(D0) == HIGH)
         for(int i =64; i < 180; i ++){
 
         EEPROM.write(i, 0x00);
         }
         EEPROM.commit();
         for (int i = 0; i < 10; i++) {
+            
             Serial.println("Reseting...");
-            delay(500);
+            delay(5000);
         }
         ESP.restart();
     }
@@ -101,7 +104,7 @@ void pin_setup() {
     for (int i = 1; i < 9; i++) {
         if (EEPROM.read(162 + i) == 0) pinMode(_pin(i), INPUT);
         if (EEPROM.read(162 + i) == 1) pinMode(_pin(i), OUTPUT);
-        if (EEPROM.read(162 + i) == 2) pinMode(_pin(i), INPUT_PULLUP);
+        if (EEPROM.read(162 + i) == 2) pinMode(_pin(i), INPUT);
     }
 }
 
@@ -192,6 +195,31 @@ httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
     s);
 }
 
+void http_sta_getPinMode() {
+
+String s = "{\"D1\": ";
+s += EEPROM.read(163);
+s += ", \"D2\": ";
+s += EEPROM.read(164);
+s += ", \"D3\": ";
+s += EEPROM.read(165);
+s += ", \"D4\": ";
+s += EEPROM.read(166);
+s += ", \"D5\": ";
+s += EEPROM.read(167);
+s += ", \"D6\": ";
+s += EEPROM.read(168);
+s += ", \"D7\": ";
+s += EEPROM.read(169);
+s += ", \"D8\": ";
+s += EEPROM.read(170);
+s += "}";
+
+
+httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
+    s);
+}
+
 void http_sta_set(){
     String t_pin = httpServer.arg("pin");
     String t_output = httpServer.arg("output");
@@ -216,7 +244,7 @@ void http_sta_set(){
  
 }
 
-void http_sta_pinmode() {
+void http_sta_pinMode() {
     String t_pin = httpServer.arg("pin");
     String t_mode = httpServer.arg("mode");
 
@@ -247,11 +275,33 @@ void http_sta_pinmode() {
         httpServer.send(
             200, "application/json\r\nAccess-Control-Allow-Origin: *",
             "{\"state\": \"" + state + "\",\"msg\": \"" + msg + "\"}");
-        delay(100);
-        if(state == "success") ESP.restart();
+        //delay(100);
+        //if(state == "success") ESP.restart();
     }
     httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
                     "{\"state\": \"" + state + "\",\"msg\": \"" + msg + "\"}");
+}
+
+void http_sta_reset(){
+httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
+                    "{\"state\": \"success\",\"msg\": \"Resetting..\"}");
+
+    ESP.restart();
+}
+
+String IpAddress2String(const IPAddress& ipAddress)
+{
+  return String(ipAddress[0]) + String(".") +\
+  String(ipAddress[1]) + String(".") +\
+  String(ipAddress[2]) + String(".") +\
+  String(ipAddress[3])  ; 
+}
+
+void http_sta_getMac(){
+    
+httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
+                    "{\"IP\": \""+IpAddress2String(WiFi.localIP())+"\", \"MAC\": \""+WiFi.macAddress()+"\"}");
+
 }
 
 void http_ap_cmd() {
@@ -285,9 +335,12 @@ void http_setup() {
         // OTA setup
         httpUpdater.setup(&httpServer);
         httpServer.on("/", http_sta_root);
-        httpServer.on("/pinmode", http_sta_pinmode);
+        httpServer.on("/pinMode", http_sta_pinMode);
         httpServer.on("/get", http_sta_get);
         httpServer.on("/set", http_sta_set);
+        httpServer.on("/reset", http_sta_reset);
+        httpServer.on("/getPinMode", http_sta_getPinMode);
+        httpServer.on("/getMac", http_sta_getMac);
     }
 
     if (Mode == AP) {
@@ -296,13 +349,19 @@ void http_setup() {
         // MDNS.addService("http", "tcp", WEB_PORT);
         httpServer.on("/", http_ap_root);
         httpServer.on("/cmd", http_ap_cmd);
+        httpServer.on("/pinMode", http_sta_pinMode);
+        httpServer.on("/get", http_sta_get);
+        httpServer.on("/set", http_sta_set);
+        httpServer.on("/reset", http_sta_reset);
+        httpServer.on("/getPinMode", http_sta_getPinMode);
+        httpServer.on("/getMac", http_sta_getMac);
     }
 
     // httpserver begin
     httpServer.begin();
 }
 
-void reset_setup() { pinMode(D0, INPUT); }
+void reset_setup() { pinMode(D0, INPUT_PULLUP); }
 
 void setup() {
     eeprom_setup();
@@ -317,54 +376,4 @@ void loop() {
     reset_core();
     httpServer.handleClient();
 
-    /*
-         EEPROM.write(0x01, 0x02);
-         static String res = "";
-         static String to = "";
-         static unsigned long t= millis();
-
-         if(millis() > t + 25){
-             if(Serial.available() > 0) to = Serial.readStringUntil('\n');
-             Serial.println(res);
-             t = millis();
-         }
-
-         
-
-
-
-
-
-         // Check if a client has connected
-         WiFiClient client = server.available();
-         if (!client) {
-             return;
-         }
-
-
-         client.setTimeout(5000); // default is 1000
-
-         // Read the first line of the request
-         String req = client.readStringUntil('\r');
-
-         char res_char[8];
-
-         if (req.indexOf(F("/cmd/")) != -1){
-
-             const char *t_req = req.c_str();
-             res = "";
-             for(int i = 0; i < 8; i++) res_char[i] = t_req[10+i];
-             res = res_char;
-         }
-
-
-         while (client.available()) {
-
-             client.read();
-         }
-
-         client.print(F("HTTP/1.1 200 OK\r\nContent-Type:
-         application/json\r\nAccess-Control-Allow-Origin: *\r\n\r\n" ));
-         client.print(EEPROM.read(0x01));
-     */
 }
