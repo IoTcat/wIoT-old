@@ -15,5 +15,5 @@
 
 
 // Create an instance of the server
-// specify the port to listen on as an argument
+// specify The port to listen on as an argument
 //WiFiServer server(80);
