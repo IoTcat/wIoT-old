@@ -8,4 +8,5 @@
         "done",
         "note"
     ],
+    "git.ignoreLimitWarning": true,
 }

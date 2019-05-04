@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: 
- * @Last Modified time: 2019-05-04 19:12:58
+ * @Last Modified time: 2019-05-04 22:13:39
  */
 var wiot = function (o_params) {
     var o = {
@@ -20,18 +20,13 @@ var wiot = function (o_params) {
         hint: true,
         debug: false,
         on: () => {},
-
         OUTPUT: 1,
         INPUT: 0,
         INPUT_PULLUP: 2,
         HIGH: 1,
         LOW: 0,
-
-
-
-
-        obj: {},
-        ip: "",
+        data: {},
+        ip: "default",
         version: "",
         errDelayTime: 500,
         okDelayTime: 200,
@@ -39,14 +34,10 @@ var wiot = function (o_params) {
         noTryMaxTime: 60000,
         reScanIpTime: 5000,
         MaxToReScanTime: 180000,
-
-
         LastConnectTime: Date.parse(new Date()),
         isConnected: false,
         LastTryTime: Date.parse(new Date()),
         firstReady: 0,
-
-
         pinCmd: {
             D1: 0,
             D2: 0,
@@ -57,79 +48,29 @@ var wiot = function (o_params) {
             D7: 0,
             D8: 0
         }
+    };
 
-    }
-
+    /* merge paras */
     if (typeof o_params.pin != undefined) {
         o_params.pin = Object.assign(o.pin, o_params.pin);
     }
     Object.assign(o, o_params);
 
-
+    /* require packages */
     var http = require('http');
     var urlExists = require('url-exists');
     var net = require('net');
     var arp = require('@network-utils/arp-lookup');
 
-
-
-
-
-
-
-
-
-
-
-
-    function http_error_callback(callback = () => {}) {
-        callback();
-    }
-
-    function http_connected_callback(callback = () => {}) {
-        callback();
-    }
-
-
-    function lstn() {
-        setInterval(() => {
-            urlExists('http://' + o.ip + '/get', (err, exists) => {
-                if (o.isConnected != exists) {
-                    if (exists == true) {
-                        http_connected_callback();
-                    } else {
-                        http_error_callback();
-                    }
-                }
-                if (!exists && o.LastConnectTime + o.MaxToReScanTime < Date.parse(new Date())) {
-                    ini();
-                } else if (exists && o.LastTryTime + o.noTryMaxTime < Date.parse(new Date())) {
-                    core();
-                }
-                o.isConnected = exists;
-                if (o.debug) console.log('Exist: ' + exists);
-
-            });
-        }, 1000);
-
-    }
-
-    function http_ok() {
-        setTimeout(core, o.okDelayTime);
-    }
-
-    function http_error() {
-        setTimeout(core, o.errDelayTime);
-    }
-
-    function IsJsonString(str) {
+    /* tools */
+    var IsJsonString = (str) => {
         try {
             JSON.parse(str);
         } catch (e) {
             return false;
         }
         return true;
-    }
+    };
 
     var get_sync_url = () => {
         var s = 'http://' + o.ip + '/sync?D1=';
@@ -150,23 +91,72 @@ var wiot = function (o_params) {
         s += o.pinCmd.D8;
 
         return s;
+    };
+
+    var getVersion = () => {
+        if (o.isConnected) {
+            http_request('http://' + o.ip + '/getVersion', (res) => {
+                o.version = res.version;
+                if (o.debug) {
+                    console.log('Version: ' + o.version);
+                }
+            }, getVersion);
+            return;
+        }
+        setTimeout(getVersion, o.errDelayTime);
+    };
+
+
+    async function getMAC() {
+        await arp.toIP(o.MAC).then((val) => {
+            if(val != null && o.ip=="default") //mac
+                o.ip = val;
+
+            if (o.debug) console.log('Found MAC: ' + o.MAC + '  from IP: ' + val);
+            lstn();
+            setup();
+        }, (err) => {
+
+            if (o.debug) console.log(err);
+            setTimeout(getMAC, o.errDelayTime);
+        });
     }
 
 
-    function http_update() {
+
+    /* http functions */
+    var http_error_callback = (callback = () => {}) => {
+        callback();
+    };
+
+    var http_connected_callback = (callback = () => {}) => {
+        callback();
+    };
+
+
+    var http_ok = () => {
+        setTimeout(core, o.okDelayTime);
+    };
+
+    var http_error = () => {
+        setTimeout(core, o.errDelayTime);
+    };
+
+
+    var http_update = () => {
         http_request(get_sync_url(), http_update_success, http_update_err);
-    }
+    };
 
-    function http_update_success(res) {
-        o.obj = res;
+    var http_update_success = (res) => {
+        o.data = res;
         http_ok();
-    }
+    };
 
-    function http_update_err(err) {
+    var http_update_err = () => {
         http_error();
-    }
+    };
 
-    function http_request(url, callback = (res) => {}, err = (e) => {}) {
+    var http_request = (url, callback = () => {}, err = () => {}) => {
 
         if (o.isConnected) {
             o.LastTryTime = Date.parse(new Date());
@@ -190,24 +180,11 @@ var wiot = function (o_params) {
         } else {
             http_error();
         }
-    }
-
-    function core() {
+    };
 
 
-
-        http_update();
-
-        if (!o.firstReady && o.ready()) {
-            o.on();
-            o.firstReady = 1;
-            if (o.hint) console.log('wIoT - ' + o.MAC + ': Connected!!');
-        }
-        if (o.debug) console.log(o.obj);
-    }
-
-
-    function setPinMode(pin, mode) {
+    /* pin Mode */
+    var setPinMode = (pin, mode) => {
         if (pin < 1 || pin > 8) throw "Illegal Pin Number!!";
         if (mode == o.INPUT_PULLUP || mode == 2) {
             mode = "INPUT_PULLUP";
@@ -218,10 +195,10 @@ var wiot = function (o_params) {
         }
         http_request('http://' + o.ip + '/pinMode?pin=' + pin + '&mode=' + mode);
 
-    }
+    };
 
 
-    function http_update_pin() {
+    var http_update_pin = () => {
         if (o.isConnected) {
             http_request('http://' + o.ip + '/getPinMode', (res) => {
                 if (JSON.stringify(o.pin) != JSON.stringify(res)) {
@@ -245,15 +222,16 @@ var wiot = function (o_params) {
                 setTimeout(() => {
                     core();
                 }, o.resetDelayTime + o.errDelayTime);
-            }, (e) => {
+            }, () => {
                 setTimeout(http_update_pin, o.errDelayTime);
             });
 
         } else {
             setTimeout(http_update_pin, o.errDelayTime);
         }
-    }
+    };
 
+    /* pin write */
     o.analogWrite = (pin, out, callback = () => {}, err = () => {}) => {
         if (!isNaN(pin)) pin = 'D' + pin;
         if (isNaN(out)) out = 0;
@@ -262,7 +240,7 @@ var wiot = function (o_params) {
 
         if (o.hint && o.pinCmd[pin] != out) console.log('wIoT - ' + o.MAC + ': Write Value ' + out + ' to ' + pin);
         o.pinCmd[pin] = out;
-    }
+    };
 
     o.digitalWrite = (pin, out, callback = () => {}, err = () => {}) => {
         if (out == o.HIGH || out == "HIGH" || out == 1) {
@@ -271,18 +249,18 @@ var wiot = function (o_params) {
             out = 0;
         }
         o.analogWrite(pin, out, callback, err);
-    }
+    };
 
-
+    /* pin read and write */
     o.digitalRead = (pin) => {
         if (!isNaN(pin)) pin = 'D' + pin;
-        return o.obj[pin];
-    }
+        return o.data[pin];
+    };
 
     o.analogRead = (pin = "A0") => {
         if (!isNaN(pin)) pin = 'A' + pin;
-        return o.obj["A0"];
-    }
+        return o.data.A0;
+    };
 
     o.read = function (pin) {
         if (isNaN(pin)) {
@@ -298,58 +276,49 @@ var wiot = function (o_params) {
                 return o.analogRead(pin);
             }
         }
-    }
+    };
 
     o.write = (pin, out, callback = () => {}, err = () => {}) => {
         o.analogWrite(pin, out, callback, err);
-    }
-
-    function getVersion() {
-        if (o.isConnected) {
-            http_request('http://' + o.ip + '/getVersion', (res) => {
-                o.version = res.version;
-                if (o.debug) {
-                    console.log('Version: ' + o.version);
-                }
-            }, getVersion);
-            return;
-        }
-        setTimeout(getVersion, o.errDelayTime);
-    }
-
+    };
     o.ready = function () {
-        if (!o.isConnected || JSON.stringify(o.obj) == JSON.stringify({})) {
+        if (!o.isConnected || JSON.stringify(o.data) == JSON.stringify({})) {
             return false;
         }
         return true;
-    }
+    };
 
-    async function getMAC() {
-        await arp.toIP(o.MAC).then((val) => {
-
-            o.ip = val;
-
-            if (o.debug) console.log('Found MAC: ' + o.MAC + '  from IP: ' + val);
-            lstn();
-            setup();
-        }, (err) => {
-
-            if (o.debug) console.log(err);
-            setTimeout(getMAC, o.errDelayTime);
-        })
-    }
-
-
+   /* exc functions */
     var ini = function () {
 
-        ;
         getMAC();
+    };
+    
+    var lstn = () => {
+        setInterval(() => {
+            urlExists('http://' + o.ip + '/get', (err, exists) => {
+                if (o.isConnected != exists) {
+                    if (exists == true) {
+                        http_connected_callback();
+                    } else {
+                        http_error_callback();
+                    }
+                }
+                if (!exists && o.LastConnectTime + o.MaxToReScanTime < Date.parse(new Date())) {
+                    ini();
+                } else if (exists && o.LastTryTime + o.noTryMaxTime < Date.parse(new Date())) {
+                    core();
+                }
+                o.isConnected = exists;
+                if (o.debug) console.log('Exist: ' + exists+' From IP: '+o.ip);
+
+            });
+        }, 1000);
+
+    };
 
 
-
-    }
-
-    function setup() {
+    var setup = () => {
 
         if (o.isConnected) {
 
@@ -359,11 +328,26 @@ var wiot = function (o_params) {
         }
 
         setTimeout(setup, o.errDelayTime);
-    }
+    };
 
+
+    var core = () => {
+
+        http_update();
+
+        if (!o.firstReady && o.ready()) {
+            o.on();
+            o.firstReady = 1;
+            if (o.hint) console.log('wIoT - ' + o.MAC + ': Connected!!');
+        }
+        if (o.debug) console.log(o.data);
+    };
+
+    /* exc cmd */
     ini();
+
     return o;
 
-}
+};
 
 exports.client = wiot;
