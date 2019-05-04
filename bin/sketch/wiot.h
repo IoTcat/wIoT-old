@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me)
  * @Date: 2019-05-02 21:20:48
  * @Last Modified by: 
- * @Last Modified time: 2019-05-04 01:26:44
+ * @Last Modified time: 2019-05-04 15:54:01
  */
 
 #include <EEPROM.h>
@@ -23,7 +23,7 @@
 
 String ssid = WIFI_STA_SSID;
 String password = WIFI_STA_PSK;
-const char* wiot_version = "v0.0.1";
+const String wiot_version = "v0.0.1";
 
 enum ModeType { AP, STA };
 ModeType Mode;
@@ -244,6 +244,47 @@ void http_sta_set(){
  
 }
 
+void http_sta_sync(){
+
+    for(int i = 1; i <= 8; i ++){
+
+        String t_ts = "D";
+        t_ts += i;
+        String t_s = httpServer.arg(t_ts);
+        int val = atoi(t_s.c_str());
+
+        if(EEPROM.read(162+i) == 1){
+            analogWrite(_pin(i), val);
+        }
+    }
+
+ 
+String s = "{\"D1\": ";
+s += digitalRead(D1);
+s += ", \"D2\": ";
+s += digitalRead(D2);
+s += ", \"D3\": ";
+s += digitalRead(D3);
+s += ", \"D4\": ";
+s += digitalRead(D4);
+s += ", \"D5\": ";
+s += digitalRead(D5);
+s += ", \"D6\": ";
+s += digitalRead(D6);
+s += ", \"D7\": ";
+s += digitalRead(D7);
+s += ", \"D8\": ";
+s += digitalRead(D8);
+s += ", \"A0\": ";
+s += analogRead(A0);
+s += "}";
+
+
+httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
+    s);
+}
+
+
 void http_sta_pinMode() {
     String t_pin = httpServer.arg("pin");
     String t_mode = httpServer.arg("mode");
@@ -303,6 +344,13 @@ httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
                     "{\"IP\": \""+IpAddress2String(WiFi.localIP())+"\", \"MAC\": \""+WiFi.macAddress()+"\"}");
 
 }
+void http_sta_getVersion(){
+    
+httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
+                    "{\"version\": \""+wiot_version+"\"}");
+
+}
+
 
 void http_ap_cmd() {
     String t_ssid = httpServer.arg("ssid");
@@ -331,17 +379,12 @@ void http_ap_cmd() {
 }
 
 void http_setup() {
+
+        httpUpdater.setup(&httpServer);
     if (Mode == STA) {
         // OTA setup
-        httpUpdater.setup(&httpServer);
         httpServer.on("/", http_sta_root);
-        httpServer.on("/pinMode", http_sta_pinMode);
-        httpServer.on("/get", http_sta_get);
-        httpServer.on("/set", http_sta_set);
-        httpServer.on("/reset", http_sta_reset);
-        httpServer.on("/getPinMode", http_sta_getPinMode);
-        httpServer.on("/getMac", http_sta_getMac);
-    }
+   }
 
     if (Mode == AP) {
         // mini dns
@@ -349,14 +392,16 @@ void http_setup() {
         // MDNS.addService("http", "tcp", WEB_PORT);
         httpServer.on("/", http_ap_root);
         httpServer.on("/cmd", http_ap_cmd);
+   }
         httpServer.on("/pinMode", http_sta_pinMode);
         httpServer.on("/get", http_sta_get);
         httpServer.on("/set", http_sta_set);
         httpServer.on("/reset", http_sta_reset);
         httpServer.on("/getPinMode", http_sta_getPinMode);
         httpServer.on("/getMac", http_sta_getMac);
-    }
-
+        httpServer.on("/getVersion", http_sta_getVersion);
+        httpServer.on("/sync", http_sta_sync);
+ 
     // httpserver begin
     httpServer.begin();
 }
