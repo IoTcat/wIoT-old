@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: 
- * @Last Modified time: 2019-05-04 22:13:39
+ * @Last Modified time: 2019-05-05 00:59:56
  */
 var wiot = function (o_params) {
     var o = {
@@ -28,12 +28,13 @@ var wiot = function (o_params) {
         data: {},
         ip: "default",
         version: "",
-        errDelayTime: 500,
-        okDelayTime: 200,
-        resetDelayTime: 7000,
+        errDelayTime: 2000,
+        okDelayTime: 30,
+        resetDelayTime: 4500,
         noTryMaxTime: 60000,
-        reScanIpTime: 5000,
+        IntervalTime: 2000,
         MaxToReScanTime: 180000,
+        pingTimeout: 2,
         LastConnectTime: Date.parse(new Date()),
         isConnected: false,
         LastTryTime: Date.parse(new Date()),
@@ -58,9 +59,10 @@ var wiot = function (o_params) {
 
     /* require packages */
     var http = require('http');
-    var urlExists = require('url-exists');
+    //var urlExists = require('url-exists');
     var net = require('net');
     var arp = require('@network-utils/arp-lookup');
+    var ping = require('ping');
 
     /* tools */
     var IsJsonString = (str) => {
@@ -121,7 +123,6 @@ var wiot = function (o_params) {
             setTimeout(getMAC, o.errDelayTime);
         });
     }
-
 
 
     /* http functions */
@@ -290,58 +291,87 @@ var wiot = function (o_params) {
 
    /* exc functions */
     var ini = function () {
-
+        if(o.hint) console.log('wiot - '+o.MAC+': init...');
         getMAC();
     };
     
-    var lstn = () => {
-        setInterval(() => {
-            urlExists('http://' + o.ip + '/get', (err, exists) => {
-                if (o.isConnected != exists) {
-                    if (exists == true) {
-                        http_connected_callback();
-                    } else {
-                        http_error_callback();
+    async function lstn() {
+        setInterval(async () => {
+            if(o.LastConnectTime + o.errDelayTime > Date.parse(new Date())){
+                o.isConnected = true;
+                http_connected_callback();
+                return;
+                }
+                ping.promise.probe(o.ip, {
+                        timeout: o.pingTimeout
+                    }).then(function (res) {
+                     if (o.isConnected != res.alive) {
+                        if (res.alive == true) {
+                            o.LastConnectTime = Date.parse(new Date());
+                            http_connected_callback();
+                        } else {
+                            http_error_callback();
+                        }
                     }
-                }
-                if (!exists && o.LastConnectTime + o.MaxToReScanTime < Date.parse(new Date())) {
-                    ini();
-                } else if (exists && o.LastTryTime + o.noTryMaxTime < Date.parse(new Date())) {
-                    core();
-                }
-                o.isConnected = exists;
-                if (o.debug) console.log('Exist: ' + exists+' From IP: '+o.ip);
+                    if (!res.alive && o.LastConnectTime + o.MaxToReScanTime < Date.parse(new Date())) {
+                        ini();
+                    } else if (res.alive && o.LastTryTime + o.noTryMaxTime < Date.parse(new Date())) {
+                        core();
+                    }
+                    o.isConnected = res.alive;
+                    if (o.debug) console.log('Exist: ' + res.alive + ' From IP: ' + o.ip);
 
-            });
-        }, 1000);
+                            
+                });
 
-    };
+/*
+                await urlExists('http://' + o.ip + '/get', (err, exists) => {
+                    if (o.isConnected != exists) {
+                        if (exists == true) {
+                            o.LastConnectTime = Date.parse(new Date());
+                            http_connected_callback();
+                        } else {
+                            http_error_callback();
+                        }
+                    }
+                    if (!exists && o.LastConnectTime + o.MaxToReScanTime < Date.parse(new Date())) {
+                        ini();
+                    } else if (exists && o.LastTryTime + o.noTryMaxTime < Date.parse(new Date())) {
+                        core();
+                    }
+                    o.isConnected = exists;
+                    if (o.debug) console.log('Exist: ' + exists + ' From IP: ' + o.ip);
+
+                });*/
+                }, o.IntervalTime);
+
+                };
 
 
-    var setup = () => {
+                var setup = () => {
 
-        if (o.isConnected) {
+                    if (o.isConnected) {
 
-            getVersion();
-            http_update_pin();
-            return;
-        }
+                        getVersion();
+                        http_update_pin();
+                        return;
+                    }
 
-        setTimeout(setup, o.errDelayTime);
-    };
+                    setTimeout(setup, o.errDelayTime);
+                };
 
 
-    var core = () => {
+                var core = () => {
 
-        http_update();
+                    http_update();
 
-        if (!o.firstReady && o.ready()) {
-            o.on();
-            o.firstReady = 1;
-            if (o.hint) console.log('wIoT - ' + o.MAC + ': Connected!!');
-        }
-        if (o.debug) console.log(o.data);
-    };
+                    if (!o.firstReady && o.ready()) {
+                        o.on();
+                        o.firstReady = 1;
+                        if (o.hint) console.log('wIoT - ' + o.MAC + ': Connected!!');
+                    }
+                    if (o.debug) console.log(o.data);
+                };
 
     /* exc cmd */
     ini();

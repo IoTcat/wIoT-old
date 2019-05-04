@@ -8219,7 +8219,7 @@ END GROUP
                 0x40203358                http_sta_set()
  .text._Z10reset_corev
                 0x40203484       0x85 e:\Arduino_project\wIoT\bin\sketch\wemos_D1_mini.ino.cpp.o
-                                 0xc1 (size before relaxing)
+                                 0xbd (size before relaxing)
                 0x40203488                reset_core()
  *fill*         0x40203509        0x3 
  .text._Z9pin_setupv
