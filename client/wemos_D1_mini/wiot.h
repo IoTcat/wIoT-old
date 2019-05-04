@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me)
  * @Date: 2019-05-02 21:20:48
  * @Last Modified by: 
- * @Last Modified time: 2019-05-04 15:54:01
+ * @Last Modified time: 2019-05-04 17:28:27
  */
 
 #include <EEPROM.h>
@@ -94,7 +94,7 @@ void reset_core() {
         for (int i = 0; i < 10; i++) {
             
             Serial.println("Reseting...");
-            delay(5000);
+            delay(500);
         }
         ESP.restart();
     }

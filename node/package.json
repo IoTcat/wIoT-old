@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@network-utils/arp-lookup": "^1.0.3"
+  }
+}
