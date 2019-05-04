@@ -1,6 +1,6 @@
 {
   "name": "wiot",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "An awesome iot system for web developers~",
   "main": "wiot.js",
   "scripts": {
@@ -25,7 +25,7 @@
   "homepage": "https://github.com/IoTcat/wIoT-nodeJS#readme",
   "dependencies": {
     "@network-utils/arp-lookup": "^1.0.3",
-    "node-arp": "^1.0.6",
+    "macfromip": "^1.1.1",
     "ping": "^0.2.2"
   }
 }
