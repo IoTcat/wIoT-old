@@ -25,6 +25,7 @@
   "homepage": "https://github.com/IoTcat/wIoT-nodeJS#readme",
   "dependencies": {
     "@network-utils/arp-lookup": "^1.0.3",
-    "url-exists": "^1.0.3"
+    "node-arp": "^1.0.6",
+    "ping": "^0.2.2"
   }
 }
