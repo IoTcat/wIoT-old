@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: 
- * @Last Modified time: 2019-05-05 03:28:11
+ * @Last Modified time: 2019-05-05 12:56:00
  */
 
 var wiot = function (o_params) {
@@ -34,7 +34,7 @@ var wiot = function (o_params) {
         errDelayTime: 2000,
         okDelayTime: 30,
         resetDelayTime: 4500,
-        noTryMaxTime: 60000,
+        noTryMaxTime: 15000,
         IntervalTime: 2000,
         MaxToReScanTime: 180000,
         MinResearchTime: 5000,
@@ -208,7 +208,7 @@ var wiot = function (o_params) {
 
             if (val != null) {
                 o.ip = val;
-            } else if (ip == "default") {
+            } else if (o.ip == "default") {
                 ip_scan();
                 return;
             }
@@ -283,6 +283,8 @@ var wiot = function (o_params) {
     };
 
 
+
+
     /* pin Mode */
     var setPinMode = (pin, mode) => {
         if (pin < 1 || pin > 8) throw "Illegal Pin Number!!";
@@ -314,13 +316,13 @@ var wiot = function (o_params) {
                         http_request('http://' + o.ip + '/reset');
                     }, o.resetDelayTime);
                     setTimeout(() => {
-                        core();
+                        http_check_pin();
                     }, o.resetDelayTime + o.errDelayTime);
                     if (o.hint) console.log('wIoT - ' + o.MAC + ": Seting Pin Mode!!  reset...");
                 }
 
                 setTimeout(() => {
-                    core();
+                    http_check_pin();
                 }, o.resetDelayTime + o.errDelayTime);
             }, () => {
                 setTimeout(http_update_pin, o.errDelayTime);
@@ -330,6 +332,26 @@ var wiot = function (o_params) {
             setTimeout(http_update_pin, o.errDelayTime);
         }
     };
+
+    var http_check_pin = () => {
+        if (o.isConnected) {
+            http_request('http://' + o.ip + '/getPinMode', (res) => {
+                if (JSON.stringify(o.pin) != JSON.stringify(res)) {
+
+                    http_update_pin();
+                    return;
+                }
+                    if(o.hint) console.log('wiot - '+o.MAC+': PinMode Confirmed!!');
+                    core();
+            }, () => {
+                setTimeout(http_update_pin, o.errDelayTime);
+            });
+
+        } else {
+            setTimeout(http_check_pin, o.errDelayTime);
+        }
+    };
+
 
     /* pin write */
     o.analogWrite = (pin, out, callback = () => {}, err = () => {}) => {
