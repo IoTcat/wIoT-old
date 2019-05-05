@@ -32,7 +32,7 @@ var wiot = require('wiot'); //引入wiot依赖包
 // 新建一个单片机对象
 // 这里使用了两个参数，MAC是单片机的MAC地址，pin中指定需要OUTPUT输出的端口
 // 请自行修改MAC地址的值
-var MyMCU = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT});
+var MyMCU = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
 
 
 // 以下代码将实现，板载led亮1秒，灭1秒的循环
@@ -46,10 +46,10 @@ setInterval(()=>{
 setTimeout(()=>{
     // 设置计时器，每隔2000毫秒，MyMCU的3号pin口将拉低一次电平
     setInterval(()=>{
-        MyMCU.write(wiot.D4. wiot.LOW);
+        MyMCU.write(wiot.D4, wiot.LOW);
     }, 2000);
 
-}, 1000)；
+}, 1000);
 
 ```
 
