@@ -2,9 +2,9 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-05 19:38:03
+ * @Last Modified time: 2019-05-05 23:44:31
  */
-var wiot = function (o_params) {
+var wiot_client = function (o_params) {
     var o = {
         MAC: "",
         pin: {
@@ -19,7 +19,6 @@ var wiot = function (o_params) {
         },
         hint: true,
         debug: false,
-        on: () => {},
         OUTPUT: 1,
         INPUT: 0,
         INPUT_PULLUP: 2,
@@ -39,6 +38,7 @@ var wiot = function (o_params) {
         MinResearchTime: 5000,
         IpScanTimeOut: 1,
         pingTimeout: 2,
+        MaxTraceBackTimes: 8,
         LastConnectTime: Date.parse(new Date()),
         isConnected: false,
         LastTryTime: Date.parse(new Date()),
@@ -52,7 +52,21 @@ var wiot = function (o_params) {
             D6: 0,
             D7: 0,
             D8: 0
-        }
+        },
+        on: (event, handler) => {
+            if(event == 'begin'){
+                o.begin = handler;
+            }
+            if(event == 'disConnected'){
+                o.disConnected = handler;
+            }
+            if(event == 'reConnected'){
+                o.reConnected = handler;
+            }
+        },
+        begin: () => {},
+        disConnected: ()=>{},
+        reConnected: ()=>{}
     };
 
     /* merge paras */
@@ -72,6 +86,8 @@ var wiot = function (o_params) {
 
     /* tmp global var */
     var ip_point = 0;
+    var status = [];
+    status.fill(false, 0, o.MaxTraceBackTimes);
 
     /* tools */
     var IsJsonString = (str) => {
@@ -271,7 +287,28 @@ var wiot = function (o_params) {
         });
     }
 
-
+    var setStatus = (s) => {
+        for (var i = 1; i < o.MaxTraceBackTimes; i++) {
+            status[i] = status[i - 1];
+        }
+        status[0] = s;
+    };
+    var checkStatus = () => {
+        var sameNum = 0;
+        for (var i = 1; i < o.MaxTraceBackTimes - 1; i++) {
+            if (status[i] == status[0]) sameNum++;
+        }
+        if (!sameNum && o.firstReady) {
+            if (status[0] == true) {
+                if (o.hint) console.log('wIoT - ' + o.MAC + ': Re Connected!!');
+                o.reConnected();
+                return;
+            }
+            if (o.hint) console.log('wIoT - ' + o.MAC + ': Lost Connection!!');
+            o.disConnected();
+            return;
+        }
+    };
     /* http functions */
     var http_error_callback = (callback = () => {}) => {
         callback();
@@ -322,7 +359,7 @@ var wiot = function (o_params) {
                 });
             }).on('error', function (e) {
                 err(e);
-                if (o.hint) console.log('wIoT - ' + o.MAC + ": err_" + o.ip + " - Lost Connection!!");
+                if (o.debug) console.log('wIoT - ' + o.MAC + ": err_" + o.ip + " - Cannot Connect to MCU!!");
             }).end();
 
         } else {
@@ -467,7 +504,10 @@ var wiot = function (o_params) {
     };
 
     async function lstn() {
+        if (o.firstReady) return; //avoid multi monitors
         setInterval(async () => {
+            setStatus(o.isConnected);
+            checkStatus();
             if (o.LastConnectTime + o.errDelayTime > Date.parse(new Date())) {
                 o.isConnected = true;
                 http_connected_callback();
@@ -518,7 +558,7 @@ var wiot = function (o_params) {
         http_update();
 
         if (!o.firstReady && o.ready()) {
-            o.on();
+            o.begin();
             o.firstReady = 1;
             if (o.hint) console.log('wIoT - ' + o.MAC + ': Connected!!');
         }
@@ -530,6 +570,40 @@ var wiot = function (o_params) {
 
     return o;
 
+    };
+
+
+/* Loop */
+var wiot_loop_core = (obj) => {
+    if(obj.client.every((items)=>{
+        return (items.firstReady);
+    })){
+        setInterval(obj.method, 20, obj.client);
+        return;
+    }
+    setTimeout(wiot_loop_core, 200, obj);
 };
 
-exports.client = wiot;
+var wiot_loop = (w = {}, f = ()=>{}) => {
+
+    setTimeout(wiot_loop_core, 1000, {"client": w, "method": f});
+};
+
+
+/* exports */
+exports.HIGH = 1;
+exports.LOW = 0;
+exports.INPUT = 0;
+exports.OUTPUT = 1;
+exports.INPUT_PULLUP = 2;
+exports.D1 = 1;
+exports.D2 = 2;
+exports.D3 = 3;
+exports.D4 = 4;
+exports.D5 = 5;
+exports.D6 = 6;
+exports.D7 = 7;
+exports.D8 = 8;
+exports.A0 = "A0";
+exports.client = wiot_client;
+exports.loop = wiot_loop;
