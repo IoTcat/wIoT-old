@@ -1,8 +1,8 @@
 /*
  * @Author: IoTcat (https://iotcat.me)
  * @Date: 2019-05-02 21:20:48
- * @Last Modified by: 
- * @Last Modified time: 2019-05-05 14:42:23
+ * @Last Modified by: IoTcat
+ * @Last Modified time: 2019-05-05 19:34:06
  */
 
 #include <EEPROM.h>
@@ -11,6 +11,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <WiFiClient.h>
+
 
 #ifndef WEB_PORT
 #define WEB_PORT 80
@@ -23,7 +24,7 @@
 
 String ssid = WIFI_STA_SSID;
 String password = WIFI_STA_PSK;
-const String wiot_version = "v0.1.2";
+const String wiot_version = "v0.1.4";
 
 enum ModeType { AP, STA };
 ModeType Mode;

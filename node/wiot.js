@@ -1,10 +1,9 @@
 /*
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
- * @Last Modified by: 
- * @Last Modified time: 2019-05-05 14:45:01
+ * @Last Modified by: IoTcat
+ * @Last Modified time: 2019-05-05 19:38:03
  */
-
 var wiot = function (o_params) {
     var o = {
         MAC: "",
@@ -68,6 +67,8 @@ var wiot = function (o_params) {
     var ping = require('ping');
     var os = require('os');
     var nodeArp = require('macfromip');
+    var request = require('request');
+    var fs = require('fs');
 
     /* tmp global var */
     var ip_point = 0;
@@ -194,7 +195,8 @@ var wiot = function (o_params) {
             http_request('http://' + o.ip + '/getVersion', (res) => {
                 o.version = res.version;
                 if (o.hint) {
-                    console.log('wiot - ' + o.MAC + ': Version: ' + o.version);
+                    console.log('wiot - ' + o.MAC + ': Local Version: ' + o.version);
+                    checkVersion();
                 }
             }, getVersion);
             return;
@@ -202,6 +204,53 @@ var wiot = function (o_params) {
         setTimeout(getVersion, o.errDelayTime);
     };
 
+    var checkVersion = () => {
+        request('https://wiot.yimian.xyz/ota/check.php?version=' + o.version, (err, res, body) => {
+            if (!err && res.statusCode == 200) {
+                if (JSON.parse(body).update) {
+                    if (o.hint) console.log('wIoT - ' + o.MAC + ': New Version Available!! OTA Updating..');
+                    getWiotBinFile(sendUpdateRequest, http_update_pin);
+                    return;
+                }
+            }
+            http_update_pin();
+            return;
+        });
+    };
+
+    var getWiotBinFile = (callback = () => {}, err_callback = () => {}) => {
+
+        request('https://wiot.yimian.xyz/ota/get.php', (err) => {
+
+            if (!err) {
+                if (o.hint) console.log('wIoT - ' + o.MAC + ': OTA::Download Finished!!');
+                callback();
+                return;
+            }
+            if (o.hint) console.log('wIoT - ' + o.MAC + ': OTA::Download Failure!!');
+            err_callback();
+        }).pipe(fs.createWriteStream(__dirname + '/wiot.bin'));
+    };
+
+    var sendUpdateRequest = () => {
+
+        var formData = {
+            my_field: 'update',
+            my_file: fs.createReadStream(__dirname + '/wiot.bin'),
+        };
+        request.post({
+            url: 'http://' + o.ip + '/update',
+            formData: formData
+        }, function optionalCallback(err) {
+            if (err) {
+                if (o.hint) console.error('wIoT - ' + o.MAC + ': OTA::Upload Failed: ', err);
+                setTimeout(http_update_pin, o.resetDelayTime);
+                return;
+            }
+            if (o.hint) console.log('wIoT - ' + o.MAC + ': OTA::Update Successful!!');
+            http_update_pin();
+        });
+    };
 
     async function getMAC() {
         await arp.toIP(o.MAC).then((val) => {
@@ -212,7 +261,6 @@ var wiot = function (o_params) {
                 ip_scan();
                 return;
             }
-
             if (o.debug) console.log('Found MAC: ' + o.MAC + '  from IP: ' + o.ip + ' :: Method: arp-lookup');
             lstn();
             setup();
@@ -341,8 +389,8 @@ var wiot = function (o_params) {
                     http_update_pin();
                     return;
                 }
-                    if(o.hint) console.log('wiot - '+o.MAC+': PinMode Confirmed!!');
-                    core();
+                if (o.hint) console.log('wiot - ' + o.MAC + ': PinMode Confirmed!!');
+                core();
             }, () => {
                 setTimeout(http_update_pin, o.errDelayTime);
             });
@@ -457,7 +505,7 @@ var wiot = function (o_params) {
         if (o.isConnected) {
 
             getVersion();
-            http_update_pin();
+            //http_update_pin();
             return;
         }
 

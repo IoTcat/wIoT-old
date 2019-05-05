@@ -1,5 +1,5 @@
 var wiot = require('./wiot');
-w = new wiot.client({MAC: "3C:71:BF:3A:F6:CF", pin: {D3: 1}, debug:1});
+w = new wiot.client({MAC: "3C:71:BF:3A:F6:CF", pin: {D3: 1}});
 //q = new wiot.client({MAC: "3C:71:BF:3A:F6:83", pin: {D3: 1} });
 var i = 0;
 w.on = () => {
