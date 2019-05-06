@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-06 15:16:58
+ * @Last Modified time: 2019-05-06 22:05:07
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -508,6 +508,7 @@ var wiot_client = function (o_params) {
     /* exc functions */
     var ini = function () {
         if (o.hint) console.log('wiot - ' + o.MAC + ': init...');
+        if(o.MAC.length != 17) throw "Wrong MAC Format!!!";
         getLocalIp();
         getMAC();
         //ip_scan();

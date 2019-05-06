@@ -143,11 +143,11 @@ MCU1 = new wiot.client({MAC: "xx:xx:xx:xx:xx:ww"});
 // 以下代码将实现: 当MCU0的D5接收到HIGH，MCU1的D4将会输出HIGH
 //                当MCU0的D5接收到LOW, MCU1的D4将会输出LOW
 // 本函数接受两个参数: 第一个是MCU对象数组, 第二个是参数为MCU对象数组的函数
-wiot.loop([MCU0, MCU1], (mcu) => {
-    if(mcu[1].read(wiot.D5) == wiot.HIGH){
-        mcu[0].write(wiot.D4, wiot.HIGH);
+wiot.loop([MCU0, MCU1], () => {
+    if(MCU1.read(wiot.D5) == wiot.HIGH){
+        MCU0.write(wiot.D4, wiot.HIGH);
     }else{
-        mcu[0].write(wiot.D4, wiot.LOW);
+        MCU0.write(wiot.D4, wiot.LOW);
     }
 });
 
