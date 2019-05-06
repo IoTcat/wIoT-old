@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-06 22:05:07
+ * @Last Modified time: 2019-05-06 23:23:02
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -22,7 +22,7 @@ var wiot_client = function (o_params) {
         OUTPUT: 1,
         INPUT: 0,
         INPUT_PULLUP: 2,
-        HIGH: 1,
+        HIGH: 255,
         LOW: 0,
         data: {},
         ip: "default",
@@ -452,7 +452,7 @@ var wiot_client = function (o_params) {
     o.analogWrite = (pin, out, callback = () => {}, err = () => {}) => {
         if (!isNaN(pin)) pin = 'D' + pin;
         if (isNaN(out)) out = 0;
-        if (out > 255 || out == "HIGH" || out == o.HIGH) out = 255;
+        if (out > 255 || out == "HIGH") out = 255;
         if (out < 0 || out == "LOW" || out == o.LOW) out = 0;
 
         if (o.hint && o.pinCmd[pin] != out) console.log('wIoT - ' + o.MAC + ': Write Value ' + out + ' to ' + pin);
@@ -471,7 +471,7 @@ var wiot_client = function (o_params) {
     /* pin read and write */
     o.digitalRead = (pin) => {
         if (!isNaN(pin)) pin = 'D' + pin;
-        return o.data[pin];
+        return o.data[pin] * 255;
     };
 
     o.analogRead = (pin = "A0") => {
@@ -619,7 +619,7 @@ var wiot_begin = (w = {}, f = ()=>{}) => {
 
 
 /* exports */
-exports.HIGH = 1;
+exports.HIGH = 255;
 exports.LOW = 0;
 exports.INPUT = 0;
 exports.OUTPUT = 1;
