@@ -37,20 +37,21 @@ var MyMCU = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
 
 // 以下代码将实现，板载led亮1秒，灭1秒的循环
 
-// 设置计时器，每隔2000毫秒, MyMCU的3号pin口将拉高一次电平
-setInterval(()=>{
-    MyMCU.write(wiot.D4, wiot.HIGH);
-}, 2000);
-
-// 设置计时器，延时1000毫秒后开始执行大括号中指令
-setTimeout(()=>{
-    // 设置计时器，每隔2000毫秒，MyMCU的3号pin口将拉低一次电平
+// 等待所有单品即准备就绪
+wiot.begin([MyMCU], ()=>{ // 第一个参数为要等待的单片机对象数组，第二个参数为要执行的函数
+    // 设置计时器，每隔2000毫秒, MyMCU的3号pin口将拉高一次电平
     setInterval(()=>{
-        MyMCU.write(wiot.D4, wiot.LOW);
+        MyMCU.write(wiot.D4, wiot.HIGH);
     }, 2000);
 
-}, 1000);
-
+    // 设置计时器，延时1000毫秒后开始执行大括号中指令
+    setTimeout(()=>{
+        // 设置计时器，每隔2000毫秒，MyMCU的3号pin口将拉低一次电平
+        setInterval(()=>{
+            MyMCU.write(wiot.D4, wiot.LOW);
+        }, 2000);
+    }, 1000);
+});
 ```
 
 ### 开始执行
@@ -122,6 +123,18 @@ var MyMCU = new wiot.client({
 ```
 
 ### API
+
++ `wiot.begin()`: 单片机准备完成后开始执行
+```js
+MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
+MCU1 = new wiot.client({MAC: "xx:xx:xx:xx:xx:ww"});
+
+wiot.begin([MCU0, MCU1], ()=>{
+    //这里放你要执行的指令
+    //这些指令将会在MCU0和MCU1准备就绪后开始执行
+});
+```
+
 + `wiot.loop()`: 循环执行的指令，适合于条件控制语句
 ```js
 MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
@@ -140,6 +153,7 @@ wiot.loop([MCU0, MCU1], (mcu) => {
 
 ```
 
+
 ### wiot.client事件绑定
 `.on(event, handler)`
 
@@ -147,6 +161,7 @@ wiot.loop([MCU0, MCU1], (mcu) => {
 var MCU = new wiot.client({"MAC": "xx:xx:xx:xx:xx:xx"});
 
 MCU.on('disConnected', function () {
+    // 当与MCU失联时会执行此处指令
     console.log('Disconnected with MCU!!');
 });
 ```
@@ -155,4 +170,3 @@ MCU.on('disConnected', function () {
 - `begin`  开始于单片机正常交互
 - `disConnected`  与单片机断开连接
 - `reConnected`   与单片机恢复连接
-

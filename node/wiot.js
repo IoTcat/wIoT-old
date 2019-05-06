@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-05 23:44:31
+ * @Last Modified time: 2019-05-06 15:16:58
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -43,6 +43,16 @@ var wiot_client = function (o_params) {
         isConnected: false,
         LastTryTime: Date.parse(new Date()),
         firstReady: 0,
+        /* avoid wrong input */
+        D1: "D1",
+        D2: "D2",
+        D3: "D3",
+        D4: "D4",
+        D5: "D5",
+        D6: "D6",
+        D7: "D7",
+        D8: "D8",
+        A0: "A0",
         pinCmd: {
             D1: 0,
             D2: 0,
@@ -590,20 +600,38 @@ var wiot_loop = (w = {}, f = ()=>{}) => {
 };
 
 
+/* begin */
+var wiot_begin_core = (obj) => {
+    if(obj.client.every((items)=>{
+        return (items.firstReady);
+    })){
+        obj.method(obj.client);
+        return;
+    }
+    setTimeout(wiot_begin_core, 200, obj);
+};
+
+var wiot_begin = (w = {}, f = ()=>{}) => {
+
+    setTimeout(wiot_begin_core, 1000, {"client": w, "method": f});
+};
+
+
 /* exports */
 exports.HIGH = 1;
 exports.LOW = 0;
 exports.INPUT = 0;
 exports.OUTPUT = 1;
 exports.INPUT_PULLUP = 2;
-exports.D1 = 1;
-exports.D2 = 2;
-exports.D3 = 3;
-exports.D4 = 4;
-exports.D5 = 5;
-exports.D6 = 6;
-exports.D7 = 7;
-exports.D8 = 8;
+exports.D1 = "D1";
+exports.D2 = "D2";
+exports.D3 = "D3";
+exports.D4 = "D4";
+exports.D5 = "D5";
+exports.D6 = "D6";
+exports.D7 = "D7";
+exports.D8 = "D8";
 exports.A0 = "A0";
 exports.client = wiot_client;
 exports.loop = wiot_loop;
+exports.begin = wiot_begin;
