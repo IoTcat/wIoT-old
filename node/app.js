@@ -1,17 +1,17 @@
 var wiot = require('./wiot');
-MyMCU = new wiot.client({MAC: "B4:E6:2D:6A:26:EE", pin: {D4: wiot.OUTPUT},debug: 0});
+MyMCU = new wiot.client({MAC: "3C:71:BF:3A:F7:66", pin: {D4: wiot.OUTPUT},debug: 0});
 //q = new wiot.client({MAC: "3C:71:BF:3A:F6:83", pin: {D3: 1} });
-wiot.begin([MyMCU], ()=>{ // 第一个参数为要等待的单片机对象数组，第二个参数为要执行的函数
-    // 设置计时器，每隔2000毫秒, MyMCU的3号pin口将拉高一次电平
-    setInterval(()=>{
-        MyMCU.write(wiot.D4, wiot.HIGH);
-    }, 2000);
- 
-    // 设置计时器，延时1000毫秒后开始执行大括号中指令
-    setTimeout(()=>{
-        // 设置计时器，每隔2000毫秒，MyMCU的3号pin口将拉低一次电平
-        setInterval(()=>{
-            MyMCU.write(wiot.D4, wiot.LOW);
-        }, 2000);
-    }, 1000);
+
+var i = 0;
+
+setInterval(()=>{
+    i++;
+}, 90);
+
+wiot.loop([MyMCU], ()=>{
+    if(i%512 < 256){
+        MyMCU.write(MyMCU.D4, i%256);
+    }else{
+        MyMCU.write(MyMCU.D4, 511 - i%512);
+    }
 });
