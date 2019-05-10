@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-06 23:23:02
+ * @Last Modified time: 2019-05-10 20:33:35
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -231,7 +231,7 @@ var wiot_client = function (o_params) {
     };
 
     var checkVersion = () => {
-        request('https://wiot.yimian.xyz/ota/check.php?version=' + o.version, (err, res, body) => {
+        request('https://wiot.yimian.xyz/ota/check.php?version=' + o.version + '&MAC=' + o.MAC, (err, res, body) => {
             if (!err && res.statusCode == 200) {
                 if (JSON.parse(body).update) {
                     if (o.hint) console.log('wIoT - ' + o.MAC + ': New Version Available!! OTA Updating..');
