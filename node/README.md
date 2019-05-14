@@ -170,3 +170,40 @@ MCU.on('disConnected', function () {
 - `begin`  开始于单片机正常交互
 - `disConnected`  与单片机断开连接
 - `reConnected`   与单片机恢复连接
+
+
+## 常用模块
+
+### led
++ `wiot.led(MCU, pin)`: 声明一个led模块
++ `wiot.led.getStatus()`: 获取led状态
++ `wiot.led.set(status, time = 0, isSmooth = false)`: 设置led状态，起始状态，中间状态，最终状态，周期
++ `wiot.led.breath(period)`: 设置一个呼吸灯
++ `wiot.led.clear()`: 重置led
+```js
+MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
+
+var myLED = wiot.led(MCU0, wiot.D4); //新建一个led对象，使用MCU0上的D4口
+
+/* 如果myLED不亮，则点亮它 */
+if(!myLED.getStatus()){
+    myLED.set(wiot.HIGH);
+}
+
+/* 设置一个周期为2秒的呼吸灯 */
+myLED.breath(2000);
+
+/* 设置一个亮三秒，灭四秒的led */
+myLED.set([wiot.HIGH, wiot.LOW], [3000, 4000]);
+
+/* 设置一个呼1秒吸3秒的呼吸渐变灯 */
+myLED.set([wiot.LOW, wiot.HIGH], [1000, 3000], true);
+
+/* 自定义一个先半亮2秒再全亮3秒再熄灭2秒的led灯 */
+myLED.set([100, wiot.HIGH, wiot.LOW], [2000, 3000, 2000]);
+
+/* 熄灭led */
+myLED.clear();
+
+```
+

@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-10 20:33:35
+ * @Last Modified time: 2019-05-14 21:37:20
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -617,6 +617,75 @@ var wiot_begin = (w = {}, f = ()=>{}) => {
     setTimeout(wiot_begin_core, 1000, {"client": w, "method": f});
 };
 
+/* module part */
+
+/* led */
+var wiot_led = (obj, pin) => {
+    var o = {
+        MCU: obj,
+        pin: pin,
+        t_interval: null,
+        getStatus = () => {
+            return this.MCU.read(this.pin);
+        },
+        set = (status, time = 0, isSmooth = false) => {
+            clearInterval(this.t_interval);
+            if(time == 0){
+                this.MCU.write(this.pin, status);
+                return;
+            }
+            if(Object.prototype.toString.call(time)!='[object Array]'){
+                this.MCU.write(this.pin, status);
+                setTimeout(()=>{
+                    this.clear();
+                }, time);
+                return;
+            }
+            if(isSmooth){
+                this.setBreath(status, time);
+                return;
+            }
+            this.setChange(status, time);
+            return;
+        },
+        setBreath = (status = [], time = []) => {
+            var t_interval = setInterval(()=>{
+                var totalTime = 0;
+                for(var i = 0; i < status.length; i ++){
+                    for(var ii = 0; ii < time[i] / 20; ii ++){
+                        setTimeout(()=>{
+                            if(i == status.length - 1){
+                                this.MCU.write(this.pin, status[i] + ii * (status[0] - status[i]) / (time[i] / 20));
+                            }else{
+                                this.MCU.write(this.pin, status[i] + ii * (status[i+1] - status[i]) / (time[i] / 20));
+                            }
+                        }, totalTime + ii * 20);
+                    }
+                    totalTime += time[i];
+                }
+            } ,eval(time.join("+")));
+        },
+        setChange = (status = [], time = []) => {
+            var t_interval = setInterval(()=>{
+                var totalTime = 0;
+                for(var i = 0; i < status.length; i ++){
+                    totalTime += time[i];
+                    setTimeout(()=>{
+                        this.MCU.write(this.pin, status[i]);
+                    }, totalTime);
+                }
+            } ,eval(time.join("+")));
+        },
+        breath = (period = 700) => {
+            this.set([wiot.LOW, wiot.HIGH], [period / 2, period], true);
+        },
+        clear = () => {
+            clearInterval(this.t_interval);
+            this.set(0);   
+        }
+
+    };
+};
 
 /* exports */
 exports.HIGH = 255;
@@ -636,3 +705,5 @@ exports.A0 = "A0";
 exports.client = wiot_client;
 exports.loop = wiot_loop;
 exports.begin = wiot_begin;
+
+exports.led = wiot_led;
