@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-17 15:44:44
+ * @Last Modified time: 2019-05-17 17:12:46
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -947,6 +947,30 @@ var wiot_pir = (obj, pin) => {
 };
 
 
+/* lightSensor */
+var wiot_lightSensor = (obj, pin) => {
+    var o = {
+        MCU: obj,
+        pin: pin,
+        getStatus: () => {
+            return (o.MCU.read(o.pin) == 255)? 0 : 255;
+        },
+        on: (event, handler = ()=>{}) => {
+            if(event == "light"){
+                o.MCU.pinOn(o.pin, "off", handler);
+            }
+            if(event == "dark"){
+                o.MCU.pinOn(o.pin, "on", handler);
+            }
+            if(event == "change"){
+                o.MCU.pinOn(o.pin, "change", handler);
+            }
+        }
+    };
+
+    return o;
+};
+
 
 
 
@@ -972,3 +996,4 @@ exports.register = wiot_register;
 
 exports.led = wiot_led;
 exports.pir = wiot_pir;
+exports.lightSensor = wiot_lightSensor;

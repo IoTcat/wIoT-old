@@ -56,11 +56,13 @@ pir.on("change", ()=>{
 
 */
 
+var light = wiot.lightSensor(MyMCU, wiot.D1);
 
-wiot.register.set(pir.getStatus, 255, ()=>{
+
+wiot.register.set(light.getStatus, wiot.HIGH, ()=>{
     myLED.set(wiot.HIGH);
 });
 
-wiot.register.set(0, pir.getStatus, ()=>{
+wiot.register.set(wiot.LOW, light.getStatus, ()=>{
     myLED.clear();
 });

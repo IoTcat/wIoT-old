@@ -261,6 +261,41 @@ myPIR.on("change", ()=>{
 });
 
 ```
+### lightSensor 光敏传感器
+
++ `wiot.lightSensor(MCU, pin)`: 声明一个lightSensor模块
++ `wiot.lightSensor.getStatus()`: 获取lightSensor状态，返回值wiot.HIGH(有光)，wiot.LOW(无光)
+
+#### 事件触发器
++ `wiot.light.on(event, handler)`
+
+**事件列表**
+- `light`  由暗到明
+- `dark`  由明到暗
+- `change`   状态改变
+
+```js
+MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx"});
+
+var myLightSensor = wiot.lightSensor(MCU0, wiot.D1); //新建一个pir对象，使用MCU0上的D2口
+
+/* 输出LightSensor状态到控制台 */
+console.log(mylightSensor.getStatus());
+
+/* 当由暗到明，打印 "Light!!!" 到控制台 */
+myLightSensor.on("light", ()=>{
+    console.log("Light!");
+});
+
+/* 由明到暗，打印 "Dark!!" 到控制台 */
+myLightSensor.on("dark", ()=>{
+    console.log("Dark!!");
+});
+
+/* 当状态改变，执行指令 */
+myLightSensor.on("change", ()=>{
+    /* 你的指令 */
+});
 
 ## 注册表
 + `wiot.register.set(status1, status2, function)`: 向注册表中添加一条规则, status可以是值或函数，当status1==status2时会触发function
