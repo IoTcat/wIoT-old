@@ -335,6 +335,7 @@ myLightSensor.on("dark", ()=>{
 myLightSensor.on("change", ()=>{
     /* 你的指令 */
 });
+```
 
 ## 注册表
 + `wiot.register.set(status1, status2, function)`: 向注册表中添加一条规则, status可以是值或函数，当status1==status2时会触发function
