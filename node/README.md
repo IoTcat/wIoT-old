@@ -157,6 +157,11 @@ wiot.loop([MCU0, MCU1], () => {
 ### wiot.client事件绑定
 `.on(event, handler)`
 
+**client事件列表**
+- `begin`  开始于单片机正常交互
+- `disConnected`  与单片机断开连接
+- `reConnected`   与单片机恢复连接
+
 ```js
 var MCU = new wiot.client({"MAC": "xx:xx:xx:xx:xx:xx"});
 
@@ -166,15 +171,27 @@ MCU.on('disConnected', function () {
 });
 ```
 
-**事件列表**
-- `begin`  开始于单片机正常交互
-- `disConnected`  与单片机断开连接
-- `reConnected`   与单片机恢复连接
+`.pinOn(pin, event, handler)`
+
+**pin事件列表**
+- `on` pin口电位从低到高
+- `off` pin口电位从高到低
+- `change` pin口电位变化
+
+
+```js
+var MCU = new wiot.client({"MAC": "xx:xx:xx:xx:xx:xx"});
+
+MCU.pinOn(wiot.D2, 'on', function () {
+    // 当MCU的D2电位由低到高时会执行
+    console.log('D2 from LOW to HIGH!!');
+});
+```
 
 
 ## 常用模块
 
-### led
+### LED
 + `wiot.led(MCU, pin)`: 声明一个led模块
 + `wiot.led.getStatus()`: 获取led状态
 + `wiot.led.set(status, time = 0, isSmooth = false)`: 设置led状态，起始状态，中间状态，最终状态，周期
@@ -206,4 +223,43 @@ myLED.set([100, wiot.HIGH, wiot.LOW], [2000, 3000, 2000]);
 myLED.clear();
 
 ```
+
+### PIR 红外人体传感器
+
++ `wiot.pir(MCU, pin)`: 声明一个PIR模块
++ `wiot.pir.getStatus()`: 获取PIR状态，返回值wiot.HIGH(有人)，wiot.LOW(无人)
+
+#### 事件触发器
++ `wiot.pir.on(event, handler)`
+
+**事件列表**
+- `detected`  探测到人
+- `undetected`  人体移动出探测范围
+- `change`   状态改变，包括有人到无人和无人到有人
+
+```js
+MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx"});
+
+var myPIR = wiot.pir(MCU0, wiot.D2); //新建一个pir对象，使用MCU0上的D2口
+
+/* 输出pir状态到控制台 */
+console.log(myPIR.getStatus());
+
+/* 当探测到人，打印 "Detected People!" 到控制台 */
+myPIR.on("detected", ()=>{
+    console.log("Detected People!");
+});
+
+/* 人移动出探测范围，打印 "No People!!" 到控制台 */
+myPIR.on("undetected", ()=>{
+    console.log("No People!!");
+});
+
+/* 当状态改变，执行指令 */
+myPIR.on("change", ()=>{
+    /* 你的指令 */
+});
+
+```
+
 

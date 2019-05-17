@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-17 11:37:13
+ * @Last Modified time: 2019-05-17 14:23:42
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -25,6 +25,7 @@ var wiot_client = function (o_params) {
         HIGH: 255,
         LOW: 0,
         data: {},
+        fData: {},
         ip: "default",
         ip_range: "192.168.0",
         localIP: "127.0.0.1",
@@ -63,7 +64,7 @@ var wiot_client = function (o_params) {
             D7: 0,
             D8: 0
         },
-        on: (event, handler) => {
+        on: (event, handler = ()=>{}) => {
             if(event == 'begin'){
                 o.begin = handler;
             }
@@ -74,9 +75,184 @@ var wiot_client = function (o_params) {
                 o.reConnected = handler;
             }
         },
+        pinOn: (pin, event, handler = ()=>{}) => {
+            if(!isNaN(pin)) pin = 'D' + pin;
+            if(event == "on"){
+                o.pinEvents[pin].onEvents.push(handler);
+            }
+            if(event == "off"){
+                o.pinEvents[pin].offEvents.push(handler);
+            }
+            if(event == "change"){
+                o.pinEvents[pin].changeEvents.push(handler);
+            }
+        },
         begin: () => {},
         disConnected: ()=>{},
-        reConnected: ()=>{}
+        reConnected: ()=>{},
+        pinEvents: {
+            D1: {
+                onEvents: [],
+                offEvents: [],
+                changeEvents: [],
+                on: ()=>{
+                    o.pinEvents.D1.onEvents.map((v)=>{
+                        v();
+                    });
+                },
+                off: ()=>{
+                    o.pinEvents.D1.offEvents.map((v)=>{
+                        v();
+                    });
+                },
+                change: ()=>{
+                    o.pinEvents.D1.changeEvents.map((v)=>{
+                       v(); 
+                    });
+                }
+            },
+             D2: {
+                onEvents: [],
+                offEvents: [],
+                changeEvents: [],
+                on: ()=>{
+                    o.pinEvents.D2.onEvents.map((v)=>{
+                        v();
+                    });
+                },
+                off: ()=>{
+                    o.pinEvents.D2.offEvents.map((v)=>{
+                        v();
+                    });
+                },
+                change: ()=>{
+                    o.pinEvents.D2.changeEvents.map((v)=>{
+                       v(); 
+                    });
+                }
+            },
+             D3: {
+                onEvents: [],
+                offEvents: [],
+                changeEvents: [],
+                on: ()=>{
+                    o.pinEvents.D3.onEvents.map((v)=>{
+                        v();
+                    });
+                },
+                off: ()=>{
+                    o.pinEvents.D3.offEvents.map((v)=>{
+                        v();
+                    });
+                },
+                change: ()=>{
+                    o.pinEvents.D3.changeEvents.map((v)=>{
+                       v(); 
+                    });
+                }
+            },
+             D4: {
+                onEvents: [],
+                offEvents: [],
+                changeEvents: [],
+                on: ()=>{
+                    o.pinEvents.D4.onEvents.map((v)=>{
+                        v();
+                    });
+                },
+                off: ()=>{
+                    o.pinEvents.D4.offEvents.map((v)=>{
+                        v();
+                    });
+                },
+                change: ()=>{
+                    o.pinEvents.D4.changeEvents.map((v)=>{
+                       v(); 
+                    });
+                }
+            },
+             D5: {
+                onEvents: [],
+                offEvents: [],
+                changeEvents: [],
+                on: ()=>{
+                    o.pinEvents.D5.onEvents.map((v)=>{
+                        v();
+                    });
+                },
+                off: ()=>{
+                    o.pinEvents.D5.offEvents.map((v)=>{
+                        v();
+                    });
+                },
+                change: ()=>{
+                    o.pinEvents.D5.changeEvents.map((v)=>{
+                       v(); 
+                    });
+                }
+            },
+             D6: {
+                onEvents: [],
+                offEvents: [],
+                changeEvents: [],
+                on: ()=>{
+                    o.pinEvents.D6.onEvents.map((v)=>{
+                        v();
+                    });
+                },
+                off: ()=>{
+                    o.pinEvents.D6.offEvents.map((v)=>{
+                        v();
+                    });
+                },
+                change: ()=>{
+                    o.pinEvents.D6.changeEvents.map((v)=>{
+                       v(); 
+                    });
+                }
+            },
+             D7: {
+                onEvents: [],
+                offEvents: [],
+                changeEvents: [],
+                on: ()=>{
+                    o.pinEvents.D7.onEvents.map((v)=>{
+                        v();
+                    });
+                },
+                off: ()=>{
+                    o.pinEvents.D7.offEvents.map((v)=>{
+                        v();
+                    });
+                },
+                change: ()=>{
+                    o.pinEvents.D7.changeEvents.map((v)=>{
+                       v(); 
+                    });
+                }
+            },
+             D8: {
+                onEvents: [],
+                offEvents: [],
+                changeEvents: [],
+                on: ()=>{
+                    o.pinEvents.D8.onEvents.map((v)=>{
+                        v();
+                    });
+                },
+                off: ()=>{
+                    o.pinEvents.D8.offEvents.map((v)=>{
+                        v();
+                    });
+                },
+                change: ()=>{
+                    o.pinEvents.D8.changeEvents.map((v)=>{
+                       v(); 
+                    });
+                }
+            }
+            
+        }
     };
 
     /* merge paras */
@@ -521,7 +697,19 @@ var wiot_client = function (o_params) {
             checkStatus();
             if (o.LastConnectTime + o.errDelayTime > Date.parse(new Date())) {
                 o.isConnected = true;
+                for(var i = 1; i <= 8; i ++){
+                    var s = 'D' + i;
+                    if(o.fData[s] != o.data[s]){
+                        o.pinEvents[s].change();
+                        if(o.data[s] == 0){
+                            o.pinEvents[s].off();
+                        }else{
+                            o.pinEvents[s].on();
+                        }
+                    }
+                }
                 http_connected_callback();
+                o.fData = o.data;
                 return;
             }
             ping.promise.probe(o.ip, {
@@ -649,11 +837,6 @@ var wiot_led = (obj, pin) => {
             return;
         },
         setBreath: (status = [], time = []) => {
-            /*var t_t = time[time.length - 1];
-            for(var t = time.length - 1; t > 0; t --){
-                time[t] = time[t - 1];
-            }
-            time[0] = t_t;*/
             o.t_interval = setInterval(()=>{
                 var totalTime = 0;
                 for(var i = 0; i < status.length; i ++){
@@ -676,13 +859,11 @@ var wiot_led = (obj, pin) => {
                 time[t] = time[t - 1];
             }
             time[0] = t_t;
- 
             o.t_interval = setInterval(()=>{
                 var totalTime = 0;
                 for(var i = 0; i < status.length; i ++){
                     totalTime += time[i];
                     setTimeout((i)=>{
-                        console.log(i);
                         o.MCU.write(o.pin, status[i]);
                     }, totalTime, i);
                 }
@@ -699,6 +880,34 @@ var wiot_led = (obj, pin) => {
 
     return o;
 };
+
+/* pir */
+var wiot_pir = (obj, pin) => {
+    var o = {
+        MCU: obj,
+        pin: pin,
+        getStatus: () => {
+            return o.MCU.read(o.pin);
+        },
+        on: (event, handler = ()=>{}) => {
+            if(event == "detected"){
+                o.MCU.pinOn(o.pin, "on", handler);
+            }
+            if(event == "undetected"){
+                o.MCU.pinOn(o.pin, "off", handler);
+            }
+            if(event == "change"){
+                o.MCU.pinOn(o.pin, "change", handler);
+            }
+        }
+    };
+
+    return o;
+};
+
+
+
+
 
 /* exports */
 exports.HIGH = 255;
@@ -720,3 +929,4 @@ exports.loop = wiot_loop;
 exports.begin = wiot_begin;
 
 exports.led = wiot_led;
+exports.pir = wiot_pir;

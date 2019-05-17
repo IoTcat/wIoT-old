@@ -1,5 +1,5 @@
 var wiot = require('./wiot');
-MyMCU = new wiot.client({MAC: "3C:71:BF:3A:F7:66", pin: {D4: 1}, okDelayTime: 30,debug: 1});
+MyMCU = new wiot.client({MAC: "3C:71:BF:3A:F7:66", pin: {D4: 1}, okDelayTime: 30,hint: 1,debug: 1});
 //q = new wiot.client({MAC: "3C:71:BF:3A:F6:83", pin: {D3: 1} });
 /*
 var i = 0;
@@ -16,10 +16,39 @@ wiot.loop([MyMCU], ()=>{
     }
 });*/
 
+
+/*
+
 var myLED = wiot.led(MyMCU, wiot.D4); //新建一个led对象，使用MCU0上的D4口
+
+myLED.set([wiot.HIGH, wiot.LOW, 30, 0], [3000, 4000, 2000, 1000], true);
+
+/*
+myLED.set(wiot.LOW);
+
 
 setTimeout(()=>{
     if(!myLED.getStatus()){
     myLED.set(wiot.HIGH);
 }
-}, 15000)
+}, 15000);*/
+
+
+var pir = wiot.pir(MyMCU, wiot.D2);
+
+
+pir.on("detected", ()=>{
+    console.log("Found People!!!");
+});
+
+pir.on("undetected", ()=>{
+    console.log("No People");
+});
+
+pir.on("change", ()=>{
+    console.log("PIR State Changed!!!");
+});
+
+pir.on("change", ()=>{
+    console.log("PIR2222222222222222 State Changed!!!");
+});
