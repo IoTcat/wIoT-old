@@ -1,7 +1,7 @@
 var wiot = require('./wiot');
-MyMCU = new wiot.client({MAC: "3C:71:BF:3A:F7:66", pin: {D4: wiot.OUTPUT},debug: 0});
+MyMCU = new wiot.client({MAC: "3C:71:BF:3A:F7:66", pin: {D4: 1}, okDelayTime: 30,debug: 1});
 //q = new wiot.client({MAC: "3C:71:BF:3A:F6:83", pin: {D3: 1} });
-
+/*
 var i = 0;
 
 setInterval(()=>{
@@ -14,4 +14,12 @@ wiot.loop([MyMCU], ()=>{
     }else{
         MyMCU.write(MyMCU.D4, 511 - i%512);
     }
-});
+});*/
+
+var myLED = wiot.led(MyMCU, wiot.D4); //新建一个led对象，使用MCU0上的D4口
+
+setTimeout(()=>{
+    if(!myLED.getStatus()){
+    myLED.set(wiot.HIGH);
+}
+}, 15000)

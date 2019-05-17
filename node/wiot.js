@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-14 21:37:20
+ * @Last Modified time: 2019-05-17 11:37:13
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -625,66 +625,79 @@ var wiot_led = (obj, pin) => {
         MCU: obj,
         pin: pin,
         t_interval: null,
-        getStatus = () => {
-            return this.MCU.read(this.pin);
+        getStatus: () => {
+            return o.MCU.read(o.pin);
         },
-        set = (status, time = 0, isSmooth = false) => {
-            clearInterval(this.t_interval);
+        set: (status, time = 0, isSmooth = false) => {
+            clearInterval(o.t_interval);
             if(time == 0){
-                this.MCU.write(this.pin, status);
+                o.MCU.write(o.pin, status);
                 return;
             }
             if(Object.prototype.toString.call(time)!='[object Array]'){
-                this.MCU.write(this.pin, status);
+                o.MCU.write(o.pin, status);
                 setTimeout(()=>{
-                    this.clear();
+                    o.clear();
                 }, time);
                 return;
             }
             if(isSmooth){
-                this.setBreath(status, time);
+                o.setBreath(status, time);
                 return;
             }
-            this.setChange(status, time);
+            o.setChange(status, time);
             return;
         },
-        setBreath = (status = [], time = []) => {
-            var t_interval = setInterval(()=>{
+        setBreath: (status = [], time = []) => {
+            /*var t_t = time[time.length - 1];
+            for(var t = time.length - 1; t > 0; t --){
+                time[t] = time[t - 1];
+            }
+            time[0] = t_t;*/
+            o.t_interval = setInterval(()=>{
                 var totalTime = 0;
                 for(var i = 0; i < status.length; i ++){
                     for(var ii = 0; ii < time[i] / 20; ii ++){
-                        setTimeout(()=>{
+                        setTimeout((i, ii)=>{
                             if(i == status.length - 1){
-                                this.MCU.write(this.pin, status[i] + ii * (status[0] - status[i]) / (time[i] / 20));
+                                o.MCU.write(o.pin, status[i] + ii * (status[0] - status[i]) / (time[i] / 20));
                             }else{
-                                this.MCU.write(this.pin, status[i] + ii * (status[i+1] - status[i]) / (time[i] / 20));
+                                o.MCU.write(o.pin, status[i] + ii * (status[i+1] - status[i]) / (time[i] / 20));
                             }
-                        }, totalTime + ii * 20);
+                        }, totalTime + ii * 20, i, ii);
                     }
                     totalTime += time[i];
                 }
             } ,eval(time.join("+")));
         },
-        setChange = (status = [], time = []) => {
-            var t_interval = setInterval(()=>{
+        setChange: (status = [], time = []) => {
+            var t_t = time[time.length - 1];
+            for(var t = time.length - 1; t > 0; t --){
+                time[t] = time[t - 1];
+            }
+            time[0] = t_t;
+ 
+            o.t_interval = setInterval(()=>{
                 var totalTime = 0;
                 for(var i = 0; i < status.length; i ++){
                     totalTime += time[i];
-                    setTimeout(()=>{
-                        this.MCU.write(this.pin, status[i]);
-                    }, totalTime);
+                    setTimeout((i)=>{
+                        console.log(i);
+                        o.MCU.write(o.pin, status[i]);
+                    }, totalTime, i);
                 }
             } ,eval(time.join("+")));
         },
-        breath = (period = 700) => {
-            this.set([wiot.LOW, wiot.HIGH], [period / 2, period], true);
+        breath: (period = 700) => {
+            o.set([0, 255], [period / 2, period], true);
         },
-        clear = () => {
-            clearInterval(this.t_interval);
-            this.set(0);   
+        clear: () => {
+            o.set(0);   
         }
 
     };
+
+    return o;
 };
 
 /* exports */
