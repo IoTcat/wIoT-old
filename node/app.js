@@ -17,10 +17,10 @@ wiot.loop([MyMCU], ()=>{
 });*/
 
 
-/*
+
 
 var myLED = wiot.led(MyMCU, wiot.D4); //新建一个led对象，使用MCU0上的D4口
-
+/*
 myLED.set([wiot.HIGH, wiot.LOW, 30, 0], [3000, 4000, 2000, 1000], true);
 
 /*
@@ -31,11 +31,12 @@ setTimeout(()=>{
     if(!myLED.getStatus()){
     myLED.set(wiot.HIGH);
 }
-}, 15000);*/
+}, 15000);
+*/
 
 
 var pir = wiot.pir(MyMCU, wiot.D2);
-
+/*
 
 pir.on("detected", ()=>{
     console.log("Found People!!!");
@@ -51,4 +52,15 @@ pir.on("change", ()=>{
 
 pir.on("change", ()=>{
     console.log("PIR2222222222222222 State Changed!!!");
+});
+
+*/
+
+
+wiot.register.set(pir.getStatus, 255, ()=>{
+    myLED.set(wiot.HIGH);
+});
+
+wiot.register.set(0, pir.getStatus, ()=>{
+    myLED.clear();
 });

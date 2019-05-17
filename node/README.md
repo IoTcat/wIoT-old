@@ -262,4 +262,21 @@ myPIR.on("change", ()=>{
 
 ```
 
+## 注册表
++ `wiot.register.set(status1, status2, function)`: 向注册表中添加一条规则, status可以是值或函数，当status1==status2时会触发function
+
+```js
+var myLED = wiot.led(MyMCU, wiot.D4);
+var pir = wiot.pir(MyMCU, wiot.D2);
+
+//注册一条规则，当pir探测到人时，myLED亮
+wiot.register.set(pir.getStatus, wiot.HIGH, ()=>{
+    myLED.set(wiot.HIGH);
+});
+
+//注册一条规则，当人离开时，myLED灭
+wiot.register.set(wiot.LOW, pir.getStatus, ()=>{
+    myLED.clear();
+});
+```
 

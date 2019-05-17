@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-17 14:23:42
+ * @Last Modified time: 2019-05-17 15:44:44
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -805,6 +805,47 @@ var wiot_begin = (w = {}, f = ()=>{}) => {
     setTimeout(wiot_begin_core, 1000, {"client": w, "method": f});
 };
 
+
+/* register */
+var wiot_register = {
+    events: [],
+    status: [],
+    action: [],
+    fState: [],
+    set: (s, st, t) => {
+        wiot_register.events.push(s);
+        wiot_register.status.push(st);
+        wiot_register.action.push(t);
+    },
+    core: () => {
+        for(var i = 0; i < wiot_register.events.length; i ++){
+            if(typeof wiot_register.events[i] == 'function'){
+                var t_event = wiot_register.events[i]();
+            }else{
+                var t_event = wiot_register.events[i];
+            }
+            if(typeof wiot_register.status[i] == 'function'){
+                var t_status = wiot_register.status[i]();
+            }else{
+                var t_status = wiot_register.status[i];
+            }
+
+            if(wiot_register.fState[i] != (t_event == t_status)){
+
+                if(t_event == t_status){
+                    wiot_register.action[i]();
+                }
+                wiot_register.fState[i] = (t_event == t_status);
+            }
+        }
+    }
+};
+
+setInterval(()=>{
+    wiot_register.core();
+}, 70);
+
+
 /* module part */
 
 /* led */
@@ -927,6 +968,7 @@ exports.A0 = "A0";
 exports.client = wiot_client;
 exports.loop = wiot_loop;
 exports.begin = wiot_begin;
+exports.register = wiot_register;
 
 exports.led = wiot_led;
 exports.pir = wiot_pir;
