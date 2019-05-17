@@ -261,6 +261,45 @@ myPIR.on("change", ()=>{
 });
 
 ```
+
+### IR 红外循迹/障碍传感器
+
++ `wiot.ir(MCU, pin)`: 声明一个IR模块
++ `wiot.ir.getStatus()`: 获取IR状态，返回值wiot.HIGH(有障碍)，wiot.LOW(无障碍)
+
+#### 事件触发器
++ `wiot.ir.on(event, handler)`
+
+**事件列表**
+- `detected`  探测到障碍
+- `undetected`  障碍消失
+- `change`   状态改变
+
+```js
+MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx"});
+
+var myPIR = wiot.pir(MCU0, wiot.D2); //新建一个pir对象，使用MCU0上的D2口
+
+/* 输出pir状态到控制台 */
+console.log(myPIR.getStatus());
+
+/* 当探测到人，打印 "Detected People!" 到控制台 */
+myPIR.on("detected", ()=>{
+    console.log("Detected People!");
+});
+
+/* 人移动出探测范围，打印 "No People!!" 到控制台 */
+myPIR.on("undetected", ()=>{
+    console.log("No People!!");
+});
+
+/* 当状态改变，执行指令 */
+myPIR.on("change", ()=>{
+    /* 你的指令 */
+});
+
+```
+
 ### lightSensor 光敏传感器
 
 + `wiot.lightSensor(MCU, pin)`: 声明一个lightSensor模块

@@ -1,5 +1,6 @@
 var wiot = require('./wiot');
 MyMCU = new wiot.client({MAC: "3C:71:BF:3A:F7:66", pin: {D4: 1}, okDelayTime: 30,hint: 1,debug: 1});
+MyMCU2 = new wiot.client({MAC: "BC:DD:C2:2F:EC:A8"});
 //q = new wiot.client({MAC: "3C:71:BF:3A:F6:83", pin: {D3: 1} });
 /*
 var i = 0;
@@ -58,11 +59,23 @@ pir.on("change", ()=>{
 
 var light = wiot.lightSensor(MyMCU, wiot.D1);
 
-
+/*
 wiot.register.set(light.getStatus, wiot.HIGH, ()=>{
     myLED.set(wiot.HIGH);
 });
 
 wiot.register.set(wiot.LOW, light.getStatus, ()=>{
+    myLED.clear();
+});
+*/
+
+
+var ir = wiot.ir(MyMCU2, wiot.D8);
+
+wiot.register.set(ir.getStatus, wiot.HIGH, ()=>{
+    myLED.set(wiot.HIGH);
+});
+
+wiot.register.set(wiot.LOW, ir.getStatus, ()=>{
     myLED.clear();
 });
