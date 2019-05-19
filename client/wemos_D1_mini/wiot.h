@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me)
  * @Date: 2019-05-02 21:20:48
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-05 19:34:06
+ * @Last Modified time: 2019-05-19 16:08:08
  */
 
 #include <EEPROM.h>
@@ -27,12 +27,14 @@ const String wiot_version = "v0.1.4";
 
 enum ModeType { AP, STA };
 ModeType Mode;
+int data[9] = {0};
 
 // void(* resetFunc) (void) = 0;
 
 /********** Web Server ***********/
 ESP8266WebServer httpServer(WEB_PORT);
 ESP8266HTTPUpdateServer httpUpdater;
+WiFiServer wifiServer(8848);
 
 void serial_setup() {
     Serial.begin(115200);
@@ -72,6 +74,7 @@ String eeprom_readStr(int start, int end) {
 }
 
 auto _pin(int i) {
+    if (i == 0) return A0;
     if (i == 1) return D1;
     if (i == 2) return D2;
     if (i == 3) return D3;
@@ -387,6 +390,10 @@ void http_setup() {
 
 void reset_setup() { pinMode(D0, INPUT_PULLUP); }
 
+void socket_setup() {
+    wifiServer.begin();
+}
+
 void setup() {
     eeprom_setup();
     reset_setup();
@@ -394,9 +401,106 @@ void setup() {
     serial_setup();
     wifi_setup();
     http_setup();
+    socket_setup();
+}
+
+
+void socket_send_all(WiFiClient& client){
+    String s = "{\"type\": \"info\", \"D1\": ";
+    s += data[1];
+    s += ", \"D2\": ";
+    s += data[2];
+    s += ", \"D3\": ";
+    s += data[3];
+    s += ", \"D4\": ";
+    s += data[4];
+    s += ", \"D5\": ";
+    s += data[5];
+    s += ", \"D6\": ";
+    s += data[6];
+    s += ", \"D7\": ";
+    s += data[7];
+    s += ", \"D8\": ";
+    s += data[8];
+    s += ", \"A0\": ";
+    s += data[0];
+    s += "}";
+
+    client.print(s);
+
+}
+
+void socket_send_on(WiFiClient& client){
+
+    static int ffdata[9] = {0};
+    static int fdata[9] = {0};
+    static unsigned long LastSendTime = millis();
+
+    for(int i = 0; i < 9; i ++){
+ 
+        if(i == 0){
+            if(LastSendTime + 100 < millis() && ((data[0] + ffdata[0]) / 2 > analogRead(_pin(0)) + 11|| (data[0] + ffdata[0]) / 2 < analogRead(_pin(0)) - 11))
+            data[i] = analogRead(_pin(i));
+        }else{
+            if(!EEPROM.read(162 + i)){
+                data[i] = digitalRead(_pin(i));
+            }
+        }
+    }
+
+    for(int i = 0; i < 9; i ++){
+
+        if(data[i] == fdata[i] && data[i] != ffdata[i]){
+            Serial.print(i);Serial.print(data[i]);Serial.println(fdata[i]);
+            socket_send_all(client);
+            LastSendTime = millis();
+            break;
+        }
+    }
+
+    for(int i = 0; i < 9; i ++){
+
+        ffdata[i] = fdata[i];
+        fdata[i] = data[i];
+    }
 }
 
 void loop() {
     reset_core();
     httpServer.handleClient();
+
+  WiFiClient client = wifiServer.available();
+ 
+  if (client) {
+ 
+    while (client.connected()) {
+     reset_core();
+    httpServer.handleClient();
+    socket_send_on(client);
+
+      while (client.available()>0) {
+        String s = client.readStringUntil('\n');
+        Serial.println(s);
+        //client.print(line);
+        if(s.substring(0, 2) == "_D" && EEPROM.read(162 + atoi(s.substring(2, 3).c_str()))){
+            //Serial.println(atoi(s.substring(2, 3).c_str()));
+            //Serial.println(atoi(s.substring(3, s.length()).c_str()));
+            analogWrite(_pin(atoi(s.substring(2, 3).c_str())), atoi(s.substring(3, s.length()).c_str()));
+            if(atoi(s.substring(3, s.length()).c_str()) == 0){
+                data[atoi(s.substring(2, 3).c_str())] = 0;
+            }else{
+                data[atoi(s.substring(2, 3).c_str())] = 1;
+            }
+        }
+        if(s.substring(0, 4) == "_GET"){
+
+            socket_send_all(client);
+        }
+      }
+ 
+      delay(6);
+    }
+ 
+    client.stop();
+  }
 }

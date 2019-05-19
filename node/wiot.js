@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-17 17:40:46
+ * @Last Modified time: 2019-05-19 16:08:40
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -40,6 +40,7 @@ var wiot_client = function (o_params) {
         IpScanTimeOut: 1,
         pingTimeout: 2,
         MaxTraceBackTimes: 8,
+        OnlyHTTP: false,
         LastConnectTime: Date.parse(new Date()),
         isConnected: false,
         LastTryTime: Date.parse(new Date()),
@@ -754,7 +755,10 @@ var wiot_client = function (o_params) {
 
     var core = () => {
 
-        http_update();
+        if(o.OnlyHTTP) http_update();
+        else{
+            
+        }
 
         if (!o.firstReady && o.ready()) {
             o.begin();
