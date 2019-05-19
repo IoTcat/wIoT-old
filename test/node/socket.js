@@ -4,12 +4,13 @@ var HOST = '192.168.4.12';
 var PORT = 8848;
 var i = 0;
 
+setInterval(()=>{client.write('_D4'+ (i++)%255 +'\n');console.log(i);}, 10);
+
 var client = new net.Socket();
 client.connect(PORT, HOST, function() {
 
     console.log('CONNECTED TO: ' + HOST + ':' + PORT);
-    // 建立连接后立即向服务器发送数据，服务器将收到这些数据 
-    client.write('I am Chuck Norris!');
+    client.write('_GET'+ '\n');
 
 });
 
@@ -18,7 +19,9 @@ client.connect(PORT, HOST, function() {
 client.on('data', function(data) {
 
     console.log('DATA: ' + data);
-        client.write('' + i++ + '\n');
+        
+        //client.write('_GET'+'\n');
+        console.log(i);
     // 完全关闭连接
     //client.destroy();
 

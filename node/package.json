@@ -1,6 +1,6 @@
 {
   "name": "wiot",
-  "version": "0.0.24",
+  "version": "0.1.1",
   "description": "An awesome iot system for web developers~",
   "main": "wiot.js",
   "scripts": {

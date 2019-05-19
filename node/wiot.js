@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-19 16:08:40
+ * @Last Modified time: 2019-05-19 23:20:54
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -27,6 +27,7 @@ var wiot_client = function (o_params) {
         data: {},
         fData: {},
         ip: "default",
+        port: 8848,
         ip_range: "192.168.0",
         localIP: "127.0.0.1",
         version: "",
@@ -270,10 +271,22 @@ var wiot_client = function (o_params) {
     var nodeArp = require('macfromip');
     var request = require('request');
     var fs = require('fs');
+    var net = require('net');
 
     /* tmp global var */
+    var client = new net.Socket();
     var ip_point = 0;
     var status = [];
+    var fpinCmd = {
+        D1: 0,
+        D2: 0,
+        D3: 0,
+        D4: 0,
+        D5: 0,
+        D6: 0,
+        D7: 0,
+        D8: 0
+    };
     status.fill(false, 0, o.MaxTraceBackTimes);
 
     /* tools */
@@ -496,6 +509,21 @@ var wiot_client = function (o_params) {
             return;
         }
     };
+
+    var eventsHandler = () => {
+        for (var i = 1; i <= 8; i++) {
+            var s = 'D' + i;
+            if (o.fData[s] != o.data[s]) {
+                o.pinEvents[s].change();
+                if (o.data[s] == 0) {
+                    o.pinEvents[s].off();
+                } else {
+                    o.pinEvents[s].on();
+                }
+            }
+        }
+    }
+
     /* http functions */
     var http_error_callback = (callback = () => {}) => {
         callback();
@@ -556,18 +584,86 @@ var wiot_client = function (o_params) {
 
 
 
+    /* socket */
+    var socket_sync_cmd = () => {
 
-    /* pin Mode */
-    var setPinMode = (pin, mode) => {
-        if (pin < 1 || pin > 8) throw "Illegal Pin Number!!";
-        if (mode == o.INPUT_PULLUP || mode == 2) {
-            mode = "INPUT_PULLUP";
-        } else if (mode == o.OUTPUT || mode == 1) {
-            mode = "OUTPUT";
-        } else {
-            mode = "INPUT";
+        for(var i = 1; i <= 8; i ++){
+
+            var s = 'D' + i;
+            if(fpinCmd[s] != o.pinCmd[s]){
+                //if(o.LastSocketSendTime + o.okDelayTime > Date.parse(new Date())) break;
+                client.write('_' + s + o.pinCmd[s]+'\n');
+                o.LastSocketSendTime = Date.parse(new Date());
+                fpinCmd[s] = o.pinCmd[0];
+
+            }
         }
-        http_request('http://' + o.ip + '/pinMode?pin=' + pin + '&mode=' + mode);
+    };
+
+    var socket_ini = () => {
+
+        socket_start();
+        client.on('data', function (msg) {
+            o.isConnected = true;
+            setTimeout(socket_sync_cmd, o.setInterval);
+            if(IsJsonString(msg)){
+            
+                var obj = JSON.parse(msg);
+                o.fData = o.data;
+                if(obj.type == "info") o.data = obj;
+                eventsHandler();
+                o.LastConnectTime = Date.parse(new Date());
+                if(o.debug) console.log('Socket: ' + msg);
+                return;
+            }
+            if(o.debug) console.log('socket recive not JSON!!');
+            
+        });
+
+        client.on('close', function () {
+            if(o.debug) console.log('Socket Connection closed');
+            client.destroy();
+            setTimeout(socket_start, o.errDelayTime);
+        });
+
+        client.on('error', function () {
+            if(o.debug) console.log('Socket Connection error');
+            o.isConnected = false;
+        });
+
+
+    };
+
+    var socket_start = () => {
+         o.LastTryTime = Date.parse(new Date());
+
+        client.connect(o.port, o.ip, function () {
+
+            if (o.hint) console.log('wIoT - ' + o.MAC + ": Socket Connected!!");
+            if(!o.firstReady){
+                o.begin();
+            }
+            o.firstReady = true;
+            client.write('_GET\n');
+            o.LastConnectTime = Date.parse(new Date());
+
+        });
+
+           
+    };
+
+
+        /* pin Mode */
+    var setPinMode = (pin, mode) => {
+                if (pin < 1 || pin > 8) throw "Illegal Pin Number!!";
+                if (mode == o.INPUT_PULLUP || mode == 2) {
+                    mode = "INPUT_PULLUP";
+                } else if (mode == o.OUTPUT || mode == 1) {
+                    mode = "OUTPUT";
+                } else {
+                    mode = "INPUT";
+                }
+                http_request('http://' + o.ip + '/pinMode?pin=' + pin + '&mode=' + mode);
 
     };
 
@@ -634,6 +730,7 @@ var wiot_client = function (o_params) {
 
         if (o.hint && o.pinCmd[pin] != out) console.log('wIoT - ' + o.MAC + ': Write Value ' + out + ' to ' + pin);
         o.pinCmd[pin] = out;
+        if(!o.OnlyHTTP) socket_sync_cmd();
     };
 
     o.digitalWrite = (pin, out, callback = () => {}, err = () => {}) => {
@@ -693,22 +790,12 @@ var wiot_client = function (o_params) {
 
     async function lstn() {
         if (o.firstReady) return; //avoid multi monitors
-        setInterval(async () => {
+        o.runing_interval = setInterval(async () => {
             setStatus(o.isConnected);
             checkStatus();
             if (o.LastConnectTime + o.errDelayTime > Date.parse(new Date())) {
                 o.isConnected = true;
-                for(var i = 1; i <= 8; i ++){
-                    var s = 'D' + i;
-                    if(o.fData[s] != o.data[s]){
-                        o.pinEvents[s].change();
-                        if(o.data[s] == 0){
-                            o.pinEvents[s].off();
-                        }else{
-                            o.pinEvents[s].on();
-                        }
-                    }
-                }
+                eventsHandler();
                 http_connected_callback();
                 o.fData = o.data;
                 return;
@@ -756,8 +843,10 @@ var wiot_client = function (o_params) {
     var core = () => {
 
         if(o.OnlyHTTP) http_update();
-        else{
-            
+        else {
+            socket_ini();
+            clearInterval(o.runing_interval);
+            lstn_socket();
         }
 
         if (!o.firstReady && o.ready()) {
@@ -767,6 +856,26 @@ var wiot_client = function (o_params) {
         }
         if (o.debug) console.log(o.data);
     };
+
+
+
+    async function lstn_socket() {
+        o.runing_interval = setInterval(async () => {
+            setStatus(o.isConnected);
+            checkStatus();
+            socket_sync_cmd();
+            if (o.LastConnectTime + o.errDelayTime > Date.parse(new Date())) {
+                o.isConnected = true;
+                //eventsHandler();
+                return;
+            }
+
+        }, o.IntervalTime);
+
+    };
+
+
+
 
     /* exc cmd */
     ini();
@@ -998,8 +1107,32 @@ var wiot_ir = (obj, pin) => {
 
     return o;
 };
+var wiot_guguji = (ak, userID, memobirdID) => {
 
+    var request = require('request');
+    var o = {
+        ak: ak,
+        userID: userID,
+        memobirdID: memobirdID,
+        print: (s) => {
+            request.post({
+                url: 'https://api.yimian.xyz/gugu/',
+                form: {
+                    ak: o.ak,
+                    userID: o.userID,
+                    memobirdID: o.memobirdID,
+                    body: s
+                }},
+                function (err, httpResponse, body) {
+                    body = JSON.parse(body);
+                    console.log('wiot - Guguji: ' + body.showapi_res_error);
+                
+            })
+        }
+    };
 
+    return o;
+};
 
 
 /* exports */
@@ -1026,3 +1159,4 @@ exports.led = wiot_led;
 exports.pir = wiot_pir;
 exports.ir = wiot_ir;
 exports.lightSensor = wiot_lightSensor;
+exports.guguji = wiot_guguji;

@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me)
  * @Date: 2019-05-02 21:20:48
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-19 16:08:08
+ * @Last Modified time: 2019-05-19 21:11:48
  */
 
 #include <EEPROM.h>
@@ -23,7 +23,7 @@
 
 String ssid = WIFI_STA_SSID;
 String password = WIFI_STA_PSK;
-const String wiot_version = "v0.1.4";
+const String wiot_version = "v0.1.5";
 
 enum ModeType { AP, STA };
 ModeType Mode;
@@ -485,12 +485,15 @@ void loop() {
         if(s.substring(0, 2) == "_D" && EEPROM.read(162 + atoi(s.substring(2, 3).c_str()))){
             //Serial.println(atoi(s.substring(2, 3).c_str()));
             //Serial.println(atoi(s.substring(3, s.length()).c_str()));
+            client.print("{\"type\": \"set\"}");
             analogWrite(_pin(atoi(s.substring(2, 3).c_str())), atoi(s.substring(3, s.length()).c_str()));
             if(atoi(s.substring(3, s.length()).c_str()) == 0){
                 data[atoi(s.substring(2, 3).c_str())] = 0;
             }else{
                 data[atoi(s.substring(2, 3).c_str())] = 1;
             }
+
+
         }
         if(s.substring(0, 4) == "_GET"){
 
