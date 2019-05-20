@@ -65,6 +65,31 @@ node app.js
 ### 预期结果
 如果一切顺利，你现在应该会发现你的板载led在闪烁了
 
+### 社区支持
+也许你会觉得上述代码难以理解，这是正常的，由于delay功能在JS中难以实现。但是不用担心，这些问题将会由社区中的其它开发者帮你解决。  
+  
+wIoT在实现基本的单片机控制同时，也提供了丰富的[扩展功能](#传感器扩展模块)。更神奇的是，任何人都可以在wIoT中编写自己的扩展并与全世界共享它们。在这里我们可以使用wIoT官方提供的led扩展轻松实现上例功能！
+
+```js
+var wiot = require('wiot'); //引入wiot依赖包
+
+// 新建一个单片机对象
+var MyMCU = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
+
+// 新建一个led模块
+var led = new wiot.led(MyMCU, wiot.D4);
+
+// 以下代码将实现，板载led亮1秒，灭1秒的循环
+
+// 等待所有单品即准备就绪
+wiot.begin([MyMCU], ()=>{
+
+    // 调用led模块构建亮1秒灭1秒的动作
+    led.set([wiot.HIGH, wiot.LOW], [1000, 1000]);
+});
+
+```
+
 
 ## 进阶设置
 
@@ -128,6 +153,11 @@ var MyMCU = new wiot.client({
 });
 
 ```
+
+#### 方法列表
+
++ `.write(pin: wiot.pin/number, state: iot.state/number)`: 向指定pin口输出状态指令，状态可以是wiot.HIGH/wiot.LOW或PWM调制(0-255数字)
++ `wiot.read(pin: wiot.pin/number)`: 读取指定pin口状态，数字pin返回wiot.HIGH/wiot.LOW，模拟pin返回0-1024数值
 
 
 
