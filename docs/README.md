@@ -81,6 +81,7 @@ ip | "default" | 指定单片机IP, 请在长时间搜索不到IP时尝试此选
 port | 8848 | Client的TCP Socket通信端口，默认8848
 ip_range | "192.168.0" | IP搜索字段，请在长时间搜索不到IP时尝试此选项
 localIP | "127.0.0.1" | 本机IP
+OnlyHTTP | false | 是否仅使用HTTP模式连接单片机
 errDelayTime | 2000 | 遇到网络错误时重试间隔时间(毫秒)
 okDelayTime | 30 | 收到网络请求后延时等待时间(毫秒)
 resetDelayTime | 4500 | 向单片机发送重置指令后多久不再发送新消息(毫秒)
@@ -169,6 +170,7 @@ MCU.pinOn(wiot.D2, 'on', function () {
 ### API
 
 + `wiot.begin()`: 单片机准备完成后开始执行
+
 ```js
 MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
 MCU1 = new wiot.client({MAC: "xx:xx:xx:xx:xx:ww"});
