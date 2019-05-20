@@ -264,7 +264,7 @@ myLED.clear();
 + `wiot.pir(MCU, pin)`: 声明一个PIR模块
 + `wiot.pir.getStatus()`: 获取PIR状态，返回值wiot.HIGH(有人)，wiot.LOW(无人)
 
-#### 事件触发器
+**事件触发器**
 + `wiot.pir.on(event, handler)`
 
 **事件列表**
@@ -302,7 +302,7 @@ myPIR.on("change", ()=>{
 + `wiot.ir(MCU, pin)`: 声明一个IR模块，pin可以是模拟或数字端口
 + `wiot.ir.getStatus()`: 获取IR状态，返回值wiot.HIGH(有障碍)，wiot.LOW(无障碍)，或者0-1024数值(限模拟端口)
 
-#### 事件触发器
+**事件触发器**
 + `wiot.ir.on(event, handler)`
 
 **事件列表**
@@ -340,7 +340,7 @@ myIR.on("change", ()=>{
 + `wiot.lightSensor(MCU, pin)`: 声明一个lightSensor模块, pin可以是模拟或数字端口
 + `wiot.lightSensor.getStatus()`: 获取lightSensor状态，返回值wiot.HIGH(有光)，wiot.LOW(无光)，或者0-1024数值(限模拟端口)
 
-#### 事件触发器
+**事件触发器**
 + `wiot.light.on(event, handler)`
 
 **事件列表**
