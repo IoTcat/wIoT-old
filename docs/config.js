@@ -18,7 +18,7 @@ docute.init({
                 title: 'Ecosystem', path: '/ecosystem'
             },
             {
-                title: 'Support DPlayer', path: '/support'
+                title: 'Support wIoT', path: '/support'
             },
             {
                 title: 'Languages', type: 'dropdown', items: langs
@@ -32,7 +32,7 @@ docute.init({
                 title: '生态', path: '/zh-Hans/ecosystem'
             },
             {
-                title: '支持 DPlayer', path: '/zh-Hans/support'
+                title: '支持 wIoT', path: '/zh-Hans/support'
             },
             {
                 title: '选择语言', type: 'dropdown', items: langs
