@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-19 23:20:54
+ * @Last Modified time: 2019-05-20 09:24:49
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -623,7 +623,7 @@ var wiot_client = function (o_params) {
         client.on('close', function () {
             if(o.debug) console.log('Socket Connection closed');
             client.destroy();
-            setTimeout(socket_start, o.errDelayTime);
+            setTimeout(socket_start, o.noTryMaxTime);
         });
 
         client.on('error', function () {
@@ -1107,6 +1107,7 @@ var wiot_ir = (obj, pin) => {
 
     return o;
 };
+
 var wiot_guguji = (ak, userID, memobirdID) => {
 
     var request = require('request');
@@ -1135,6 +1136,38 @@ var wiot_guguji = (ak, userID, memobirdID) => {
 };
 
 
+var wiot_mail = (to, from = "wIoT") => {
+
+    var request = require('request');
+    var o = {
+        to: to,
+        from: from,
+        send: (subject, body) => {
+            request.post({
+                url: 'https://mail.yimian.xyz/',
+                form: {
+                    to: o.to,
+                    from: o.from,
+                    subject: subject,
+                    body: body
+                }},
+                function (err, httpResponse, body) {
+                    body = JSON.parse(body);
+                    if(body.state == "true")
+                    console.log('wiot - Mail: Sent successfully!!');
+                    else
+                    console.log('wiot - Mail: ' + 'Sent failure!!');
+                
+            })
+        }
+    };
+
+    return o;
+};
+
+
+
+
 /* exports */
 exports.HIGH = 255;
 exports.LOW = 0;
@@ -1160,3 +1193,4 @@ exports.pir = wiot_pir;
 exports.ir = wiot_ir;
 exports.lightSensor = wiot_lightSensor;
 exports.guguji = wiot_guguji;
+exports.mail = wiot_mail;

@@ -90,6 +90,11 @@ wiot.register.set(wiot.LOW, ir.getStatus, ()=>{
 */
 
 
-var gugu = wiot.guguji("9e55121803474371bfa25d20e554b31d", "832598", "b3ee06a8bd9b49e1");
+//var gugu = wiot.guguji("9e55121803474371bfa25d20e554b31d", "832598", "b3ee06a8bd9b49e1");
 
-gugu.print("kkk");
+//gugu.print("kkk");
+//
+
+var mail = wiot.mail("i@yimian.xyz", "wIoT");
+
+mail.send("Test", "Test from wiot!!");
