@@ -169,11 +169,11 @@ var MyMCU = new wiot.client({
 
 
 ## Event Binding
-###Client
+### Client
 
 `.on(event, handler)`
 
-####Event List of client
+#### Event List of client
 
 - `begin`  It begins when MCU starts to interact normally
 - `disConnected`  Disconnect from MCU
@@ -191,7 +191,7 @@ MCU.on('disConnected', function () {
 
 ```
 
-###Pin
+### Pin
 
 `.pinOn(pin, event, handler)`
 
@@ -214,7 +214,7 @@ MCU.pinOn(wiot.D2, 'on', function () {
 ```
 
 
-###API
+### API
 
 + `wiot.begin()`: Execute when MCU is ready
 
