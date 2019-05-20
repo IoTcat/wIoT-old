@@ -8,7 +8,7 @@ docute.init({
     title: 'wIoT',
     repo: 'iotcat/wIoT',
     twitter: 'iotcat',
-    'edit-link': 'https://github.com/IoTcat/wIoT/blob/master/',
+    'edit-link': 'https://github.com/IoTcat/wIoT/blob/master/docs/',
     nav: {
         default: [
             {
