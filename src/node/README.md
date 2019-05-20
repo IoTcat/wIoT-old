@@ -209,7 +209,9 @@ wiot.register.set(pir.getStatus, wiot.HIGH, ()=>{
 });
 
 //注册一条规则，当人离开时，myLED灭
-wiot.register.set(wiot.LOW, pir.getStatus, ()=>{
+wiot.register.set(()=>{
+    return (wiot.LOW == pir.getStatus);
+}, ()=>{
     myLED.clear();
 });
 ```
