@@ -1,6 +1,6 @@
 const langs = [
-    { title: 'English', path: '/home', matchPath: /^\/(home|ecosystem|support)/ },
-    { title: '简体中文', path: '/zh-Hans/', matchPath: /^\/zh-Hans/ },
+    { title: '简体中文', path: '/home', matchPath: /^\/(home|ecosystem|support)/ },
+    { title: 'English', path: '/en/', matchPath: /^\/en/ },
 ];
 
 docute.init({
@@ -26,13 +26,13 @@ docute.init({
         ],
         'zh-Hans': [
             {
-                title: '首页', path: '/zh-Hans/'
+                title: '首页', path: '/en/'
             },
             {
-                title: '生态', path: '/zh-Hans/ecosystem'
+                title: '生态', path: '/en/ecosystem'
             },
             {
-                title: '支持 wIoT', path: '/zh-Hans/support'
+                title: '支持 wIoT', path: '/en/support'
             },
             {
                 title: '选择语言', type: 'dropdown', items: langs
