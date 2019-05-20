@@ -7,8 +7,8 @@ docute.init({
     landing: 'landing.html',
     title: 'wIoT',
     repo: 'iotcat/wIoT',
-    twitter: 'wiott',
-    'edit-link': 'https://github.com/iotcat/wiot/docs',
+    twitter: 'iotcat',
+    'edit-link': 'https://github.com/IoTcat/wIoT/blob/master/',
     nav: {
         default: [
             {
