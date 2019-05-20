@@ -1,0 +1,33 @@
+{
+  "name": "wiot",
+  "version": "0.2.2",
+  "description": "An awesome iot system for web developers~",
+  "main": "wiot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IoTcat/wIoT.git"
+  },
+  "keywords": [
+    "iot",
+    "system",
+    "websocket",
+    "http",
+    "socket",
+    "OTA"
+  ],
+  "author": "iotcat",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IoTcat/wIoT/issues"
+  },
+  "homepage": "https://github.com/IoTcat/wIoT#readme",
+  "dependencies": {
+    "@network-utils/arp-lookup": "^1.0.3",
+    "macfromip": "^1.1.1",
+    "ping": "^0.2.2",
+    "request": "^2.88.0"
+  }
+}

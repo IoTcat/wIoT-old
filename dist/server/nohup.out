@@ -1,0 +1,34 @@
+
+Running node-supervisor with
+  program 'getData.js'
+  --watch '.'
+  --extensions 'node,js'
+  --exec 'node'
+
+Starting child process with 'node getData.js'
+Watching directory '/home/wIoT' for changes.
+Press rs for restarting the process.
+Parent process exiting, terminating child...
+events.js:160
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EBADF: bad file descriptor, read
+    at Error (native)
+
+Running node-supervisor with
+  program 'getData.js'
+  --watch '.'
+  --extensions 'node,js'
+  --exec 'node'
+
+Starting child process with 'node getData.js'
+Watching directory '/home/wIoT' for changes.
+Press rs for restarting the process.
+Parent process exiting, terminating child...
+events.js:160
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EBADF: bad file descriptor, read
+    at Error (native)
