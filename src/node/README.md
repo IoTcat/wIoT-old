@@ -306,23 +306,23 @@ myPIR.on("change", ()=>{
 ```js
 MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx"});
 
-var myPIR = wiot.pir(MCU0, wiot.D2); //新建一个pir对象，使用MCU0上的D2口
+var myIR = wiot.ir(MCU0, wiot.D2); //新建一个ir对象，使用MCU0上的D2口
 
-/* 输出pir状态到控制台 */
-console.log(myPIR.getStatus());
+/* 输出ir状态到控制台 */
+console.log(myIR.getStatus());
 
-/* 当探测到人，打印 "Detected People!" 到控制台 */
-myPIR.on("detected", ()=>{
-    console.log("Detected People!");
+/* 当探测到物体，打印 "Detected Object!" 到控制台 */
+myIR.on("detected", ()=>{
+    console.log("Detected Object!");
 });
 
-/* 人移动出探测范围，打印 "No People!!" 到控制台 */
-myPIR.on("undetected", ()=>{
-    console.log("No People!!");
+/* 物体移动出探测范围，打印 "No Object!!" 到控制台 */
+myIR.on("undetected", ()=>{
+    console.log("No Object!!");
 });
 
 /* 当状态改变，执行指令 */
-myPIR.on("change", ()=>{
+myIR.on("change", ()=>{
     /* 你的指令 */
 });
 

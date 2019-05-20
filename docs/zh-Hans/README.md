@@ -166,7 +166,6 @@ MCU.pinOn(wiot.D2, 'on', function () {
 ### API
 
 + `wiot.begin()`: 单片机准备完成后开始执行
-
 ```js
 MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
 MCU1 = new wiot.client({MAC: "xx:xx:xx:xx:xx:ww"});
@@ -178,7 +177,6 @@ wiot.begin([MCU0, MCU1], ()=>{
 ```
 
 + `wiot.loop()`: 循环执行的指令，适合于条件控制语句
-
 ```js
 MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
 MCU1 = new wiot.client({MAC: "xx:xx:xx:xx:xx:ww"});
@@ -227,7 +225,6 @@ wiot.register.set(()=>{
 + `wiot.led.set(status, time = 0, isSmooth = false)`: 设置led状态，起始状态，中间状态，最终状态，周期
 + `wiot.led.breath(period)`: 设置一个呼吸灯
 + `wiot.led.clear()`: 重置led
-
 ```js
 MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
 
@@ -309,23 +306,23 @@ myPIR.on("change", ()=>{
 ```js
 MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx"});
 
-var myPIR = wiot.pir(MCU0, wiot.D2); //新建一个pir对象，使用MCU0上的D2口
+var myIR = wiot.ir(MCU0, wiot.D2); //新建一个ir对象，使用MCU0上的D2口
 
-/* 输出pir状态到控制台 */
-console.log(myPIR.getStatus());
+/* 输出ir状态到控制台 */
+console.log(myIR.getStatus());
 
-/* 当探测到人，打印 "Detected People!" 到控制台 */
-myPIR.on("detected", ()=>{
-    console.log("Detected People!");
+/* 当探测到物体，打印 "Detected Object!" 到控制台 */
+myIR.on("detected", ()=>{
+    console.log("Detected Object!");
 });
 
-/* 人移动出探测范围，打印 "No People!!" 到控制台 */
-myPIR.on("undetected", ()=>{
-    console.log("No People!!");
+/* 物体移动出探测范围，打印 "No Object!!" 到控制台 */
+myIR.on("undetected", ()=>{
+    console.log("No Object!!");
 });
 
 /* 当状态改变，执行指令 */
-myPIR.on("change", ()=>{
+myIR.on("change", ()=>{
     /* 你的指令 */
 });
 
