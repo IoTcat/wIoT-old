@@ -1,6 +1,6 @@
 {
   "name": "wiot",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "An awesome iot system for web developers~",
   "main": "wiot.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "keywords": [
     "iot",
     "system",
-    "websocket",
+    "socket",
     "http",
     "socket",
     "OTA"
@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/IoTcat/wIoT/issues"
   },
-  "homepage": "https://github.com/IoTcat/wIoT#readme",
+  "homepage": "https://wiot.eee.dog/",
   "dependencies": {
     "@network-utils/arp-lookup": "^1.0.3",
     "macfromip": "^1.1.1",

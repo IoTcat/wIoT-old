@@ -66,7 +66,9 @@ node app.js
 
 ## 进阶设置
 
-### wiot.client参数说明
+### wiot.client
+
+#### 参数说明
 名称 | 默认值 | 描述
 ----|-------|----
 MAC | "" | 单片机的MAC地址
@@ -74,6 +76,7 @@ pin | {D1: 0, D2: 0, D3: 0, D4: 0, D5: 0, D6: 0, D7: 0, D8: 0} | pin脚的模式
 hint | true | 是否显示状态提示
 debug | false | 是否开启debug模式
 ip | "default" | 指定单片机IP, 请在长时间搜索不到IP时尝试此选项
+port | 8848 | Client的TCP Socket通信端口，默认8848
 ip_range | "192.168.0" | IP搜索字段，请在长时间搜索不到IP时尝试此选项
 localIP | "127.0.0.1" | 本机IP
 errDelayTime | 2000 | 遇到网络错误时重试间隔时间(毫秒)
@@ -106,6 +109,7 @@ var MyMCU = new wiot.client({
     hint: true,
     debug: false,
     ip: "192.168.0.55",
+    port: 6666,
     ip_range: "192.168.0",
     localIP: "127.0.0.1",
     errDelayTime: 2000,
@@ -122,39 +126,9 @@ var MyMCU = new wiot.client({
 
 ```
 
-### API
-
-+ `wiot.begin()`: 单片机准备完成后开始执行
-```js
-MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
-MCU1 = new wiot.client({MAC: "xx:xx:xx:xx:xx:ww"});
-
-wiot.begin([MCU0, MCU1], ()=>{
-    //这里放你要执行的指令
-    //这些指令将会在MCU0和MCU1准备就绪后开始执行
-});
-```
-
-+ `wiot.loop()`: 循环执行的指令，适合于条件控制语句
-```js
-MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
-MCU1 = new wiot.client({MAC: "xx:xx:xx:xx:xx:ww"});
-
-// 以下代码将实现: 当MCU0的D5接收到HIGH，MCU1的D4将会输出HIGH
-//                当MCU0的D5接收到LOW, MCU1的D4将会输出LOW
-// 本函数接受两个参数: 第一个是MCU对象数组, 第二个是参数为MCU对象数组的函数
-wiot.loop([MCU0, MCU1], () => {
-    if(MCU1.read(wiot.D5) == wiot.HIGH){
-        MCU0.write(wiot.D4, wiot.HIGH);
-    }else{
-        MCU0.write(wiot.D4, wiot.LOW);
-    }
-});
-
-```
 
 
-### wiot.client事件绑定
+#### 事件绑定
 `.on(event, handler)`
 
 **client事件列表**
@@ -188,8 +162,61 @@ MCU.pinOn(wiot.D2, 'on', function () {
 });
 ```
 
+### 注册表
++ `wiot.register.set(status1, status2, function)`: 向注册表中添加一条规则, status可以是值或函数，当status1==status2时会触发function。
+注册表的设计是为了方便协调各扩展模块的使用，详见下文[扩展模块](#扩展模块)。
 
-## 常用模块
+```js
+var myLED = wiot.led(MyMCU, wiot.D4);
+var pir = wiot.pir(MyMCU, wiot.D2);
+
+//注册一条规则，当pir探测到人时，myLED亮
+wiot.register.set(pir.getStatus, wiot.HIGH, ()=>{
+    myLED.set(wiot.HIGH);
+});
+
+//注册一条规则，当人离开时，myLED灭
+wiot.register.set(wiot.LOW, pir.getStatus, ()=>{
+    myLED.clear();
+});
+```
+
+
+
+
+### API
+
++ `wiot.begin()`: 单片机准备完成后开始执行
+```js
+MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
+MCU1 = new wiot.client({MAC: "xx:xx:xx:xx:xx:ww"});
+
+wiot.begin([MCU0, MCU1], ()=>{
+    //这里放你要执行的指令
+    //这些指令将会在MCU0和MCU1准备就绪后开始执行
+});
+```
+
++ `wiot.loop()`: 循环执行的指令，适合于条件控制语句
+```js
+MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
+MCU1 = new wiot.client({MAC: "xx:xx:xx:xx:xx:ww"});
+
+// 以下代码将实现: 当MCU0的D5接收到HIGH，MCU1的D4将会输出HIGH
+//                当MCU0的D5接收到LOW, MCU1的D4将会输出LOW
+// 本函数接受两个参数: 第一个是MCU对象数组, 第二个是参数为MCU对象数组的函数
+wiot.loop([MCU0, MCU1], () => {
+    if(MCU1.read(wiot.D5) == wiot.HIGH){
+        MCU0.write(wiot.D4, wiot.HIGH);
+    }else{
+        MCU0.write(wiot.D4, wiot.LOW);
+    }
+});
+
+```
+
+
+## 扩展模块
 
 ### LED
 + `wiot.led(MCU, pin)`: 声明一个led模块
@@ -334,24 +361,6 @@ myLightSensor.on("dark", ()=>{
 /* 当状态改变，执行指令 */
 myLightSensor.on("change", ()=>{
     /* 你的指令 */
-});
-```
-
-## 注册表
-+ `wiot.register.set(status1, status2, function)`: 向注册表中添加一条规则, status可以是值或函数，当status1==status2时会触发function
-
-```js
-var myLED = wiot.led(MyMCU, wiot.D4);
-var pir = wiot.pir(MyMCU, wiot.D2);
-
-//注册一条规则，当pir探测到人时，myLED亮
-wiot.register.set(pir.getStatus, wiot.HIGH, ()=>{
-    myLED.set(wiot.HIGH);
-});
-
-//注册一条规则，当人离开时，myLED灭
-wiot.register.set(wiot.LOW, pir.getStatus, ()=>{
-    myLED.clear();
 });
 ```
 
