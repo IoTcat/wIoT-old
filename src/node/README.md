@@ -197,6 +197,7 @@ wiot.loop([MCU0, MCU1], () => {
 ### 注册表
 + `wiot.register.set(status1, status2, function)`: 向注册表中添加一条规则, status可以是值或函数，当status1==status2时会触发function。
 注册表的设计是为了方便协调各扩展模块的使用，详见下文[扩展模块](#传感器扩展模块)。
++ `wiot.register.set(status, function)`: 你也可以传入两个函数，其中status的返回值是bool型，变为true时触发function
 
 ```js
 var myLED = wiot.led(MyMCU, wiot.D4);
@@ -289,8 +290,8 @@ myPIR.on("change", ()=>{
 
 ### IR 红外循迹/障碍传感器
 
-+ `wiot.ir(MCU, pin)`: 声明一个IR模块
-+ `wiot.ir.getStatus()`: 获取IR状态，返回值wiot.HIGH(有障碍)，wiot.LOW(无障碍)
++ `wiot.ir(MCU, pin)`: 声明一个IR模块，pin可以是模拟或数字端口
++ `wiot.ir.getStatus()`: 获取IR状态，返回值wiot.HIGH(有障碍)，wiot.LOW(无障碍)，或者0-1024数值(限模拟端口)
 
 #### 事件触发器
 + `wiot.ir.on(event, handler)`
@@ -327,8 +328,8 @@ myPIR.on("change", ()=>{
 
 ### lightSensor 光敏传感器
 
-+ `wiot.lightSensor(MCU, pin)`: 声明一个lightSensor模块
-+ `wiot.lightSensor.getStatus()`: 获取lightSensor状态，返回值wiot.HIGH(有光)，wiot.LOW(无光)
++ `wiot.lightSensor(MCU, pin)`: 声明一个lightSensor模块, pin可以是模拟或数字端口
++ `wiot.lightSensor.getStatus()`: 获取lightSensor状态，返回值wiot.HIGH(有光)，wiot.LOW(无光)，或者0-1024数值(限模拟端口)
 
 #### 事件触发器
 + `wiot.light.on(event, handler)`

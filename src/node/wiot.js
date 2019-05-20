@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-20 11:04:11
+ * @Last Modified time: 2019-05-20 11:39:31
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -593,7 +593,7 @@ var wiot_client = function (o_params) {
             if (fpinCmd[s] != o.pinCmd[s]) {
                 //if(o.LastSocketSendTime + o.okDelayTime > Date.parse(new Date())) break;
                 client.write('_' + s + o.pinCmd[s] + '\n');
-                if(o.debug) console.log('Socket-send::'+s+o.pinCmd[s]);
+                if (o.debug) console.log('Socket-send::' + s + o.pinCmd[s]);
                 o.LastSocketSendTime = Date.parse(new Date());
                 fpinCmd[s] = o.pinCmd[s];
 
@@ -932,30 +932,43 @@ var wiot_register = {
     status: [],
     action: [],
     fState: [],
-    set: (s, st, t) => {
+    set: (s, st = null, t = null) => {
+        if (t != null) {
+
+            wiot_register.events.push(s);
+            wiot_register.status.push(st);
+            wiot_register.action.push(t);
+            return;
+        }
+
         wiot_register.events.push(s);
-        wiot_register.status.push(st);
-        wiot_register.action.push(t);
+        wiot_register.status.push(null);
+        wiot_register.action.push(st);
     },
     core: () => {
         for (var i = 0; i < wiot_register.events.length; i++) {
-            if (typeof wiot_register.events[i] == 'function') {
-                var t_event = wiot_register.events[i]();
+            if (wiot_register.status[i] == null) {
+                var res = wiot_register.events[i]();
             } else {
-                var t_event = wiot_register.events[i];
-            }
-            if (typeof wiot_register.status[i] == 'function') {
-                var t_status = wiot_register.status[i]();
-            } else {
-                var t_status = wiot_register.status[i];
-            }
+                if (typeof wiot_register.events[i] == 'function') {
+                    var t_event = wiot_register.events[i]();
+                } else {
+                    var t_event = wiot_register.events[i];
+                }
+                if (typeof wiot_register.status[i] == 'function') {
+                    var t_status = wiot_register.status[i]();
+                } else {
+                    var t_status = wiot_register.status[i];
+                }
 
-            if (wiot_register.fState[i] != (t_event == t_status)) {
+                var res = (t_status == t_event);
+            }
+            if (wiot_register.fState[i] != res) {
 
-                if (t_event == t_status) {
+                if (res) {
                     wiot_register.action[i]();
                 }
-                wiot_register.fState[i] = (t_event == t_status);
+                wiot_register.fState[i] = res;
             }
         }
     }
@@ -978,18 +991,18 @@ var wiot_led = (obj, pin) => {
                     return o.MCU.read(o.pin);
                 },
                 set: (status, time = 0, isSmooth = false) => {
-                    clearInterval(o.t_interval);
-                    if (time == 0) {
-                        o.MCU.write(o.pin, status);
-                        return;
-                    }
-                    if (Object.prototype.toString.call(time) != '[object Array]') {
-                        o.MCU.write(o.pin, status);
-                        setTimeout(() => {
-                            o.clear();
-                        }, time);
-                        return;
-                    }
+                        clearInterval(o.t_interval);
+                        if (time == 0) {
+                            o.MCU.write(o.pin, status);
+                            return;
+                        }
+                        if (Object.prototype.toString.call(time) != '[object Array]') {
+                            o.MCU.write(o.pin, status);
+                            setTimeout(() => {
+                                o.clear();
+                            }, time);
+                            return;
+                        }
                     if (isSmooth) {
                         o.setBreath(status, time);
                         return;
@@ -1073,7 +1086,8 @@ var wiot_lightSensor = (obj, pin) => {
         MCU: obj,
         pin: pin,
         getStatus: () => {
-            return (o.MCU.read(o.pin) == 255)? 0 : 255;
+            if(o.pin != "A0" && o.pin != 0) return (o.MCU.read(o.pin) == 255)? 0 : 255;
+            return o.MCU.read(o.pin);
         },
         on: (event, handler = ()=>{}) => {
             if(event == "light"){
@@ -1097,7 +1111,9 @@ var wiot_ir = (obj, pin) => {
         MCU: obj,
         pin: pin,
         getStatus: () => {
-            return (o.MCU.read(o.pin) == 255) ? 0 : 255;
+
+            if(o.pin != "A0" && o.pin != 0) return (o.MCU.read(o.pin) == 255) ? 0 : 255;
+            return o.MCU.read(o.pin);
         },
         on: (event, handler = ()=>{}) => {
             if(event == "detected"){
