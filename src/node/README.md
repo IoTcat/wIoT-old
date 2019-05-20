@@ -164,7 +164,7 @@ MCU.pinOn(wiot.D2, 'on', function () {
 
 ### 注册表
 + `wiot.register.set(status1, status2, function)`: 向注册表中添加一条规则, status可以是值或函数，当status1==status2时会触发function。
-注册表的设计是为了方便协调各扩展模块的使用，详见下文[扩展模块](#扩展模块)。
+注册表的设计是为了方便协调各扩展模块的使用，详见下文[扩展模块](#传感器扩展模块)。
 
 ```js
 var myLED = wiot.led(MyMCU, wiot.D4);
@@ -216,7 +216,7 @@ wiot.loop([MCU0, MCU1], () => {
 ```
 
 
-## 扩展模块
+## 传感器扩展模块
 
 ### LED
 + `wiot.led(MCU, pin)`: 声明一个led模块
@@ -362,5 +362,34 @@ myLightSensor.on("dark", ()=>{
 myLightSensor.on("change", ()=>{
     /* 你的指令 */
 });
+```
+
+
+## 网络扩展模块
+
+### mail 邮件模块
+使用本模块向指定邮箱发送邮件。自豪地引用[Yimian API](https://api.yimian.xyz/)构建！
+
++ `wiot.mail(to, from = "wIoT")`: 声明一个mail模块，参数收件地址，发件人名称
++ `wiot.mail.send(subject, body)`: 发送邮件，需传入主题，邮件内容
+
+```js
+var mail = wiot.mail("i@iotcat.me", "wIoT Test");
+
+mail.send("Test", "Test from wiot!!");
+
+```
+
+### guguji 咕咕机模块
+使用本模块向指定咕咕机发送消息。咕咕机是一款便携式私人打印机，详见[官网](https://www.memobird.shop/)。使用本模块需要在官网提前申请好自己的开发者ak, 详见[这里](https://api.yimian.xyz/gugu/intro.php)。自豪地引用[Yimian API](https://api.yimian.xyz/)构建！
+
++ `wiot.guguji(ak, userID, memobirdID)`: 声明一个guguji模块，参数: 开发者ak, 用户id, 咕咕机id
++ `wiot.guguji.send(msg)`: 发送消息，需传入待发送的消息
+
+```js
+var gugu = wiot.guguji("9e55121803474371bfa25d20e554b31f", "832598", "b3ee06a8bd9b49e1");
+
+gugu.print("This is from wIoT!!");
+
 ```
 
