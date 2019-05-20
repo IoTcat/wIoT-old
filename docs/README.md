@@ -2,7 +2,7 @@
 适用于NodeJS的wIoT服务器控制组件，轻松物联
 
 ## 先觉条件
- - 拥有烧录好wIoT固件的**D1 MINI**单片机
+ - 拥有烧录好[wIoT固件](https://wiot.yimian.xyz/ota/get.php)的**D1 MINI**单片机
  - 一台或多台无线WiFi路由器2.4G/5G
  - 局域网内拥有一台装有**NodeJS**的服务器或电脑 (NodeJS装法非常简单, 请自行Google或百度)
  - 配置好**npm**
