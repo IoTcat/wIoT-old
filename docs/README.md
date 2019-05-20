@@ -339,7 +339,7 @@ myLED.clear();
 
 
 
-**事件列表**
+**Events List**
 
 - `detected`  Person detected
 - `undetected`  People out of the detective field

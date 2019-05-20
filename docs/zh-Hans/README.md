@@ -20,6 +20,7 @@
 
 ### 依赖安装
 在你的项目文件夹下打开命令行，输入以下指令安装wiot:
+
 ````shell
 $ npm install wiot
 ````
@@ -56,6 +57,7 @@ wiot.begin([MyMCU], ()=>{ // 第一个参数为要等待的单片机对象数组
 
 ### 开始执行
 在项目文件夹中打开命令行，输入以下指令:
+
 ````shell
 node app.js
 ````
@@ -129,6 +131,7 @@ var MyMCU = new wiot.client({
 
 
 #### 事件绑定
+
 `.on(event, handler)`
 
 **client事件列表**
@@ -177,6 +180,7 @@ wiot.begin([MCU0, MCU1], ()=>{
 ```
 
 + `wiot.loop()`: 循环执行的指令，适合于条件控制语句
+
 ```js
 MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
 MCU1 = new wiot.client({MAC: "xx:xx:xx:xx:xx:ww"});
@@ -225,6 +229,7 @@ wiot.register.set(()=>{
 + `wiot.led.set(status, time = 0, isSmooth = false)`: 设置led状态，起始状态，中间状态，最终状态，周期
 + `wiot.led.breath(period)`: 设置一个呼吸灯
 + `wiot.led.clear()`: 重置led
+
 ```js
 MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
 
