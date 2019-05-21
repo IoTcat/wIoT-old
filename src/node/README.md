@@ -1,9 +1,8 @@
 ## wIoT for NodeJS
-适用于NodeJS的wIoT服务器控制组件，轻松物联  
-[**Click Here for English Version~**](https://wiot.eee.dog)
+适用于NodeJS的wIoT服务器控制组件，轻松物联
 
 ## 先觉条件
- - 拥有烧录好wIoT固件的**D1 MINI**单片机
+ - 拥有烧录好[wIoT固件](https://wiot.yimian.xyz/ota/get.php)的**D1 MINI**单片机
  - 一台或多台无线WiFi路由器2.4G/5G
  - 局域网内拥有一台装有**NodeJS**的服务器或电脑 (NodeJS装法非常简单, 请自行Google或百度)
  - 配置好**npm**
@@ -66,6 +65,31 @@ node app.js
 ### 预期结果
 如果一切顺利，你现在应该会发现你的板载led在闪烁了
 
+### 社区支持
+也许你会觉得上述代码难以理解，这是正常的，由于delay功能在JS中难以实现。但是不用担心，这些问题将会由社区中的其它开发者帮你解决。  
+  
+wIoT在实现基本的单片机控制同时，也提供了丰富的[扩展功能](#传感器扩展模块)。更神奇的是，任何人都可以在wIoT中编写自己的扩展并与全世界共享它们。在这里我们可以使用wIoT官方提供的led扩展轻松实现上例功能！
+
+```js
+var wiot = require('wiot'); //引入wiot依赖包
+
+// 新建一个单片机对象
+var MyMCU = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
+
+// 新建一个led模块
+var led = new wiot.led(MyMCU, wiot.D4);
+
+// 以下代码将实现，板载led亮1秒，灭1秒的循环
+
+// 等待所有单品即准备就绪
+wiot.begin([MyMCU], ()=>{
+
+    // 调用led模块构建亮1秒灭1秒的动作
+    led.set([wiot.HIGH, wiot.LOW], [1000, 1000]);
+});
+
+```
+
 
 ## 进阶设置
 
@@ -82,6 +106,8 @@ ip | "default" | 指定单片机IP, 请在长时间搜索不到IP时尝试此选
 port | 8848 | Client的TCP Socket通信端口，默认8848
 ip_range | "192.168.0" | IP搜索字段，请在长时间搜索不到IP时尝试此选项
 localIP | "127.0.0.1" | 本机IP
+OTA | true | 是否自动OTA更新固件
+OnlyHTTP | false | 是否仅使用HTTP模式连接单片机
 errDelayTime | 2000 | 遇到网络错误时重试间隔时间(毫秒)
 okDelayTime | 30 | 收到网络请求后延时等待时间(毫秒)
 resetDelayTime | 4500 | 向单片机发送重置指令后多久不再发送新消息(毫秒)
@@ -115,6 +141,8 @@ var MyMCU = new wiot.client({
     port: 6666,
     ip_range: "192.168.0",
     localIP: "127.0.0.1",
+    OTA: false,
+    OnlyHTTP: true,
     errDelayTime: 2000,
     okDelayTime: 30,
     resetDelayTime: 4500,
@@ -128,6 +156,11 @@ var MyMCU = new wiot.client({
 });
 
 ```
+
+#### 方法列表
+
++ `.write(pin: wiot.pin/number, state: iot.state/number)`: 向指定pin口输出状态指令，状态可以是wiot.HIGH/wiot.LOW或PWM调制(0-255数字)
++ `wiot.read(pin: wiot.pin/number)`: 读取指定pin口状态，数字pin返回wiot.HIGH/wiot.LOW，模拟pin返回0-1024数值
 
 
 
@@ -170,6 +203,7 @@ MCU.pinOn(wiot.D2, 'on', function () {
 ### API
 
 + `wiot.begin()`: 单片机准备完成后开始执行
+
 ```js
 MCU0 = new wiot.client({MAC: "xx:xx:xx:xx:xx:xx", pin: {D4: wiot.OUTPUT}});
 MCU1 = new wiot.client({MAC: "xx:xx:xx:xx:xx:ww"});
@@ -263,7 +297,7 @@ myLED.clear();
 + `wiot.pir(MCU, pin)`: 声明一个PIR模块
 + `wiot.pir.getStatus()`: 获取PIR状态，返回值wiot.HIGH(有人)，wiot.LOW(无人)
 
-#### 事件触发器
+**事件触发器**
 + `wiot.pir.on(event, handler)`
 
 **事件列表**
@@ -301,7 +335,7 @@ myPIR.on("change", ()=>{
 + `wiot.ir(MCU, pin)`: 声明一个IR模块，pin可以是模拟或数字端口
 + `wiot.ir.getStatus()`: 获取IR状态，返回值wiot.HIGH(有障碍)，wiot.LOW(无障碍)，或者0-1024数值(限模拟端口)
 
-#### 事件触发器
+**事件触发器**
 + `wiot.ir.on(event, handler)`
 
 **事件列表**
@@ -339,7 +373,7 @@ myIR.on("change", ()=>{
 + `wiot.lightSensor(MCU, pin)`: 声明一个lightSensor模块, pin可以是模拟或数字端口
 + `wiot.lightSensor.getStatus()`: 获取lightSensor状态，返回值wiot.HIGH(有光)，wiot.LOW(无光)，或者0-1024数值(限模拟端口)
 
-#### 事件触发器
+**事件触发器**
 + `wiot.light.on(event, handler)`
 
 **事件列表**

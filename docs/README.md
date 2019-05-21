@@ -106,6 +106,7 @@ ip | "default" | 指定单片机IP, 请在长时间搜索不到IP时尝试此选
 port | 8848 | Client的TCP Socket通信端口，默认8848
 ip_range | "192.168.0" | IP搜索字段，请在长时间搜索不到IP时尝试此选项
 localIP | "127.0.0.1" | 本机IP
+OTA | true | 是否自动OTA更新固件
 OnlyHTTP | false | 是否仅使用HTTP模式连接单片机
 errDelayTime | 2000 | 遇到网络错误时重试间隔时间(毫秒)
 okDelayTime | 30 | 收到网络请求后延时等待时间(毫秒)
@@ -140,6 +141,8 @@ var MyMCU = new wiot.client({
     port: 6666,
     ip_range: "192.168.0",
     localIP: "127.0.0.1",
+    OTA: false,
+    OnlyHTTP: true,
     errDelayTime: 2000,
     okDelayTime: 30,
     resetDelayTime: 4500,

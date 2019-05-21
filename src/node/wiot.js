@@ -2,7 +2,7 @@
  * @Author: IoTcat (https://iotcat.me) 
  * @Date: 2019-05-04 18:59:49 
  * @Last Modified by: IoTcat
- * @Last Modified time: 2019-05-20 11:39:31
+ * @Last Modified time: 2019-05-21 10:28:21
  */
 var wiot_client = function (o_params) {
     var o = {
@@ -41,6 +41,7 @@ var wiot_client = function (o_params) {
         IpScanTimeOut: 1,
         pingTimeout: 2,
         MaxTraceBackTimes: 8,
+        OTA: true,
         OnlyHTTP: false,
         LastConnectTime: Date.parse(new Date()),
         isConnected: false,
@@ -423,7 +424,7 @@ var wiot_client = function (o_params) {
     var checkVersion = () => {
         request('https://wiot.yimian.xyz/ota/check.php?version=' + o.version + '&MAC=' + o.MAC, (err, res, body) => {
             if (!err && res.statusCode == 200) {
-                if (JSON.parse(body).update) {
+                if (o.OTA && JSON.parse(body).update) {
                     if (o.hint) console.log('wIoT - ' + o.MAC + ': New Version Available!! OTA Updating..');
                     getWiotBinFile(sendUpdateRequest, http_update_pin);
                     return;
