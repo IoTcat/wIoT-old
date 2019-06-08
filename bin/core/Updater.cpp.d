@@ -52,8 +52,8 @@ e:\Arduino_project\wIoT\bin\core\Updater.cpp.o: \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/Esp.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/Updater.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/debug.h \
- C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\d1_mini/pins_arduino.h \
- C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\d1_mini/../generic/common.h \
+ C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\wifiduino/pins_arduino.h \
+ C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\wifiduino/../generic/common.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/flash_utils.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/MD5Builder.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/WString.h \

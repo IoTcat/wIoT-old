@@ -33,6 +33,6 @@ e:\Arduino_project\wIoT\bin\core\core_esp8266_waveform.c.o: \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/twi.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/Arduino.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/core_esp8266_features.h \
- C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\d1_mini/pins_arduino.h \
- C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\d1_mini/../generic/common.h \
+ C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\wifiduino/pins_arduino.h \
+ C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\wifiduino/../generic/common.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266\core_esp8266_waveform.h

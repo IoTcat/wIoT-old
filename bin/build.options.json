@@ -1,10 +1,10 @@
 {
   "builtInLibrariesFolders": "D:\\Arduino\\libraries",
   "customBuildProperties": "build.path=e:\\Arduino_project\\wIoT\\bin,build.warn_data_percentage=75",
-  "fqbn": "esp8266:esp8266:d1_mini:xtal=80,vt=flash,eesz=4M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=921600",
+  "fqbn": "esp8266:esp8266:wifiduino:xtal=80,vt=flash,eesz=4M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=921600",
   "hardwareFolders": "D:\\Arduino\\hardware,C:\\Users\\lymia\\Documents\\Arduino\\hardware",
   "otherLibrariesFolders": "C:\\Users\\lymia\\Documents\\Arduino\\libraries",
   "runtime.ide.version": "10805",
-  "sketchLocation": "e:\\Arduino_project\\wIoT\\client\\wemos_D1_mini\\wemos_D1_mini.ino",
+  "sketchLocation": "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\pre\\pre.ino",
   "toolsFolders": "D:\\Arduino\\tools-builder,D:\\Arduino\\hardware\\tools\\avr"
 }

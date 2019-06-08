@@ -56,8 +56,8 @@ e:\Arduino_project\wIoT\bin\core\Esp-version.cpp.o: \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/Stream.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/md5.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\cores\esp8266/debug.h \
- C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\d1_mini/pins_arduino.h \
- C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\d1_mini/../generic/common.h \
+ C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\wifiduino/pins_arduino.h \
+ C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266\variants\wifiduino/../generic/common.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266/tools/sdk/include/user_interface.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266/tools/sdk/include/os_type.h \
  C:\Users\lymia\Documents\Arduino\hardware\esp8266\esp8266/tools/sdk/include/ets_sys.h \

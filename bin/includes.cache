@@ -7,35 +7,35 @@
   {
     "Sourcefile": "",
     "Include": "",
-    "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\variants\\d1_mini"
+    "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\variants\\wifiduino"
   },
   {
-    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\pre.ino.cpp",
     "Include": "EEPROM.h",
     "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\EEPROM"
   },
   {
-    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\pre.ino.cpp",
     "Include": "ESP8266HTTPUpdateServer.h",
     "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266HTTPUpdateServer\\src"
   },
   {
-    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\pre.ino.cpp",
     "Include": "ESP8266WebServer.h",
     "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WebServer\\src"
   },
   {
-    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\pre.ino.cpp",
     "Include": "ESP8266WiFi.h",
     "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266WiFi\\src"
   },
   {
-    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\pre.ino.cpp",
     "Include": "ESP8266mDNS.h",
     "Includepath": "C:\\Users\\lymia\\Documents\\Arduino\\hardware\\esp8266\\esp8266\\libraries\\ESP8266mDNS"
   },
   {
-    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\wemos_D1_mini.ino.cpp",
+    "Sourcefile": "e:\\Arduino_project\\wIoT\\bin\\sketch\\pre.ino.cpp",
     "Include": "",
     "Includepath": ""
   },
