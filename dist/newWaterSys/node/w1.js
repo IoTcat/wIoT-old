@@ -10,7 +10,7 @@ var w1 = client({
     name: "w1",
     ctl: 0,
     send: ()=>{
-        w1.ctl = fs.readFileSync('ctl.txt').toString();
+        w1.ctl = fs.readFileSync('config/_ctl.txt').toString();
         return '_wiot_' + w1.ctl;
     },
     res: (data)=>{

@@ -24,8 +24,8 @@ setInterval(()=>{
     data.w1Flow = w1.flow;
     data.w2Flow = w2.flow;
     data.ctl = w1.ctl;
-    data.w1Status = fs.readFileSync('data/w1Status.txt').toString();
-    data.w2Status = fs.readFileSync('data/w2Status.txt').toString();
+    data.w1Status = Number(fs.readFileSync('data/w1Status.txt').toString());
+    data.w2Status = Number(fs.readFileSync('data/w2Status.txt').toString());
     data.timestamp = Date.parse(new Date());
 
     
@@ -43,7 +43,7 @@ setInterval(()=>{
     });
  
     
-}, 5000);
+}, 1000);
 
 
 //connection.end();
