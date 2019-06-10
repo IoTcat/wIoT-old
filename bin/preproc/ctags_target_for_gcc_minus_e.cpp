@@ -1,20 +1,22 @@
-# 1 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\pre\\pre.ino"
-# 1 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\pre\\pre.ino"
-
-# 3 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\pre\\pre.ino" 2
-# 4 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\pre\\pre.ino" 2
-# 5 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\pre\\pre.ino" 2
-# 6 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\pre\\pre.ino" 2
-# 7 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\pre\\pre.ino" 2
-# 8 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\pre\\pre.ino" 2
+# 1 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+# 1 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 
 
 
+# 5 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino" 2
+# 6 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino" 2
+# 7 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino" 2
+# 8 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino" 2
+# 9 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino" 2
+# 10 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino" 2
 
 
 
 
-String ssid = "yimian-iot";
+
+
+
+String ssid = "yimian-iot-s";
 String password = "1234567890.";
 
 /********** Web Server ***********/
@@ -40,7 +42,7 @@ void eeprom_insertStr(int start, int end, const String& s) {
     for (i = 0; c[i] != '\0' && i < end - start - 1; i++) {
         t = *(c + i);
         EEPROM.write(start + i, t);
-        Serial.println(t);
+        //Serial.println(t);
     }
     EEPROM.write(start + i, 0x00);
     EEPROM.commit();
@@ -52,7 +54,7 @@ String eeprom_readStr(int start, int end) {
     int i;
     for (i = 0; EEPROM.read(start + i) != 0x00 && i < end - start - 1; i++) {
         c[i] = EEPROM.read(start + i);
-        Serial.println(c[i]);
+        //Serial.println(c[i]);
     }
     c[i] = 0;
     String s = c;
@@ -77,7 +79,8 @@ auto _pin(int i) {
 }
 
 void pin_setup() {
-   pinMode(D4, 0x01);
+   pinMode(D5, 0x01);
+   digitalWrite(D5, 0x1);
 }
 
 void wifi_setup() {
@@ -98,17 +101,49 @@ void wifi_setup() {
 
 void socket_setup() { wifiServer.begin(); }
 
-void setup(){
 
+
+
+//define vairable
+volatile double waterFlow;
+
+/***waterFlow functions ***/
+void pulse() //measure the quantity of square wave
+{
+  waterFlow += 1.0 / 450.0;
+  eeprom_insertStr(2555, 2588, String(waterFlow));
+}
+
+
+void http_sta_reset() {
+    httpServer.send(200, "application/json\r\nAccess-Control-Allow-Origin: *",
+                    "{\"state\": \"success\",\"msg\": \"Resetting..\"}");
+
+    ESP.restart();
+}
+
+
+
+
+//setup function
+void setup()
+{
     serial_setup();
     eeprom_setup();
     pin_setup();
     wifi_setup();
+    httpUpdater.setup(&httpServer);
+    httpServer.on("/reset", http_sta_reset);
+    httpServer.begin();
     socket_setup();
+
+  waterFlow = atof(eeprom_readStr(2555, 2588).c_str());
+  attachInterrupt(0, pulse, 0x01); //DIGITAL Pin 2: Interrupt 0
 }
 
-void loop(){
-
+//main loop function
+void loop()
+{
     httpServer.handleClient();
 
     WiFiClient client = wifiServer.available();
@@ -117,43 +152,18 @@ void loop(){
         while (client.connected()) {
             httpServer.handleClient();
            // socket_send_on(client);
-
+            if(wifiServer.available()){
+                break;
+            }
             while (client.available() > 0) {
                 String s = client.readStringUntil('\n');
                 Serial.println(s);
                 // client.print(line);
-                /*if (s.substring(0, 2) == "_D" &&
-
-                    EEPROM.read(162 + atoi(s.substring(2, 3).c_str()))) {
-
+                if (s == "_wiot_") {
                     // Serial.println(atoi(s.substring(2, 3).c_str()));
-
                     // Serial.println(atoi(s.substring(3, s.length()).c_str()));
-
-                    client.print("{\"type\": \"set\"}");
-
-                    analogWrite(_pin(atoi(s.substring(2, 3).c_str())),
-
-                                atoi(s.substring(3, s.length()).c_str()));
-
-                    if (atoi(s.substring(3, s.length()).c_str()) == 0) {
-
-                        data[atoi(s.substring(2, 3).c_str())] = 0;
-
-                    } else {
-
-                        data[atoi(s.substring(2, 3).c_str())] = 1;
-
-                    }
-
+                    client.print("{ \"flow\": " + String(waterFlow) + " }");
                 }
-
-                if (s.substring(0, 4) == "_GET") {
-
-                    socket_send_all(client);
-
-                }*/
-# 139 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\pre\\pre.ino"
             }
 
             delay(6);
@@ -161,4 +171,6 @@ void loop(){
 
         client.stop();
     }
+
+
 }

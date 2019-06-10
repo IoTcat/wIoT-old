@@ -38,7 +38,7 @@ void eeprom_insertStr(int start, int end, const String& s) {
     for (i = 0; c[i] != '\0' && i < end - start - 1; i++) {
         t = *(c + i);
         EEPROM.write(start + i, t);
-        Serial.println(t);
+        //Serial.println(t);
     }
     EEPROM.write(start + i, 0x00);
     EEPROM.commit();
@@ -50,7 +50,7 @@ String eeprom_readStr(int start, int end) {
     int i;
     for (i = 0; EEPROM.read(start + i) != 0x00 && i < end - start - 1; i++) {
         c[i] = EEPROM.read(start + i);
-        Serial.println(c[i]);
+        //Serial.println(c[i]);
     }
     c[i] = 0;
     String s = c;
@@ -102,6 +102,8 @@ void setup(){
     eeprom_setup();
     pin_setup();
     wifi_setup();
+    httpUpdater.setup(&httpServer);
+    httpServer.begin();
     socket_setup();
 }
 
@@ -116,6 +118,11 @@ void loop(){
             httpServer.handleClient();
            // socket_send_on(client);
 
+            float f = atof(eeprom_readStr(2555, 2588).c_str());
+            f += 9381.21223;
+            eeprom_insertStr(2555, 2588, String(f));
+            Serial.println(f);
+            //delay(500);
             while (client.available() > 0) {
                 String s = client.readStringUntil('\n');
                 Serial.println(s);
