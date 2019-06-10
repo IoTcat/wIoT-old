@@ -4,7 +4,7 @@ var mysql  = require('mysql');
 var moment = require('moment');
  
 var connection = mysql.createConnection({     
-  host     : '192.168.3.15',       
+  host     : '127.0.0.1',       
   user     : 'home',              
   password : 'KJ4j2JL6s^k@jsa2',       
   port: '3306',                   
