@@ -7,7 +7,7 @@ yimian__headerEnd();
 <h4>参考温度：<span id="temp"></span> &nbsp;&nbsp;&nbsp;&nbsp;参考亮度：<span id="Ls"></span></h4>
 <h4>换热器水流量：<span id="wF1"></span></h4>
 <h4>太阳能水流量：<span id="wF2"></span></h4>
-<h4>太阳能已使用水量：<span id="tW"></span>&nbsp;&nbsp;&nbsp;&nbsp;<button id="isAuto" onClick="auto()"></button>&nbsp;&nbsp;<button id="reset" onClick="reset()"></button></h4>
+<h4>太阳能已使用水量：<span id="tW"></span>&nbsp;&nbsp;&nbsp;&nbsp;<button id="isAuto" onClick="auto()"></button>&nbsp;&nbsp;<button id="reset" onClick="reset()">重置</button></h4>
 <h4>水流系统状态：<span id="wS"></span>&nbsp;&nbsp;&nbsp;&nbsp;<button id="isAdd" onClick="manual()"></button></h4>
 <h4>灯系统状态：<span id="lS"></span></h4>
 <h4>客厅人数：<span id="lP"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onClick="openDoor()">戳我开门</button></h4>
@@ -19,6 +19,9 @@ yimian__headerEnd();
 <h4><a href="http://cloud.home.yimian.xyz">点击进入家庭云盘</a>&nbsp;&nbsp;&nbsp;&nbsp;☜ 你想要的都在这里</h4>
 
 <script>
+
+var wAddStatus = 1;
+var wAutoStatus = 0;
 
 function action()
 {	
@@ -37,7 +40,24 @@ function action()
 		$('#dP').html(msg.dP+' 人');
 		$('#kP').html(msg.kP+' 人');
 		$('#hP').html(msg.hP+' 人');
+
+		if(msg.wAddStatus == '1'){
+			wAddStatus = 0;
+			$('#isAdd').text("手动停止加水");
+		}else{
+			wAddStatus = 1;
+			$('#isAdd').text("手动开始加水");
+		}
 		
+		if(msg.wAutoStatus == '1'){
+			wAutoStatus = 0;
+			$('#isAuto').text("切换到手动模式");
+		}else{
+			wAutoStatus = 1;
+			$('#isAuto').text("切换到自动模式");
+	
+		}
+
 		if(msg.tW<3) {$("#btn").hide();$('#btn').attr('disabled',"true");}
 		else {$("#btn").show();$('#btn').removeAttr("disabled");}
 	});
@@ -61,6 +81,19 @@ function addWater()
 	$.post("./addWater.php");
 }
 
+function reset(){
+
+	$.post("./reset.php");
+}
+
+function manual(){
+
+	$.post("./addWater.php?key=15&cmd=" + wAddStatus);
+}
+function auto(){
+
+	$.post("./auto.php?key=15&cmd=" + wAutoStatus);
+}
 </script>
 <?php
 yimian__footer();
