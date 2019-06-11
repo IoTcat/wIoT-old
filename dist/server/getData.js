@@ -97,8 +97,9 @@ function hallCtlData(){
 
 };
 
+if(on_hall)
 var socket_hall = new WebSocket('ws://192.168.3.102:81');
-
+else var socket_hall = new WebSocket('ws://192.168.3.1:81');
 
 
 /* hall ctl */
@@ -543,8 +544,8 @@ function log()
 		fs.closeSync(fd_l);
 	}
 
-	if(parseInt(fs.readFileSync('alert.txt'))) socket_lc.send('{"w-alert":1}');
-	else socket_lc.send('{"w-alert":0}');
+	//if(parseInt(fs.readFileSync('alert.txt'))) socket_lc.send('{"w-alert":1}');
+	//else socket_lc.send('{"w-alert":0}');
 
 
 	let fd_Tp1 = fs.openSync('Tp1.txt','w');
@@ -665,7 +666,7 @@ function isLight()
 	if(d.getHours()==1) lightVal=0;
 	if(d.getHours()==1&&d.getMinutes()==1&&d.getSeconds()<10) {if(socket_hall)socket_hall.send('{"w-light":0}');if(socket_dc)socket_dc.send('{"w-light":0}');if(socket_lc)socket_lc.send('{"w-light":0}');if(socket_kc)socket_kc.send('{"w-light":0}');}
 	if(d.getHours()==8&&d.getMinutes()==1&&d.getSeconds()<10) {if(socket_hall)socket_hall.send('{"w-light":0}');if(socket_dc)socket_dc.send('{"w-light":0}');if(socket_lc)socket_lc.send('{"w-light":0}');if(socket_kc)socket_kc.send('{"w-light":0}');}
-	if(d.getHours()==5) lightVal=1;
+	//if(d.getHours()==5) lightVal=1;
 
 	let fd = fs.openSync('lightVal.txt','w');
 
@@ -673,7 +674,7 @@ function isLight()
 
 	fs.closeSync(fd);
 
-	if(d.getHours()<1||(d.getHours()>5&&d.getHours()<7)||d.getHours()>17||lightVal==1) return 1;
+	if(d.getHours()<1/*||(d.getHours()>5&&d.getHours()<6)*/||d.getHours()>19||lightVal==1) return 1;
 	else return 0;
 }
 
