@@ -23,6 +23,7 @@ String password = "1234567890.";
 ESP8266WebServer httpServer(80);
 ESP8266HTTPUpdateServer httpUpdater;
 WiFiServer wifiServer(8848);
+unsigned int LastConnectTime = millis();
 
 void serial_setup() {
     Serial.begin(115200);
@@ -156,6 +157,7 @@ void loop()
                 break;
             }
             while (client.available() > 0) {
+                LastConnectTime = millis();
                 String s = client.readStringUntil('\n');
                 Serial.println(s);
                 // client.print(line);
@@ -172,5 +174,9 @@ void loop()
         client.stop();
     }
 
+    if(LastConnectTime + 100000 < millis()){
+        Serial.println(LastConnectTime);
+        ESP.restart();
+    }
 
 }

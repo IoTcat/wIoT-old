@@ -24,32 +24,33 @@ String password = WIFI_STA_PSK;
 ESP8266WebServer httpServer(80);
 ESP8266HTTPUpdateServer httpUpdater;
 WiFiServer wifiServer(8848);
+unsigned int LastConnectTime = millis();
 
-#line 25 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 26 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 void serial_setup();
-#line 30 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 31 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 void eeprom_setup();
-#line 36 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 37 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 void eeprom_insertStr(int start, int end, const String& s);
-#line 49 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 50 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 String eeprom_readStr(int start, int end);
-#line 62 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 63 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 auto _pin(int i);
-#line 79 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 80 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 void pin_setup();
-#line 84 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 85 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 void wifi_setup();
-#line 100 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 101 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 void socket_setup();
-#line 109 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 110 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 void pulse();
-#line 116 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 117 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 void http_sta_reset();
-#line 127 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 128 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 void setup();
-#line 143 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 144 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 void loop();
-#line 25 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
+#line 26 "e:\\Arduino_project\\wIoT\\dist\\newWaterSys\\w2\\w2.ino"
 void serial_setup() {
     Serial.begin(115200);
     Serial.setTimeout(12);
@@ -182,6 +183,7 @@ void loop()
                 break;
             }
             while (client.available() > 0) {
+                LastConnectTime = millis();
                 String s = client.readStringUntil('\n');
                 Serial.println(s);
                 // client.print(line);
@@ -198,6 +200,10 @@ void loop()
         client.stop();
     }
 
+    if(LastConnectTime + 100000 < millis()){
+        Serial.println(LastConnectTime);
+        ESP.restart();
+    }
 
 }
 

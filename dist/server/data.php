@@ -12,8 +12,8 @@ elseif(file_get_contents('./node/ctl.txt')=="1") $wS="正在加水";
 if(file_get_contents('./node/config/auto.txt')=="0") $wS.="(手动)";
 else $wS.="(自动)";
 
-$tW = "加水量: ".substr(file_get_contents('./node/data/w1InsFlow.txt') / (file_get_contents('./node/data/w2InsFlow.txt') - file_get_contents('./node/data/w1InsFlow.txt')), 0, 4);
-$tW .= "% | 校准参数: ". file_get_contents('./node/config/rate.txt') ." | 开始加水Hour: ". file_get_contents('./node/config/AddTime.txt');
+$tW = "加水量: ".substr(100 * file_get_contents('./node/data/w1InsFlow.txt') / (file_get_contents('./node/data/w2InsFlow.txt') + 0.001 - file_get_contents('./node/data/w1InsFlow.txt')), 0, 4);
+$tW .= "% | 校准参数: ". file_get_contents('./node/config/rate.txt') ." | 开始加水: ". file_get_contents('./node/config/AddTime.txt');
 
 if(file_get_contents('fon_hall.txt')=="1" && file_get_contents('fon_kit.txt')==1 && file_get_contents('fon_din.txt')==1 && file_get_contents('fon_liv.txt')==1 && file_get_contents('fon_livS.txt')==1) $lS="正常运行";
 else

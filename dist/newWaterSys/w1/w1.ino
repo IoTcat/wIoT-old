@@ -15,6 +15,7 @@
 
 String ssid = WIFI_STA_SSID;
 String password = WIFI_STA_PSK;
+unsigned int LastConnectTime = millis();
 
 /********** Web Server ***********/
 ESP8266WebServer httpServer(80);
@@ -156,6 +157,7 @@ void loop()
             }
 
             while (client.available() > 0) {
+                LastConnectTime = millis();
                 String s = client.readStringUntil('\n');
                 Serial.println(s);
                 // client.print(line);
@@ -183,6 +185,11 @@ void loop()
         }
 
         client.stop();
+    }
+
+    if(LastConnectTime + 100000 < millis()){
+        Serial.println(LastConnectTime);
+        ESP.restart();
     }
 
 

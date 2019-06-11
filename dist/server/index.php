@@ -7,7 +7,7 @@ yimian__headerEnd();
 <h4>参考温度：<span id="temp"></span> &nbsp;&nbsp;&nbsp;&nbsp;参考亮度：<span id="Ls"></span></h4>
 <h4>换热器水流量：<span id="wF1"></span></h4>
 <h4>太阳能水流量：<span id="wF2"></span></h4>
-<h4>太阳能已使用水量：<span id="tW"></span>&nbsp;&nbsp;&nbsp;&nbsp;<button id="isAuto" onClick="auto()"></button>&nbsp;&nbsp;<button id="reset" onClick="reset()">重置</button></h4>
+<h4><span id="tW"></span><br/><button id="isAuto" onClick="auto()"></button>&nbsp;&nbsp;<button id="reset" onClick="reset()">重置</button></h4>
 <h4>水流系统状态：<span id="wS"></span>&nbsp;&nbsp;&nbsp;&nbsp;<button id="isAdd" onClick="manual()"></button></h4>
 <h4>灯系统状态：<span id="lS"></span></h4>
 <h4>客厅人数：<span id="lP"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onClick="openDoor()">戳我开门</button></h4>
@@ -33,7 +33,7 @@ function action()
 		$('#dl').html(msg.dl);
 		$('#wS').html(msg.wS);
 		$('#lS').html(msg.lS);
-		$('#tW').html(msg.tW+" L");
+		$('#tW').html(msg.tW+"H");
 		$('#temp').html(msg.temp+" ℃ ");
 		$('#Ls').html(msg.Ls2+" ");
 		$('#lP').html(msg.lP+' 人');
@@ -83,7 +83,7 @@ function addWater()
 
 function reset(){
 
-	$.post("./reset.php");
+	$.post("./reset.php?key=15");
 }
 
 function manual(){
