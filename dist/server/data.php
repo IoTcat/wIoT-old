@@ -4,19 +4,16 @@ include './functions.php';
 $conn=db__connect();
 $learn_count=db__rowNum($conn,"People_learning","d",1);
 
-if(file_get_contents('./wStatus.txt')=="1") $wS="未用水";
-if(file_get_contents('./wStatus.txt')=="2") 
-{
-	$wS="正在加水 ";
-	$wS.=substr(((file_get_contents('./waterFlow2.txt')-file_get_contents('./topW_end.txt'))/(file_get_contents('./topW_end.txt')-file_get_contents('./topW_start.txt')))*100,0,5);
-	$wS.="%";
-	
-}
-if(file_get_contents('./wStatus.txt')=="3") $wS="换热器用水";
-if(file_get_contents('./wStatus.txt')=="4") $wS="太阳能用水";
-if(file_get_contents('./wStatus.txt')=="-1") $wS="主厕系统故障";
-if(file_get_contents('./wStatus.txt')=="-2") $wS="副厕系统故障";
-if(file_get_contents('./wStatus.txt')=="-3") $wS="主、副厕系统故障";
+if(file_get_contents('./node/data/w1Status.txt')=="0") $wS.="主厕故障";
+elseif(file_get_contents('./node/data/w2Status.txt')=="0") $wS="辅厕故障";
+elseif(file_get_contents('./node/ctl.txt')=="0") $wS="未加水";
+elseif(file_get_contents('./node/ctl.txt')=="1") $wS="正在加水";
+
+if(file_get_contents('./node/config/auto.txt')=="0") $wS.="(手动)";
+else $wS.="(自动)";
+
+$tW = "加水量: ".substr(file_get_contents('./node/data/w1InsFlow.txt') / (file_get_contents('./node/data/w2InsFlow.txt') - file_get_contents('./node/data/w1InsFlow.txt')), 0, 4);
+$tW .= "% | 校准参数: ". file_get_contents('./node/config/rate.txt') ." | 开始加水Hour: ". file_get_contents('./node/config/AddTime.txt');
 
 if(file_get_contents('fon_hall.txt')=="1" && file_get_contents('fon_kit.txt')==1 && file_get_contents('fon_din.txt')==1 && file_get_contents('fon_liv.txt')==1 && file_get_contents('fon_livS.txt')==1) $lS="正常运行";
 else
