@@ -41,7 +41,7 @@ docute.init({
     },
     plugins: [
         docsearch({
-            apiKey: '46a8ba306e368972c1d75feb581fb430',
+            apiKey: '4de49b1faa7fecd36ac7a295fcb55229',
             indexName: 'wiot',
             tags: ['english', 'zh-Hans'],
             url: 'http://wiot.eee.dog'
