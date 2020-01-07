@@ -40,13 +40,13 @@ docute.init({
         ],
     },
     plugins: [
-        docsearch({
+        /*docsearch({
             apiKey: '4de49b1faa7fecd36ac7a295fcb55229',
             indexName: 'wiot',
 	    inputSelector: 'search-box',
             tags: ['english', 'zh-Hans'],
             url: 'http://wiot.eee.dog'
-        }),
+        }),*/
         evanyou()
     ]
 });
