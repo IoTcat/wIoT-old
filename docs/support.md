@@ -16,13 +16,13 @@ You can support wIoT development via the following methods:
 
 We accept donations through these channels:
 
-- [Paypal](https://www.paypal.me/iotgod)
-- [WeChat Pay](https://cdn.yimian.xyz/img/pay/wechatpay.png)
-- [Alipay](https://cdn.yimian.xyz/img/pay/alipay.png)
+- [Paypal](https://pay.yimian.xyz/)
+- [WeChat Pay](https://pay.yimian.xyz/)
+- [Alipay](https://pay.yimian.xyz/)
 - Bitcoin: 1MRAfEXsHTVYH8bHQ3J4fos3zs7Zj6oKWh
 
 
 
-## DwIoT contributors
+## wIoT contributors
 
 This project exists thanks to all the people who contribute.
