@@ -1,6 +1,13 @@
 ## wIoT for NodeJS
 适用于NodeJS的wIoT服务器控制组件，轻松物联
 
+<video id="video" controls="" preload="none">
+      <source id="mp4" src="/video/wiot.mp4" type="video/mp4">
+      <p>Your user agent does not support the HTML5 Video element.</p>
+</video>
+
+
+
 ## 先觉条件
  - 拥有烧录好[wIoT固件](https://wiot.yimian.xyz/ota/get.php)的**D1 MINI**单片机
  - 一台或多台无线WiFi路由器2.4G/5G
