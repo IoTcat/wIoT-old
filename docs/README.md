@@ -1,7 +1,7 @@
 ## wIoT for NodeJS
 适用于NodeJS的wIoT服务器控制组件，轻松物联
 
-<video id="video" controls="" preload="none">
+<video id="video" controls="" preload="none" width="100%">
       <source id="mp4" src="/video/wiot.mp4" type="video/mp4">
       <p>Your user agent does not support the HTML5 Video element.</p>
 </video>
