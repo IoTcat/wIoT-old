@@ -38,7 +38,7 @@ Follow the steps below, I'm sure it would not be a problem for such a smart pers
  - After you finish step 1, your MINI would work in AP mode, which means you can search it with your smart phone or personal computer by scanning the Wi-Fi around     
  - If your MINI was reset successfully, you would find a Wi-Fi with SSID in the form of **wiot-xx:xx:xx:xx:xx:xx**.  
 Example:         
-![ssid](https://image.yimian.xyz/docs/wiot/ssid.png)          
+![ssid](https://api.yimian.xyz/img/?path=docs/wiot/ssid.png)          
 "xx:xx:xx:xx:xx:xx" is the MAC address of this MINI, please try to remember the address for you may use it later 
 
 The default password for D1 MINI is **1234567890**, enter the password and you should be able to connect to your MINI.
@@ -51,7 +51,7 @@ Use the device which had just been connected to D1 MINI and follow the steps bel
 ### 1. Visit the control page of D1 MINI
 Visit **http://192.168.0.1** with the browser on your device             
 Normally, you would see a webpage like this:          
-![webpage](https://image.yimian.xyz/docs/wiot/webpage.png)            
+![webpage](https://api.yimian.xyz/img/?path=docs/wiot/webpage.png)            
 In this page, you can see the MAC Address and wIoT version of your MINI  
 Again, please **remember** the MAC Address  
 
