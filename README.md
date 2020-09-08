@@ -1,9 +1,16 @@
 # wIoT
 >This Project is not finished!!!!
 
-wIoT let developers do not need to consider how to program the MCU and how the server could interact with MCUs. Then you can concentrate on programing the logic layer and develop very great IoT applications!  
+This project aims to help web developers who are not familiar with firmware programming to implement their own IoT applications. You only need a server inside the network (such as Raspberry Pi) and several MCUs (single-chip computers) that support networking (via serial port, WiFi, LoRa, Bluetooth, Zigbee, etc.), you can easily create and manage your own Internet of Things Cluster.
 
 
+> Please refer to this [Blog](https://www.eee.dog/tech/wiot.html) for details..
+> 请查看这篇[博客](https://www.eee.dog/tech/wiot.html)
+
+-------------------------------------------
+The following is history
+
+---------------------------------
 
 ## 快速开始
 
